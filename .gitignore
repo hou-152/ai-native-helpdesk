@@ -4,6 +4,20 @@
 # Agent 自己的日志（不进 GitHub）
 memory/
 
+# 私密语料、加工证据与本地状态（不进 GitHub）
+evidence/
+**/.work/
+*.ndjson
+*.jsonl
+*.sqlite
+*.sqlite-*
+.env
+.env.*
+*.log
+
 # 临时文件
 *.tmp
 *.bak
+.DS_Store
+node_modules/
+coverage/

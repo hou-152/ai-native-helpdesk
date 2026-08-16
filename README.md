@@ -1,92 +1,92 @@
-# ai-native-helpdesk v0.2.3-trial
+# ai-native-helpdesk v0.3.0-gate-trial
 
-> ⚠️ **TRIAL 版本 / 尚未在真实群内验证过完整流程**
-> 设计稿：https://feishu.cn/docx/DQqBdlPHPoktjNxe8flcSSC0nBf
-> 知识库形态：https://feishu.cn/docx/YhrUd3qApoXPdWxe9TDcUorknFb
+> 当前状态：发布门代码已建立，公开知识卡为 0。不是已上线知识库，也没有完成真实社区端到端验收。
 
-## 这是什么
+## 目标
 
-AI Native 群高频问答的**薄入口 Skill**。
+为 AI／Agent／OpenClaw 相关社区提供一个薄入口 Helpdesk：先守门和路由，再按需加载合同；知识问答只能读取已经通过编辑、验证、隐私和发布四道门的 PublicCard。
 
-只做 3 件事：
-1. 守门（识别红线 / 隐私 / 不可逆 / 动态事实）
-2. 判模（识别主路由 = good-question / thinking / action / knowledge / safety）
-3. 加载对应子 Skill contract（按需 `read_file`）
+AI Native 社区可以作为共同知识的高质量来源，但私密群聊、成员信息、原话和内部审核材料不进入本仓库。未来其他社区可以显式挂载自己的本地知识包，不与公共包混写。
 
-## 这是不是什么
+## 运行结构
 
-- ❌ **不是**全量加载的诊断框架
-- ❌ **不是**一次性回答所有问题
-- ❌ **不是**个人 Agent 记忆库
-- ❌ **不是**已核验的知识库
-
-## 目录结构
-
-```
+```text
 ai-native-helpdesk/
-├── SKILL.md                    # 总导航（默认全量加载）
-├── contracts/                  # 子 Skill contract（按需 read_file）
+├── SKILL.md
+├── contracts/
 │   ├── good-question.md
 │   ├── thinking.md
 │   ├── action.md
 │   ├── knowledge.md
+│   ├── public-card.md
 │   └── safety.md
-└── README.md                   # 本文件
+├── schemas/public-card.schema.json
+├── scripts/query-public-card.mjs
+├── knowledge/public/index.json
+└── tests/public-card-gate.test.mjs
 ```
 
-## 使用方式
+## 发布门
 
-### 入口触发
+PublicCard 必须精确满足：
 
-当用户在 AI Native 群提问时，调用：
+```text
+editorial = APPROVED
+verification = PASS
+privacy_gate = PASS
+publication = READY
+```
+
+加载器还会检查 `domain = AI_AGENT_OPENCLAW`、严格 schema、索引一致性、路径和软链边界、重复 JSON 键、敏感字段／模式以及公共包与社区包冲突。所有检查完成前不输出正文。
+
+三种结果：
+
+- `ALLOW`：唯一命中且全部检查通过，返回白名单卡片字段。
+- `MISS`：没有命中，Helpdesk 回到普通事实检索。
+- `DENY`：坏包、坏卡、冲突或状态不通过，不返回正文。
+
+## 使用
+
+默认公共包：
 
 ```bash
-read_file ~/.agents/skills/ai-native-helpdesk/SKILL.md
+node scripts/query-public-card.mjs --query "用户问题"
 ```
 
-### 子 Skill 加载
-
-按 SKILL.md 判模结果，加载对应 contract：
+显式增加社区本地包：
 
 ```bash
-read_file ~/.agents/skills/ai-native-helpdesk/contracts/good-question.md
-read_file ~/.agents/skills/ai-native-helpdesk/contracts/thinking.md
-read_file ~/.agents/skills/ai-native-helpdesk/contracts/action.md
-read_file ~/.agents/skills/ai-native-helpdesk/contracts/knowledge.md
-read_file ~/.agents/skills/ai-native-helpdesk/contracts/safety.md
+node scripts/query-public-card.mjs \
+  --query "用户问题" \
+  --community-pack "/path/to/community-pack"
 ```
 
-### 关键规则
+脚本不会自动扫描当前目录、用户目录、环境变量或个人资料。当前公共索引为空，因此正常查询结果是 `MISS`。
 
-**fail-closed**：contract 文件缺失 → 明确告知模块不可用，**禁止模拟**。
+## 验证
 
-**输出所有权唯一**：入口只路由 + 一句话理由；子 Skill 给完整回答 + 一个最小下一步。
+```bash
+node --test
+```
 
-## 已知缺陷（trial 阶段暴露过）
+测试使用纯虚构临时卡片，不包含真实社区数据。覆盖四道门、严格 schema、重复键、敏感内容、路径穿越、软链越界、跨包冲突和拒绝内容不泄露。
 
-- ❌ 问题域识别不够细（第一次用户问"养龙虾审美"，我没识别出是"私人助手"问题域）
-- ❌ 9 标签阻塞识别只实现了 5 个核心标签（其余 NOT_IMPLEMENTED）
-- ❌ 留档治理 5 档状态只实现了 2 档（候选 / 已核验）
-- ❌ 运行时动态事实自动核验未实现
-- ❌ v0.3 知识库（飞书 Bitable）尚未创建
+## 隐私与能力边界
 
-## 修订记录
+- Git 仓库不接收群聊导出、候选报告、证据、`.work`、memory、凭证或本机日志。
+- 公共包只能包含已经生成的 PublicCard；私密编辑真源必须留在其他受控位置。
+- 程序能做结构和敏感模式检查，但不能证明普通文本从未逐字取自私域语料；语义脱敏仍由人工 `privacy_gate` 负责。
+- 测试通过只证明发布门的机器行为，不证明卡片答案正确、用户接受、已经发布或产生效果。
 
-| 版本 | 状态 | 改动 |
-|---|---|---|
-| v0.1 / v0.2 / v0.2.1 / v0.2.2 | 已废弃 | 见飞书文档 |
-| **v0.2.3-trial** | **TRIAL** | 砍版 + 5 子 Skill contract + fail-closed |
+## 当前完成度
 
-## v0.3 待办
+| 项目 | 状态 |
+|---|---|
+| 薄入口与 5 个原有合同 | `TRIAL` |
+| PublicCard schema | `CODE_READY` |
+| 确定性发布门 | `CODE_READY` |
+| 公共知识卡 | `0` |
+| 第一张真实 PublicCard | `NOT_STARTED` |
+| 真实社区端到端验证 | `NOT_VERIFIED` |
 
-- [ ] 知识库（Bitable）实际创建 + 数据沉淀
-- [ ] 9 标签阻塞识别全表
-- [ ] 5 档 FAQ 状态跑通完整流程
-- [ ] 典型案例库（已脱敏）
-- [ ] 运行时动态事实自动核验
-- [ ] Codex 群聊记录批量扫描整合
-
----
-
-*v0.2.3-trial = 砍版先做，不假装成熟。*
-*真问题进来后，下一版自然升级到 v0.3。*
+下一阶段必须由独立流程完成第一张卡的内容修正、真实环境验证、隐私审查和 Owner 发布批准；本阶段不会自动生成或发布真实知识卡。
