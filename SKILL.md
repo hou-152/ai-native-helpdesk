@@ -137,5 +137,6 @@ publication = READY
 | v0.1—v0.2.2 | 已废弃 | 历史设计 |
 | v0.2.3-trial | TRIAL | 薄入口和 5 个子合同 |
 | v0.3.0-gate-trial | GATE_TRIAL | PublicCard schema、确定性发布门、公共／社区包边界 |
+| v0.3.2-contracts-trial | TRIAL 工作标签 | 合同内容修正：good-question 去机械化、safety 风险分级、action 补闭环；有效 Skill 版本仍为 `0.3.0-gate-trial` |
 
 后续 PublicCard 仍须逐张独立完成内容修正、真实验证、隐私审查和 Owner 发布批准；首张卡通过不能让其他候选自动晋级。
