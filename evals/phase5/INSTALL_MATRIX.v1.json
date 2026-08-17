@@ -1,0 +1,58 @@
+{
+  "schema_version": "1.0",
+  "matrix_id": "AIHD-PHASE5-INSTALL-V1",
+  "frozen_at": "2026-08-18T06:34:00+08:00",
+  "baseline_commit": "9cee4e5fb6cf48555174e50e1e6386fbf7f43b26",
+  "host_scope": {
+    "os": "macOS",
+    "arch": "arm64",
+    "node_major": 24,
+    "docker_available": false,
+    "podman_available": false
+  },
+  "cases": [
+    {
+      "case_id": "P5-INSTALL-FRESH-SPACED",
+      "kind": "FRESH_INSTALL",
+      "required": true,
+      "expected": "INSTALL_VERIFY_PASS_FROM_UNRELATED_CWD"
+    },
+    {
+      "case_id": "P5-TWO-CARD-READBACK",
+      "kind": "RUNTIME_READBACK",
+      "required": true,
+      "expected": "TWO_APPROVED_CARDS_ALLOW_AND_NEARBY_NOT_FOR_MISS"
+    },
+    {
+      "case_id": "P5-ROLLBACK-PREEXISTING",
+      "kind": "ROLLBACK",
+      "required": true,
+      "expected": "PREVIOUS_TARGET_BYTE_IDENTICAL_RESTORED"
+    },
+    {
+      "case_id": "P5-UNINSTALL-RECOVERABLE",
+      "kind": "UNINSTALL",
+      "required": true,
+      "expected": "TARGET_MOVED_NOT_DELETED_AND_RECEIPT_READABLE"
+    },
+    {
+      "case_id": "P5-VERIFY-TAMPER-DENY",
+      "kind": "NEGATIVE",
+      "required": true,
+      "expected": "VERIFY_FAIL_CLOSED_ON_BYTE_DRIFT"
+    },
+    {
+      "case_id": "P5-RELEASE-ALLOWLIST",
+      "kind": "PACKAGE_BOUNDARY",
+      "required": true,
+      "expected": "NO_PRIVATE_OR_DEVELOPMENT_ONLY_FILES_INSTALLED"
+    }
+  ],
+  "cross_platform_claims": {
+    "linux": "NOT_VERIFIED",
+    "windows": "NOT_VERIFIED",
+    "other_node_majors": "NOT_VERIFIED"
+  },
+  "community_contact_before_g14": false,
+  "status": "FROZEN_BEFORE_IMPLEMENTATION"
+}
