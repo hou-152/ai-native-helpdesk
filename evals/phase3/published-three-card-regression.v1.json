@@ -1,0 +1,156 @@
+{
+  "schema_version": "1.0",
+  "dataset_id": "aihd-phase3-published-three-card-regression-v1",
+  "evidence_class": "OBSERVED_ACCEPTANCE_REGRESSION",
+  "algorithm": "bm25_expansion_keyword",
+  "threshold": 0.8449460370411592,
+  "top_k": 3,
+  "claim_boundary": "local_branch_three_approved_publiccards_not_remote_publication_or_user_effect",
+  "cases": [
+    {
+      "case_id": "REAL-R01",
+      "stage": "RECALL",
+      "query": "写进 AGENTS.md 的规则怎样确认生效",
+      "expected_status": "CANDIDATE",
+      "expected_public_card_ids": ["AIHD-PC-000001"],
+      "exact_set_required": true,
+      "tags": ["codex", "rule-discovery"]
+    },
+    {
+      "case_id": "REAL-R02",
+      "stage": "RECALL",
+      "query": "怎么确认项目规则被新 Codex 会话吃到了",
+      "expected_status": "CANDIDATE",
+      "expected_public_card_ids": ["AIHD-PC-000001"],
+      "exact_set_required": true,
+      "tags": ["codex", "natural-paraphrase"]
+    },
+    {
+      "case_id": "REAL-R03",
+      "stage": "RECALL",
+      "query": "命令被审批拦下怎么办",
+      "expected_status": "CANDIDATE",
+      "expected_public_card_ids": ["AIHD-PC-000002"],
+      "exact_set_required": true,
+      "tags": ["codex", "permission"]
+    },
+    {
+      "case_id": "REAL-R04",
+      "stage": "RECALL",
+      "query": "AGENTS 已经被读取，可命令仍提示 approval required",
+      "expected_status": "CANDIDATE",
+      "expected_public_card_ids": ["AIHD-PC-000002"],
+      "exact_set_required": true,
+      "tags": ["codex", "bilingual", "permission"]
+    },
+    {
+      "case_id": "REAL-R05",
+      "stage": "RECALL",
+      "query": "怎样用 --require-rpc 验证 OpenClaw Gateway",
+      "expected_status": "CANDIDATE",
+      "expected_public_card_ids": ["AIHD-PC-000003"],
+      "exact_set_required": true,
+      "tags": ["openclaw", "gateway"]
+    },
+    {
+      "case_id": "REAL-R06",
+      "stage": "RECALL",
+      "query": "小龙虾服务进程在但 RPC 探针失败怎么验证",
+      "expected_status": "CANDIDATE",
+      "expected_public_card_ids": ["AIHD-PC-000003"],
+      "exact_set_required": true,
+      "tags": ["openclaw", "natural-paraphrase"]
+    },
+    {
+      "case_id": "REAL-R07",
+      "stage": "RECALL",
+      "query": "AGENTS.md 已经读取但命令仍被 sandbox 拒绝",
+      "expected_status": "CLARIFY",
+      "expected_public_card_ids": ["AIHD-PC-000001", "AIHD-PC-000002"],
+      "exact_set_required": true,
+      "tags": ["codex", "post-recall-ambiguity"]
+    },
+    {
+      "case_id": "REAL-R08",
+      "stage": "RECALL",
+      "query": "AGENTS.md 规则没生效还是 sandbox 拒绝",
+      "expected_status": "CLARIFY",
+      "expected_public_card_ids": ["AIHD-PC-000001", "AIHD-PC-000002"],
+      "exact_set_required": true,
+      "tags": ["codex", "post-recall-ambiguity"]
+    },
+    {
+      "case_id": "REAL-R09",
+      "stage": "RECALL",
+      "query": "Codex 为什么没有权限打开这个文件？",
+      "expected_status": "CANDIDATE",
+      "expected_public_card_ids": ["AIHD-PC-000002"],
+      "exact_set_required": false,
+      "tags": ["codex", "allowed-over-recall", "applicability-adjudication"]
+    },
+    {
+      "case_id": "REAL-R10",
+      "stage": "RECALL",
+      "query": "OpenClaw 为什么记不住上一轮",
+      "expected_status": "MISS",
+      "expected_public_card_ids": [],
+      "exact_set_required": true,
+      "tags": ["hard-negative", "openclaw", "wrong-topic"]
+    },
+    {
+      "case_id": "REAL-R11",
+      "stage": "RECALL",
+      "query": "怎样确认 README.md 的规则在 Codex 中生效",
+      "expected_status": "MISS",
+      "expected_public_card_ids": [],
+      "exact_set_required": true,
+      "tags": ["hard-negative", "codex", "wrong-file"]
+    },
+    {
+      "case_id": "REAL-R12",
+      "stage": "RECALL",
+      "query": "怎样连接并验证 Codex MCP 服务",
+      "expected_status": "MISS",
+      "expected_public_card_ids": [],
+      "exact_set_required": true,
+      "tags": ["hard-negative", "codex", "wrong-topic"]
+    },
+    {
+      "case_id": "REAL-R13",
+      "stage": "RECALL",
+      "query": "完全无关的烘焙问题",
+      "expected_status": "MISS",
+      "expected_public_card_ids": [],
+      "exact_set_required": true,
+      "tags": ["unrelated"]
+    },
+    {
+      "case_id": "REAL-P01",
+      "stage": "PRE_RECALL",
+      "query": "我该改 AGENTS 还是 sandbox 权限",
+      "expected_status": "NEEDS_INPUT",
+      "expected_public_card_ids": [],
+      "exact_set_required": true,
+      "tags": ["missing-context-changes-path", "retrieval-bypass"]
+    },
+    {
+      "case_id": "REAL-P02",
+      "stage": "PRE_RECALL",
+      "query": "规则写了但没吃到，还是系统权限拦住了？",
+      "expected_status": "NEEDS_INPUT",
+      "expected_public_card_ids": [],
+      "exact_set_required": true,
+      "tags": ["missing-context-changes-path", "retrieval-bypass"]
+    }
+  ],
+  "acceptance": {
+    "candidate_target_hit_rate": 1,
+    "exact_required_rate": 1,
+    "clarify_full_coverage_rate": 1,
+    "miss_false_positive_count": 0,
+    "hard_negative_false_positive_count": 0,
+    "pre_recall_bypass_rate": 1,
+    "safe_output_rate": 1,
+    "cross_domain_false_positive_count": 0
+  }
+}

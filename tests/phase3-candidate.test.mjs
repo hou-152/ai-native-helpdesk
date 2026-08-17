@@ -49,9 +49,13 @@ test("Phase 3 first batch is exactly three cards with full human QA pending", ()
   assert.equal(manifest.cards.every((card) => card.human_qa === "PENDING_G12"), true);
 });
 
-test("formal public index remains one card before G12", () => {
+test("formal public index contains all three G12-approved cards", () => {
   const index = readJson("knowledge/public/index.json");
-  assert.deepEqual(index.cards.map((card) => card.card_id), ["AIHD-PC-000001"]);
+  assert.deepEqual(index.cards.map((card) => card.card_id), [
+    "AIHD-PC-000001",
+    "AIHD-PC-000002",
+    "AIHD-PC-000003"
+  ]);
 });
 
 for (const candidate of [candidate002, candidate003]) {
@@ -69,7 +73,7 @@ for (const candidate of [candidate002, candidate003]) {
     assert.equal(candidate.human_qa.verdict, "PENDING_G12");
   });
 
-  test(`${candidate.proposed_public_fields.card_id} production receipt refuses private or public promotion before G12`, () => {
+  test(`${candidate.proposed_public_fields.card_id} preserves its immutable pre-G12 HOLD receipt`, () => {
     const privateResult = evaluateRecord(candidate.production_receipt, "private-card");
     const publicResult = evaluateRecord(candidate.production_receipt, "public-projection");
     assert.equal(privateResult.status, "HOLD");

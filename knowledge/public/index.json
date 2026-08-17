@@ -14,6 +14,34 @@
         "怎样测试 AGENTS.md 规则有没有生效？"
       ],
       "scope_hint": "排查 Codex 是否发现、读取并触发普通 AGENTS.md 行为规则；不处理技术性权限阻断。"
+    },
+    {
+      "card_id": "AIHD-PC-000002",
+      "file": "cards/AIHD-PC-000002.json",
+      "revision": "1.0.0",
+      "content_sha256": "a0bad2ec48760eac38bb1efb48b6e5fc992dd28f16f03cfcb7fd81378a65864e",
+      "question": "Codex 已读取 AGENTS.md，但命令仍被沙箱或审批阻断，应该怎么排查？",
+      "aliases": [
+        "Codex 明明读了规则为什么还是不能执行命令？",
+        "命令被 sandbox 拒绝该怎么查？",
+        "AGENTS.md 允许了为什么还要审批？",
+        "怎样区分规则要求和沙箱硬限制？"
+      ],
+      "scope_hint": "排查已确认规则被读取后，命令、文件或网络访问仍被 Sandbox、Rules 或审批策略限制。"
+    },
+    {
+      "card_id": "AIHD-PC-000003",
+      "file": "cards/AIHD-PC-000003.json",
+      "revision": "1.0.0",
+      "content_sha256": "284483b32305b1e869364c8904f92336602016b2c5d9550ed3a34c29c4ef796a",
+      "question": "OpenClaw Gateway 安装后，怎样确认服务真的运行并且 RPC 可用？",
+      "aliases": [
+        "openclaw gateway status 怎么看？",
+        "小龙虾 gateway 装好了怎么验收？",
+        "Gateway 显示 running 但连不上怎么办？",
+        "怎样用 --require-rpc 验证 OpenClaw Gateway？"
+      ],
+      "scope_hint": "验证 OpenClaw Gateway 服务状态、连接握手与 RPC 读探针；不处理安装、重启或凭证分发。"
     }
   ]
 }

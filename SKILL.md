@@ -1,15 +1,15 @@
 ---
 name: ai-native-helpdesk
 description: 面向 AI／Agent／OpenClaw 社区的薄入口 Helpdesk Skill。负责守门、判模、按需加载合同，并只通过确定性发布门读取 PublicCard。
-version: 0.5.0-phase3-candidate
-status: PHASE_3_CANDIDATE / 1 张 PublicCard 试运行 / 两张新卡待 G12 / 真实社区端到端未验证
+version: 0.5.1-phase3-published
+status: G12_APPROVED / 本地正式三卡包 / 真实三卡观察回归通过 / 真实社区端到端未验证
 author: 减
 license: internal
 ---
 
-# ai-native-helpdesk v0.5.0-phase3-candidate
+# ai-native-helpdesk v0.5.1-phase3-published
 
-> 当前已实现 PublicCard 机器发布门，并有 1 张经过单独批准的试运行卡。单卡可用不等于完整知识库上线，也不等于已经完成真实社区端到端验证或解决了用户问题。
+> 当前已实现 PublicCard 机器发布门，本地功能分支有 3 张经 G12 逐卡批准的正式卡。三卡本地可用不等于远端已发布、完整知识库上线，也不等于已经完成真实社区端到端验证或解决了用户问题。
 
 ## 这是什么
 
@@ -109,9 +109,9 @@ publication = READY
 
 公共包随 Skill 分发；社区本地包必须由调用者显式给出路径。同一问题命中多卡时拒绝，不设置静默覆盖顺序。
 
-Phase 1 已由 Owner G10 选择 `bm25_expansion_keyword@0.8449460370411592 / top_k=3` 作为候选召回方案，但当前只有 synthetic mechanism 证据，尚未接入确定性 loader，也不能从分数直接触发 `ALLOW` 或正文读取。
+Phase 1 已由 Owner G10 选择 `bm25_expansion_keyword@0.8449460370411592 / top_k=3` 作为候选召回方案，并通过 synthetic holdout 与 G12 后真实三卡观察回归。它仍不能从分数直接触发 `ALLOW` 或正文读取；宽召回必须先经过适用性裁决。
 
-PublicCard schema B 为 `0.4`，新增安全 `scope_hint`、判断框架、常见错误、行动原则和验证方法。index 同时绑定 revision、完整文件 hash 和 scope_hint；任一漂移均 `DENY`。Phase 3 两张新卡只存在于 G12 候选包，禁止直接读取或复制为四门通过卡。
+PublicCard schema B 为 `0.4`，新增安全 `scope_hint`、判断框架、常见错误、行动原则和验证方法。index 同时绑定 revision、完整文件 hash 和 scope_hint；任一漂移均 `DENY`。G12 已批准 000001 v1.1.0、000002 v1.0.0、000003 v1.0.0，本地正式 index 精确绑定这三张卡。
 
 ## Phase 3 生产门
 
@@ -171,9 +171,9 @@ node scripts/helpdesk-turn-contract.mjs \
 - 发布门代码和合成测试：已建立。
 - Phase 1 召回选择：Owner G10 已通过；只限 synthetic 候选召回证据，尚未接入 loader。
 - Phase 2 回合与外部来源合同：G11 已通过；当前仍是本地分支能力。
-- Phase 3 schema B、生产门与候选错配：本地通过，待 G12 逐卡人工 QA 和发布决定。
-- 公开 PublicCard：1 张试运行卡。
-- 两张新卡：`PENDING_G12`，未进入正式 index。
+- Phase 3 schema B、生产门与正式三卡错配：G12 已通过，本地验证通过。
+- 公开 PublicCard：本地功能分支 3 张，尚未进入远端 `main`。
+- 两张新卡：已按 G12 指定 revision 进入本地正式 index。
 - 社区真实端到端验证：未完成。
 - 群聊候选、内部证据和审核材料：不属于公开仓库。
 
@@ -186,5 +186,6 @@ node scripts/helpdesk-turn-contract.mjs \
 | v0.3.0-gate-trial | GATE_TRIAL | PublicCard schema、确定性发布门、公共／社区包边界 |
 | v0.4.0-phase2-candidate | PHASE_2_CANDIDATE | 追问门、8 种回合去向、G6 外部来源政策与逐 claim 来源合同 |
 | v0.5.0-phase3-candidate | PHASE_3_CANDIDATE | schema B、index 完整性绑定、双生产路径、首批 100% QA 与 G12 停点 |
+| v0.5.1-phase3-published | G12_APPROVED | 首批三卡本地正式投影、loader 后验收与真实卡错配回归 |
 
 后续 PublicCard 仍须逐张独立完成内容修正、真实验证、隐私审查和 Owner 发布批准；首张卡通过不能让其他候选自动晋级。

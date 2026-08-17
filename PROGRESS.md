@@ -1,5 +1,15 @@
 # 受控阶段进度
 
+## G12 正式三卡投影（2026-08-18）
+
+- Owner 已批准 schema B、QA rubric、首批 000001／000002／000003，并逐卡批准 000001 v1.1.0、000002 v1.0.0、000003 v1.0.0 发布。
+- 当前本地功能分支的正式公共 index 包含 3 张卡；index 与 G12 收据同时绑定 revision、完整文件 SHA-256 和安全 scope。
+- 000002／000003 的正式正文逐字段保持已批准候选投影；历史 `PENDING_G12` 收据保持不可变，仍然返回 `HOLD`。
+- 真实三卡观察回归为 15／15 PASS：需精确集合、歧义覆盖、预召回绕过和安全输出均为 100%；MISS、hard-negative 和跨域假阳性均为 0。
+- `REAL-R09` 保留一条可见宽召回：000002 目标卡命中时也召回 000001；该路径必须在 loader 前经过 applicability 裁决，不声称 exact-set 成功。
+- 当前状态只表示本地正式公共包通过；尚未 push、建立 PR、合并远端 `main` 或完成真实社区端到端验证。
+- G12 后置条件已完成，可以进入 Phase 4。
+
 ## Phase 3 schema B 与知识生产（2026-08-18）
 
 - Owner 已按推荐通过 G11，本地分支从 `441fffadc0771172d6e305ab4d576ebc058cbf51` 进入 `codex/phase3-knowledge-production`。
@@ -9,7 +19,7 @@
 - 首批候选固定为 000001 schema 迁移、000002 Codex 权限边界、000003 OpenClaw Gateway 健康检查；两张新卡只用公开官方来源，当前均为 `PENDING_G12`。
 - 正式公共 index 保持 1 张卡；候选投影在 G12 前确定性返回 `HOLD`。
 - 全量测试当前为 `144／144 PASS`，0 fail／cancelled／skipped／todo。候选三卡测试是本地 candidate projection 证据，不是已发布真实三卡验收。
-- 当前停点：准备 G12 包，等待 Owner 对 schema、rubric、实际清单和每张卡做 100% 人工 QA／发布决定；未经 G12 不进入 Phase 4。
+- 本段保留 G12 前历史状态。Owner 后续已通过 G12，实际投影和回归结果见上方新段落。
 
 ## Phase 1 v2 召回复验（2026-08-18）
 

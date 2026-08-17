@@ -1,6 +1,6 @@
-# ai-native-helpdesk v0.5.0-phase3-candidate
+# ai-native-helpdesk v0.5.1-phase3-published
 
-> 当前状态：Owner 已通过 G11；本分支进入 Phase 3，建立 schema B、index revision／hash 绑定和两条内部卡生产门。正式公共索引仍只有 1 张卡；两张新卡保持 `PENDING_G12`，不代表 3 张真实卡已经发布，也不代表完成社区端到端验收。
+> 当前状态：Owner 已通过 G12；本地功能分支的正式公共索引包含 3 张逐卡批准的 PublicCard，确定性 loader 与真实三卡错配回归已通过。尚未 push、建立 PR、合并到远端 `main` 或完成社区端到端验收。
 
 ## 目标
 
@@ -68,7 +68,7 @@ node scripts/query-public-card.mjs \
   --community-pack "/path/to/community-pack"
 ```
 
-脚本不会自动扫描当前目录、用户目录、环境变量或个人资料。当前公共索引只有 1 张试运行卡；命中该卡才返回 `ALLOW`，其他问题仍返回 `MISS`。
+脚本不会自动扫描当前目录、用户目录、环境变量或个人资料。当前本地分支的正式公共索引包含 3 张逐卡批准卡；精确命中且通过全部门时才返回 `ALLOW`，其他问题仍返回 `MISS`。
 
 ## Phase 3 生产门
 
@@ -83,13 +83,13 @@ node scripts/knowledge-production.mjs \
 - 普通路径必须先有 Owner-authorized Candidate。
 - `MISS` 路径必须到 `ADOPTED / OUTCOME_REPORTED`，答案候选获批并完成人工提炼。
 - 公开投影还必须经过首批 100% 人工 QA、四门和逐卡 Owner 发布决定。
-- `PENDING_G12` 在 private 与 public 目标都会返回 `HOLD`，不会写卡片或 index。
+- 历史 `PENDING_G12` 收据在 private 与 public 目标仍返回 `HOLD`，不会因后续批准而被静默改写。
 
-首批清单固定为 3 张：现有卡的 schema B 迁移，以及 2 张只使用公开官方来源起草的新候选。G12 前正式 index 不扩张。
+首批清单固定为 3 张：现有卡的 schema B 迁移，以及 2 张只使用公开官方来源起草的新卡。G12 已逐卡批准指定 revision；正式 index 的扩张和真实三卡回归均有独立收据。
 
 ## Phase 1 召回边界
 
-Owner G10 已选择 `bm25_expansion_keyword@0.8449460370411592 / top_k=3`。它在冻结的 synthetic observed／holdout 门上通过，但尚未接入确定性 loader；召回只允许返回候选 ID 和安全元数据，分数不能触发 `ALLOW`、正文读取或用户语境裁决。当前 1 张正式卡也不足以声称真实跨卡验收。
+Owner G10 已选择 `bm25_expansion_keyword@0.8449460370411592 / top_k=3`。它在冻结的 synthetic observed／holdout 门和 G12 后真实三卡观察回归上通过，但仍只允许返回候选 ID 和安全元数据；分数不能触发 `ALLOW`、正文读取或用户语境裁决。回归保留一条 Codex 宽召回，要求 loader 前完成 applicability 裁决。
 
 ## Phase 2 回合合同
 
@@ -118,7 +118,7 @@ node scripts/helpdesk-turn-contract.mjs \
 node --test
 ```
 
-测试使用纯虚构临时卡片、公开来源候选和结构化回合，不包含真实社区数据。覆盖四道门、严格 schema、revision／hash 漂移、重复键、敏感内容、路径穿越、软链越界、跨包冲突、拒绝内容不泄露，Phase 2 合同，以及 Phase 3 双生产路径、G12 停点和候选三卡错配。
+测试使用纯虚构临时卡片、公开来源卡片和结构化回合，不包含真实社区数据。覆盖四道门、严格 schema、revision／hash 漂移、重复键、敏感内容、路径穿越、软链越界、跨包冲突、拒绝内容不泄露，Phase 2 合同，以及 Phase 3 双生产路径、历史 G12 停点和正式三卡错配。
 
 ## 隐私与能力边界
 
@@ -134,12 +134,12 @@ node --test
 | 薄入口与 5 个原有合同 | `TRIAL` |
 | PublicCard schema | `CODE_READY` |
 | 确定性发布门 | `CODE_READY` |
-| 公共知识卡 | `1` |
-| 第一张真实 PublicCard | `PUBLISHED_TRIAL` |
-| Phase 1 召回选择 | `G10_APPROVED / SYNTHETIC_ONLY / NOT_LOADER_INTEGRATED` |
+| 公共知识卡 | `3 / LOCAL_BRANCH` |
+| 首批真实 PublicCard | `G12_APPROVED / LOCAL_INDEXED` |
+| Phase 1 召回选择 | `G10_APPROVED / REAL_THREE_CARD_OBSERVED_REGRESSION_PASS` |
 | Phase 2 回合合同 | `G11_APPROVED / LOCAL_ONLY` |
-| Phase 3 schema B 与生产门 | `CANDIDATE / TESTED / AWAITING_G12` |
-| Phase 3 两张新卡 | `PENDING_G12 / NOT_IN_PUBLIC_INDEX` |
+| Phase 3 schema B 与生产门 | `G12_APPROVED / TESTED` |
+| Phase 3 两张新卡 | `G12_APPROVED / LOCAL_INDEXED` |
 | 真实社区端到端验证 | `NOT_VERIFIED` |
 
-首张卡仅验证了它声明支持的 Codex 版本和加载路径。后续卡片仍须逐张经过内容修正、真实环境验证、隐私审查和 Owner 发布批准，不能因首张卡通过而自动晋级。
+三张卡只覆盖各自声明的窄 scope。后续卡片仍须逐张经过内容修正、真实环境验证、隐私审查和 Owner 发布批准，不能因首批通过而自动晋级。
