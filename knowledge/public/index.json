@@ -1,4 +1,16 @@
 {
   "schema_version": "0.3",
-  "cards": []
+  "cards": [
+    {
+      "card_id": "AIHD-PC-000001",
+      "file": "cards/AIHD-PC-000001.json",
+      "question": "写进 AGENTS.md 的规则，怎样确认在 Codex 中生效？",
+      "aliases": [
+        "写进 AGENTS.md 为什么没生效？",
+        "Codex 为什么不遵守已经写下的规则？",
+        "怎样验证 Codex 已读取项目规则？",
+        "怎样测试 AGENTS.md 规则有没有生效？"
+      ]
+    }
+  ]
 }

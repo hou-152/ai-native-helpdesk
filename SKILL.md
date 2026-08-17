@@ -2,14 +2,14 @@
 name: ai-native-helpdesk
 description: 面向 AI／Agent／OpenClaw 社区的薄入口 Helpdesk Skill。负责守门、判模、按需加载合同，并只通过确定性发布门读取 PublicCard。
 version: 0.3.0-gate-trial
-status: GATE_TRIAL / 公开知识包为空 / 待真实社区验证
+status: GATE_TRIAL / 1 张 PublicCard 试运行 / 待真实社区端到端验证
 author: 减
 license: internal
 ---
 
 # ai-native-helpdesk v0.3.0-gate-trial
 
-> 当前已实现 PublicCard 机器发布门，但公开知识包仍为空。代码就绪不等于知识库上线、答案正确或用户问题已解决。
+> 当前已实现 PublicCard 机器发布门，并有 1 张经过单独批准的试运行卡。单卡可用不等于完整知识库上线，也不等于已经完成真实社区端到端验证或解决了用户问题。
 
 ## 这是什么
 
@@ -126,7 +126,7 @@ publication = READY
 ## 当前状态
 
 - 发布门代码和合成测试：已建立。
-- 公开 PublicCard：0 张。
+- 公开 PublicCard：1 张试运行卡。
 - 社区真实端到端验证：未完成。
 - 群聊候选、内部证据和审核材料：不属于公开仓库。
 
@@ -138,4 +138,4 @@ publication = READY
 | v0.2.3-trial | TRIAL | 薄入口和 5 个子合同 |
 | v0.3.0-gate-trial | GATE_TRIAL | PublicCard schema、确定性发布门、公共／社区包边界 |
 
-下一阶段是独立完成第一张卡的内容修正、真实验证、隐私审查和 Owner 发布批准，再生成 PublicCard；不能由本阶段自动晋级。
+后续 PublicCard 仍须逐张独立完成内容修正、真实验证、隐私审查和 Owner 发布批准；首张卡通过不能让其他候选自动晋级。
