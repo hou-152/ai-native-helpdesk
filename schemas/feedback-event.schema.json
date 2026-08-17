@@ -1,0 +1,267 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/hou-152/ai-native-helpdesk/schemas/feedback-event.schema.json",
+  "title": "AI Native Helpdesk append-only feedback event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event_id",
+    "chain_id",
+    "event_type",
+    "occurred_at",
+    "source",
+    "privacy",
+    "payload",
+    "previous_event_hash",
+    "event_hash"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "event_id": { "type": "string", "pattern": "^EVT-[A-Z0-9][A-Z0-9._-]{2,63}$" },
+    "chain_id": { "type": "string", "pattern": "^CHAIN-[A-Z0-9][A-Z0-9._-]{2,63}$" },
+    "event_type": {
+      "enum": [
+        "DEMAND_GAP",
+        "FEEDBACK",
+        "ANSWER_CANDIDATE",
+        "HUMAN_DISTILLATION",
+        "PUBLICATION_DECISION",
+        "INDEX_RESULT",
+        "ALLOW_RESULT",
+        "VERIFICATION_RESULT",
+        "WITHDRAWAL",
+        "EXPIRY",
+        "CORRECTION"
+      ]
+    },
+    "occurred_at": { "type": "string", "format": "date-time" },
+    "source": { "$ref": "#/$defs/source" },
+    "privacy": { "$ref": "#/$defs/privacy" },
+    "payload": { "type": "object" },
+    "previous_event_hash": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/hash" }
+      ]
+    },
+    "event_hash": { "$ref": "#/$defs/hash" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "event_type": { "const": "DEMAND_GAP" } } },
+      "then": { "properties": { "payload": { "$ref": "#/$defs/demandGap" } } }
+    },
+    {
+      "if": { "properties": { "event_type": { "const": "FEEDBACK" } } },
+      "then": { "properties": { "payload": { "$ref": "#/$defs/feedback" } } }
+    },
+    {
+      "if": { "properties": { "event_type": { "const": "ANSWER_CANDIDATE" } } },
+      "then": { "properties": { "payload": { "$ref": "#/$defs/answerCandidate" } } }
+    },
+    {
+      "if": { "properties": { "event_type": { "const": "HUMAN_DISTILLATION" } } },
+      "then": { "properties": { "payload": { "$ref": "#/$defs/humanDistillation" } } }
+    },
+    {
+      "if": { "properties": { "event_type": { "const": "PUBLICATION_DECISION" } } },
+      "then": { "properties": { "payload": { "$ref": "#/$defs/publicationDecision" } } }
+    },
+    {
+      "if": { "properties": { "event_type": { "const": "INDEX_RESULT" } } },
+      "then": { "properties": { "payload": { "$ref": "#/$defs/indexResult" } } }
+    },
+    {
+      "if": { "properties": { "event_type": { "const": "ALLOW_RESULT" } } },
+      "then": { "properties": { "payload": { "$ref": "#/$defs/allowResult" } } }
+    },
+    {
+      "if": { "properties": { "event_type": { "const": "VERIFICATION_RESULT" } } },
+      "then": { "properties": { "payload": { "$ref": "#/$defs/verificationResult" } } }
+    },
+    {
+      "if": { "properties": { "event_type": { "const": "WITHDRAWAL" } } },
+      "then": { "properties": { "payload": { "$ref": "#/$defs/withdrawal" } } }
+    },
+    {
+      "if": { "properties": { "event_type": { "const": "EXPIRY" } } },
+      "then": { "properties": { "payload": { "$ref": "#/$defs/expiry" } } }
+    },
+    {
+      "if": { "properties": { "event_type": { "const": "CORRECTION" } } },
+      "then": { "properties": { "payload": { "$ref": "#/$defs/correction" } } }
+    },
+    {
+      "$comment": "Payload definitions are below so schema readers can audit every event contract."
+    }
+  ],
+  "$defs": {
+    "hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "reference_hash", "evidence_class"],
+      "properties": {
+        "kind": { "enum": ["HELPDESK_TURN", "USER_FOLLOWUP", "HUMAN_REVIEW", "PUBLICATION_SYSTEM", "INDEX_SYSTEM", "LOADER"] },
+        "reference_hash": { "$ref": "#/$defs/hash" },
+        "evidence_class": { "enum": ["REAL_USER_FEEDBACK", "SYNTHETIC_MECHANISM", "CONTROL_RECEIPT"] }
+      }
+    },
+    "privacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["classification", "redaction", "public_projection_allowed"],
+      "properties": {
+        "classification": { "enum": ["PRIVATE_CONTROLLED", "PUBLIC_SAFE_SYNTHETIC"] },
+        "redaction": { "enum": ["MINIMIZED", "NOT_APPLICABLE"] },
+        "public_projection_allowed": { "const": false }
+      }
+    },
+    "humanOverride": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["applied"],
+      "properties": {
+        "applied": { "type": "boolean" },
+        "reviewer_hash": { "$ref": "#/$defs/hash" },
+        "reason_code": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]{2,63}$" }
+      }
+    },
+    "demandGap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["demand_summary", "feedback_level", "handling_source", "contains_raw_user_text"],
+      "properties": {
+        "demand_summary": { "type": "string", "minLength": 1, "maxLength": 240 },
+        "feedback_level": { "const": "MISS" },
+        "handling_source": { "enum": ["PUBLIC_CARD_MISS", "EXTERNAL_VERIFIED", "MODEL_REASONING"] },
+        "contains_raw_user_text": { "const": false }
+      }
+    },
+    "feedback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence_signal", "feedback_level", "classification_basis", "objective_effect_claimed", "human_override"],
+      "properties": {
+        "evidence_signal": { "enum": ["THANKS_ONLY", "EXPLICIT_ADOPTION", "SELF_REPORTED_ACTION_AND_RESULT"] },
+        "feedback_level": { "enum": ["ACKNOWLEDGED", "ADOPTED", "OUTCOME_REPORTED"] },
+        "classification_basis": { "type": "string", "minLength": 1, "maxLength": 240 },
+        "objective_effect_claimed": { "const": false },
+        "human_override": { "$ref": "#/$defs/humanOverride" }
+      }
+    },
+    "answerCandidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidate_id", "asset_action", "source_feedback_event_id", "content_transfer", "contains_answer_text", "proposed_revision"],
+      "properties": {
+        "candidate_id": { "type": "string", "pattern": "^AC-[A-Z0-9][A-Z0-9._-]{2,63}$" },
+        "asset_action": { "enum": ["NEW_CARD", "REVISE_CARD"] },
+        "source_feedback_event_id": { "type": "string" },
+        "content_transfer": { "const": "HUMAN_DISTILLATION_REQUIRED" },
+        "contains_answer_text": { "const": false },
+        "proposed_card_id": { "type": "string" },
+        "target_card_id": { "type": "string" },
+        "current_revision": { "type": "string" },
+        "proposed_revision": { "type": "string" }
+      }
+    },
+    "humanDistillation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidate_id", "reviewer_hash", "verdict", "private_source_retained", "public_text_in_ledger"],
+      "properties": {
+        "candidate_id": { "type": "string" },
+        "reviewer_hash": { "$ref": "#/$defs/hash" },
+        "verdict": { "enum": ["PASS", "FAIL"] },
+        "private_source_retained": { "const": true },
+        "public_text_in_ledger": { "const": false }
+      }
+    },
+    "publicationDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidate_id", "asset_action", "card_id", "target_revision", "editorial", "verification", "privacy_gate", "publication", "owner_decision"],
+      "properties": {
+        "candidate_id": { "type": "string" },
+        "asset_action": { "enum": ["NEW_CARD", "REVISE_CARD"] },
+        "card_id": { "type": "string" },
+        "current_revision": { "type": "string" },
+        "target_revision": { "type": "string" },
+        "editorial": { "enum": ["APPROVED", "REJECTED"] },
+        "verification": { "enum": ["PASS", "FAIL"] },
+        "privacy_gate": { "enum": ["PASS", "FAIL"] },
+        "publication": { "enum": ["READY", "HOLD"] },
+        "owner_decision": { "enum": ["APPROVED", "DENIED"] }
+      }
+    },
+    "indexResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["card_id", "revision", "result", "reason_code"],
+      "properties": {
+        "card_id": { "type": "string" },
+        "revision": { "type": "string" },
+        "result": { "enum": ["SUCCESS", "FAIL"] },
+        "reason_code": { "type": "string" }
+      }
+    },
+    "allowResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["card_id", "revision", "result", "reason_code"],
+      "properties": {
+        "card_id": { "type": "string" },
+        "revision": { "type": "string" },
+        "result": { "enum": ["ALLOW", "DENY", "MISS"] },
+        "reason_code": { "type": "string" }
+      }
+    },
+    "verificationResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["card_id", "revision", "result", "reason_code"],
+      "properties": {
+        "card_id": { "type": "string" },
+        "revision": { "type": "string" },
+        "result": { "enum": ["PASS", "FAIL"] },
+        "reason_code": { "type": "string" }
+      }
+    },
+    "withdrawal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["card_id", "revision", "owner_decision", "reason_code"],
+      "properties": {
+        "card_id": { "type": "string" },
+        "revision": { "type": "string" },
+        "owner_decision": { "const": "APPROVED" },
+        "reason_code": { "type": "string" }
+      }
+    },
+    "expiry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["card_id", "revision", "expires_at", "reason_code"],
+      "properties": {
+        "card_id": { "type": "string" },
+        "revision": { "type": "string" },
+        "expires_at": { "type": "string", "format": "date-time" },
+        "reason_code": { "type": "string" }
+      }
+    },
+    "correction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target_event_id", "corrected_feedback_level", "reviewer_hash", "reason_code", "history_rewrite"],
+      "properties": {
+        "target_event_id": { "type": "string" },
+        "corrected_feedback_level": { "enum": ["ACKNOWLEDGED", "ADOPTED", "OUTCOME_REPORTED"] },
+        "reviewer_hash": { "$ref": "#/$defs/hash" },
+        "reason_code": { "type": "string" },
+        "history_rewrite": { "const": false }
+      }
+    }
+  }
+}
