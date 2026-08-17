@@ -1,5 +1,14 @@
 # 受控阶段进度
 
+## Phase 5 本地工程验收与 G14 停点（2026-08-18）
+
+- `c8ace8a25a7e8663d41816f97e60304f6f763201` 完成运行路径解耦、标准 Apache 2.0、28 文件 release allowlist，以及显式 target／state 的 install、verify、uninstall 和 rollback。
+- 最终字节从与源码无关的 cwd 安装到含空格的隔离路径；`AIHD-PC-000001 v1.1.0`、`AIHD-PC-000004 v1.0.0` 均为 `ALLOW`，模型权重训练近邻保持 `MISS / NO_MATCH`。
+- fresh uninstall 后目标消失，安装包移动到可恢复目录，state 为 0600 普通文件；pre-existing target rollback 恢复 sentinel 原始字节。
+- 反向门覆盖安装卡片 byte drift、目标软链、state 软链，以及旧目标已备份后注入 state 写入失败的自动恢复。
+- 全量测试 192／192 PASS；0 fail／cancelled／skipped／todo。Linux、Windows 和其他 Node major 保持 `NOT_VERIFIED`。
+- 当前状态：`ENGINEERING_ACCEPTANCE_PASS_AWAITING_G14`。没有触达社区、传递试跑包、push、开 PR 或 merge；G14 决策包只推荐 1 次、1 人、先同意后试跑的最小范围。
+
 ## G13b 第四张卡正式投影（2026-08-18）
 
 - Owner 已批准 `AC-G13A-20260818-001 → AIHD-PC-000004 v1.0.0` 作为 `NEW_CARD` 正式发布；无修订、无撤回。
