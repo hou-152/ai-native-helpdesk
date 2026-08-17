@@ -1,5 +1,13 @@
 # 受控阶段进度
 
+## P1 前置环境通过，交付缺失后正确停止（2026-08-18）
+
+- P1 实际读回 `Darwin / arm64 / Node.js v24.15.0`，环境门 PASS。
+- P1 没有找到目标 archive 或 Runbook，未发生 hash 比对，也未启动 install／Runbook；按 fail-closed 指令正确停止。
+- 本次分类为 `DELIVERY_MISS_PRE_TRIAL`，不是产品试跑失败：缺口是 Owner 端尚未把两个文件实际交付到 P1 可见位置。
+- Owner Downloads 已生成隔离交付目录；archive 与 Runbook 分别和冻结来源 byte-identical，另有机器可读 handoff manifest。当前仍 `transferred = false`。
+- 当前状态：`OWNER_HANDOFF_READY_AWAITING_TRANSFER`。Owner 需把 archive 与 Runbook 作为两个实际附件发送给 P1，再由 P1 重跑前置校验。
+
 ## P1 已同意，等待 Owner 私下传包（2026-08-18）
 
 - Owner 已转述 P1 的明确同意；私密控制面只保存原始回复 SHA-256，不保存回复正文，公开面只登记 `consent = OBSERVED`。

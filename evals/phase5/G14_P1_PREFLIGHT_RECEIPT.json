@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "receipt_id": "G14-P1-PREFLIGHT-20260818-001",
+  "relayed_at": "2026-08-18T07:55:01+08:00",
+  "participant_id": "P1",
+  "private_preflight_receipt_sha256": "e9902e743fa8ce174f03e22920008263d2c547d2956650bab881fbf4655d6d6a",
+  "environment_readback": {
+    "os": "Darwin",
+    "arch": "arm64",
+    "node": "v24.15.0",
+    "status": "PASS"
+  },
+  "delivery_readback": {
+    "archive": "NOT_FOUND",
+    "runbook": "NOT_FOUND",
+    "archive_hash_compared": false
+  },
+  "execution": {
+    "runbook_started": false,
+    "install_started": false,
+    "stop_instruction_followed": true
+  },
+  "classification": "DELIVERY_MISS_PRE_TRIAL",
+  "trial_failure": false,
+  "trial_started": false,
+  "owner_handoff": {
+    "archive_sha256": "544cae157075dd71b1c0c74395ba54f4420d4b5f96dd7d8c568ca4e7e20ec7c8",
+    "runbook_sha256": "7348a3d99f3b27113be58756f32b696b8836f48e105a7c709bd9c19da8a99f3c",
+    "manifest_sha256": "ad614826fab779aea4b66aca9c141588093e1876f20860d0a1fde8c0700a249e",
+    "byte_identical_copies_verified": true,
+    "transferred": false
+  },
+  "status": "OWNER_HANDOFF_READY_AWAITING_TRANSFER"
+}
