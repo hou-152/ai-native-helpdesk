@@ -19,6 +19,8 @@ const ROOT = path.resolve(HERE, "..");
 const dataset = JSON.parse(fs.readFileSync(path.join(ROOT, "evals/retrieval/golden.v1.json"), "utf8"));
 const fixture = JSON.parse(fs.readFileSync(path.join(ROOT, "evals/retrieval/fixture-index.v1.json"), "utf8"));
 const holdoutSpec = JSON.parse(fs.readFileSync(path.join(ROOT, "evals/retrieval/v2/holdout-spec.v2.json"), "utf8"));
+const holdout = JSON.parse(fs.readFileSync(path.join(ROOT, "evals/retrieval/v2/holdout.v2.json"), "utf8"));
+const holdoutReport = JSON.parse(fs.readFileSync(path.join(ROOT, "evals/retrieval/v2/holdout-report.v2.json"), "utf8"));
 
 function sha256(relativePath) {
   return crypto.createHash("sha256").update(fs.readFileSync(path.join(ROOT, relativePath))).digest("hex");
@@ -95,4 +97,26 @@ test("combined v2 algorithm forms the frozen observed safety interval", () => {
   assert.equal(calibrated.metrics.deny_bypass_rate, 1);
   assert.ok(calibrated.separation >= 0.05);
   assert.equal(calibrated.qualified, true);
+});
+
+test("v2 holdout is bound to the frozen implementation and generator spec", () => {
+  assert.equal(holdout.cases.length, 30);
+  assert.equal(holdout.generation.implementation_commit, "573cc1c0b16364db4a65e59221aa8f74c3b259a7");
+  assert.equal(holdout.generation.spec_sha256, "6e5a054fef65db1777d8b6582e86b56763bda2b4c9719b3936ab3139bafde82d");
+  assert.equal(new Set(holdout.cases.map((item) => item.query)).size, 30);
+  assert.equal(sha256("evals/retrieval/v2/holdout.v2.json"), "2a021b68328a4a5a07da48aa7c7217ca2f140d351cc4efd1c28f2559ec090b80");
+});
+
+test("frozen combined algorithm passes every v2 holdout gate", () => {
+  const combined = holdoutReport.algorithms.bm25_expansion_keyword;
+  assert.equal(holdoutReport.mechanical_front_runner, "bm25_expansion_keyword");
+  assert.equal(combined.observed_qualified, true);
+  assert.equal(combined.holdout_gate_passed, true);
+  assert.equal(combined.metrics.candidate_hit_at_3, 1);
+  assert.ok(Math.abs(combined.metrics.candidate_exact_set_rate - 11 / 15) < 1e-12);
+  assert.equal(combined.metrics.clarify_full_coverage_at_3, 1);
+  assert.equal(combined.metrics.miss_false_positive_count, 0);
+  assert.equal(combined.metrics.hard_negative_false_positive_count, 0);
+  assert.equal(combined.metrics.deny_bypass_rate, 1);
+  assert.equal(combined.metrics.safe_output_rate, 1);
 });

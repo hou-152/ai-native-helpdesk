@@ -1,12 +1,20 @@
 # v0.3 发布门进度
 
+## Phase 1 v2 召回复验（2026-08-18）
+
+- Owner 选择 G10-A 后，v1 全部文件保持 byte-identical；旧 BLIND 明确降级为 `OBSERVED_REGRESSION`，没有被重写成新盲测。
+- `1182bd6` 先冻结 v2 协议和 commit-seeded holdout 生成规范；`573cc1c` 后冻结算法、阈值和实现，此时还不存在实际 holdout。
+- combined 方案在 60 条已观察回归上形成 `0.175681` 正负间隔：单候选 30／30、exact 26／30、歧义 7／7、MISS 假阳性 0／17、DENY 6／6。
+- 绑定 `573cc1c` 后生成 30 条唯一 synthetic holdout；combined 首次结果为单候选 15／15、exact 11／15、歧义 6／6、MISS 假阳性 0／6、hard-negative 假阳性 0／5、DENY 3／3。
+- 机械 front runner：`bm25_expansion_keyword@0.8449460370411592 / top_k=3`。当前状态 `AWAITING_G10_OWNER_APPROVAL`；未修改运行时，未进入 Phase 2。
+
 ## Phase 1 召回评测（2026-08-18）
 
 - G0—G9 已由 Owner 通过；Phase 0 已闭环，PR #3／#4 已关闭但未合并。
 - 先在 `80732aa` 冻结 60 条黄金集（DESIGN 40／BLIND 20），再在 `7cfe6a8` 提交四种召回实现、设计报告和阈值；之后才执行 BLIND。
 - 完整回归为 72／72 PASS；召回只返回 G5 白名单元数据，DENY／注入／隐私／drift 均在召回前 fail-closed。
 - BM25 的 BLIND 单候选召回为 9／10，MISS／hard-negative 假阳性均为 0，DENY 旁路 100%；但歧义全覆盖仅 1／3，未达到冻结门槛 2／3。
-- 当前状态：`HOLD_AT_G10`。没有算法获准接入；推荐保留 v1 证据并在 Phase 1 建 v2，新 holdout 通过后再审 G10。
+- v1 状态：`HOLD_AT_G10`。Owner 随后选择 G10-A 并授权 v2；该段保留 v1 历史结果，不代表当前 G10 状态。
 
 ## 开工回执
 
