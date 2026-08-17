@@ -1,6 +1,6 @@
-# ai-native-helpdesk v0.6.3-phase4-g13b-published
+# ai-native-helpdesk v0.7.0-phase5-g14-ready
 
-> 当前状态：Owner 已通过 G13b，批准 `AIHD-PC-000004 v1.0.0` 作为新卡正式投影。当前本地正式 index 为 4 张，正式 loader 与 184 项全量回归通过；尚未 push、进入远端 `main` 或完成社区试跑。Phase 5 已获准开始，外部社区触达仍需 G14。
+> 当前状态：Owner 已通过 G13b，批准 `AIHD-PC-000004 v1.0.0` 作为新卡正式投影。当前本地正式 index 为 4 张；Phase 5 的路径解耦、Apache 2.0、可逆安装与隔离路径矩阵已通过本地工程验收。尚未 push、进入远端 `main` 或完成社区试跑；外部社区触达仍需 G14。
 
 ## 目标
 
@@ -71,6 +71,12 @@ node scripts/query-public-card.mjs \
 ```
 
 脚本不会自动扫描当前目录、用户目录、环境变量或个人资料。当前本地分支的正式公共索引包含 4 张逐卡批准卡；精确命中且通过全部门时才返回 `ALLOW`，其他问题仍返回 `MISS`。
+
+安装、验证、卸载与回滚使用显式目标路径和可读回 state；完整步骤见 [`docs/INSTALL.md`](docs/INSTALL.md)。运行时只从 `SKILL.md` 所在目录解析资源，不依赖固定的用户目录。
+
+## LICENSE
+
+本公开仓库中的代码、contracts、schema、公开 PublicCard 和文档按 Apache License 2.0 提供，见 [`LICENSE`](LICENSE)。私密群聊、证据、未公开候选、安装 state 和本机日志不属于公开 release 包，也不因本 LICENSE 获得再发布授权。
 
 ## Phase 3 生产门
 
@@ -170,6 +176,7 @@ node --test
 | Phase 3 两张新卡 | `G12_APPROVED / LOCAL_INDEXED` |
 | Phase 4 反馈账本与回滚 | `MECHANISM_COMPLETE / 23 TESTS` |
 | Phase 4 真实反馈闭环 | `G13B_APPROVED / LOCAL_FORMAL_LOOP_COMPLETE` |
-| 真实社区端到端验证 | `NOT_VERIFIED` |
+| Phase 5 安装与发布工程 | `ENGINEERING_ACCEPTANCE_PASS / AWAITING_G14` |
+| 真实社区端到端验证 | `NOT_STARTED / AWAITING_G14` |
 
 三张卡只覆盖各自声明的窄 scope。后续卡片仍须逐张经过内容修正、真实环境验证、隐私审查和 Owner 发布批准，不能因首批通过而自动晋级。

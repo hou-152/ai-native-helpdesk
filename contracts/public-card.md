@@ -11,17 +11,18 @@ description: PublicCard 的确定性发布门合同。knowledge 路由只允许�
 
 ## 唯一加载路径
 
-运行：
+将当前 `SKILL.md` 所在目录视为 Skill 根目录，并从该目录运行：
 
 ```bash
-node ~/.agents/skills/ai-native-helpdesk/scripts/query-public-card.mjs \
-  --query "<用户问题>"
+node scripts/query-public-card.mjs --query "<用户问题>"
 ```
 
 需要社区本地知识包时，只能由调用者显式增加：
 
 ```bash
---community-pack "<社区知识包目录>"
+node scripts/query-public-card.mjs \
+  --query "<用户问题>" \
+  --community-pack "<社区知识包目录>"
 ```
 
 禁止自动扫描当前目录、用户目录、环境变量或个人资料。禁止用 `read_file`、shell 或其他工具直接读取卡片正文来绕过脚本。

@@ -22,9 +22,10 @@ description: 当用户查询 AI／Agent／OpenClaw 的具体信息或事实时�
 先读取 `contracts/public-card.md`，再调用：
 
 ```bash
-node ~/.agents/skills/ai-native-helpdesk/scripts/query-public-card.mjs \
-  --query "<用户问题>"
+node scripts/query-public-card.mjs --query "<用户问题>"
 ```
+
+命令从当前 `SKILL.md` 所在的 Skill 根目录运行；不得假设固定用户目录或全局安装路径。
 
 调用者明确提供社区知识包时，才增加 `--community-pack "<路径>"`。禁止直接读取 `knowledge/public/` 或社区包中的卡片正文。
 

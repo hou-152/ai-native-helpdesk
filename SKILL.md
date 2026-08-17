@@ -1,15 +1,17 @@
 ---
 name: ai-native-helpdesk
 description: 面向 AI／Agent／OpenClaw 社区的薄入口 Helpdesk Skill。负责守门、判模、按需加载合同，并只通过确定性发布门读取 PublicCard。
-version: 0.6.3-phase4-g13b-published
-status: G13B_APPROVED_LOCAL_FORMAL_LOOP_COMPLETE / 本地正式四卡包 / PHASE5_READY
+version: 0.7.0-phase5-g14-ready
+status: PHASE5_ENGINEERING_ACCEPTANCE_PASS / 本地正式四卡包 / AWAITING_G14
 author: 减
-license: internal
+license: Apache-2.0
 ---
 
-# ai-native-helpdesk v0.6.3-phase4-g13b-published
+# ai-native-helpdesk v0.7.0-phase5-g14-ready
 
-> 当前已实现 PublicCard 机器发布门，本地功能分支有 3 张经 G12 逐卡批准的正式卡。三卡本地可用不等于远端已发布、完整知识库上线，也不等于已经完成真实社区端到端验证或解决了用户问题。
+> 当前已实现 PublicCard 机器发布门，本地功能分支有 G12 批准的前三张卡和 G13b 批准的第四张卡。Phase 5 本地安装工程验收已通过，仍未获 G14 社区试跑授权。四卡本地可用不等于远端已发布、完整知识库上线，也不等于已经完成真实社区端到端验证或解决了用户问题。
+
+运行时把本文件所在目录作为唯一 Skill 根目录；所有 contract、schema、policy、script 和 PublicCard 都相对于该目录解析，不猜测用户目录或固定全局安装路径。
 
 ## 这是什么
 
