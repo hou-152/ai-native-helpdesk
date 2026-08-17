@@ -17,6 +17,11 @@ const MAX_QUERY_CHARS = 500;
 const MAX_INDEX_BYTES = 512 * 1024;
 const MAX_CARD_BYTES = 128 * 1024;
 const MAX_INDEX_ENTRIES = 1000;
+const MAX_FALLBACK_QUERY_TOKENS = 16;
+const MAX_FALLBACK_SUGGESTIONS = 3;
+const MIN_FALLBACK_QUERY_TOKENS = 2;
+const MIN_FALLBACK_QUERY_COVERAGE = 2 / 3;
+const MIN_FALLBACK_TERM_COVERAGE = 1 / 2;
 const EXPECTED_SCHEMA_SHA256 = "40779ff9c0a97d0fbb574d9d2951f002b0eeb36b6d6775a1993a4287282e31a2";
 const CARD_ID_PATTERN = /^[A-Z0-9][A-Z0-9._-]{2,63}$/;
 const REVISION_PATTERN = /^\d+\.\d+\.\d+$/;
@@ -53,6 +58,8 @@ const SENSITIVE_QUERY_KEY_PATTERN = /^(?:api[_-]?key|access[_-]?token|token|key|
 const INVISIBLE_FORMAT_PATTERN = /\p{Cf}/u;
 const DISALLOWED_TEXT_CONTROL_PATTERN = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F]/u;
 const CONTROL_OR_FORMAT_PATTERN = /[\p{Cc}\p{Cf}]/u;
+const FALLBACK_TOKEN_PATTERN = /[\p{Script=Han}]+|[\p{Script=Latin}\p{N}]+(?:[._-][\p{Script=Latin}\p{N}]+)*/gu;
+const HAN_TOKEN_PATTERN = /^\p{Script=Han}+$/u;
 
 const PRIVATE_FIELD_PATTERN = /(?:^|_)(?:source_message_id|original_quote|raw_quote|quote|context|evidence|sender|sender_id|member|member_id|message_id|thread_id|root_id|parent_id|session_id|chat_id|group_id|receipt|private_source_candidate|internal_reason|local_path|credential|api_key|access_token|secret|password)(?:$|_)/i;
 const SENSITIVE_TEXT_PATTERNS = Object.freeze([
@@ -261,6 +268,100 @@ function normalizeTerm(value) {
     .trim()
     .replace(/\s+/gu, " ")
     .replace(/[A-Z]/g, (character) => character.toLowerCase());
+}
+
+function tokenizeFallbackTerm(value) {
+  const tokens = normalizeTerm(value).toLowerCase().match(FALLBACK_TOKEN_PATTERN) ?? [];
+  return [...new Set(tokens.filter((token) => [...token].length >= 2))];
+}
+
+function fallbackTokenMatches(queryToken, termToken) {
+  if (queryToken === termToken) return true;
+  if (!HAN_TOKEN_PATTERN.test(queryToken) || !HAN_TOKEN_PATTERN.test(termToken)) return false;
+  return queryToken.includes(termToken) || termToken.includes(queryToken);
+}
+
+function countFallbackTokenMatches(queryTokens, termTokens) {
+  const matchedQueryByTerm = new Array(termTokens.length).fill(-1);
+
+  function assignQuery(queryIndex, visitedTerms) {
+    for (let termIndex = 0; termIndex < termTokens.length; termIndex += 1) {
+      if (
+        visitedTerms[termIndex] ||
+        !fallbackTokenMatches(queryTokens[queryIndex], termTokens[termIndex])
+      ) {
+        continue;
+      }
+      visitedTerms[termIndex] = true;
+      if (
+        matchedQueryByTerm[termIndex] === -1 ||
+        assignQuery(matchedQueryByTerm[termIndex], visitedTerms)
+      ) {
+        matchedQueryByTerm[termIndex] = queryIndex;
+        return true;
+      }
+    }
+    return false;
+  }
+
+  let hitCount = 0;
+  for (let queryIndex = 0; queryIndex < queryTokens.length; queryIndex += 1) {
+    if (assignQuery(queryIndex, new Array(termTokens.length).fill(false))) hitCount += 1;
+  }
+  return hitCount;
+}
+
+/**
+ * 在严格匹配 MISS 后，对公共索引做保守的候选提示。
+ *
+ * 结果仍是 MISS；这里只返回索引中的 card_id 与排序分数，不读取卡片正文，
+ * 也不代表候选已经通过卡片 schema 或四道发布门。调用者不得自动把候选
+ * 改写成新的 exact query。
+ */
+function suggestFallback(terms, normalizedQuery) {
+  const queryTokens = tokenizeFallbackTerm(normalizedQuery);
+  if (
+    queryTokens.length < MIN_FALLBACK_QUERY_TOKENS ||
+    queryTokens.length > MAX_FALLBACK_QUERY_TOKENS
+  ) {
+    return [];
+  }
+
+  const candidates = new Map();
+  for (const [term, cardId] of terms.entries()) {
+    const termTokens = tokenizeFallbackTerm(term);
+    if (termTokens.length === 0) continue;
+    const hitCount = countFallbackTokenMatches(queryTokens, termTokens);
+    const queryCoverage = hitCount / queryTokens.length;
+    const termCoverage = hitCount / termTokens.length;
+    if (
+      queryCoverage < MIN_FALLBACK_QUERY_COVERAGE ||
+      termCoverage < MIN_FALLBACK_TERM_COVERAGE
+    ) {
+      continue;
+    }
+    const score = Math.round(queryCoverage * 1000);
+    const termScore = Math.round(termCoverage * 1000);
+    const previous = candidates.get(cardId);
+    if (
+      !previous ||
+      score > previous.score ||
+      (score === previous.score && termScore > previous.termScore)
+    ) {
+      candidates.set(cardId, { score, termScore });
+    }
+  }
+
+  return [...candidates.entries()]
+    .map(([card_id, ranking]) => ({ card_id, ...ranking }))
+    .sort((left, right) => {
+      if (left.score !== right.score) return right.score - left.score;
+      if (left.termScore !== right.termScore) return right.termScore - left.termScore;
+      if (left.card_id === right.card_id) return 0;
+      return left.card_id < right.card_id ? -1 : 1;
+    })
+    .slice(0, MAX_FALLBACK_SUGGESTIONS)
+    .map(({ card_id, score }) => ({ card_id, score }));
 }
 
 function scanSensitive(value, reasonCode) {
@@ -606,7 +707,12 @@ async function queryPublicCard(options) {
     const entry = pack.index.cards.find((candidate) => candidate.card_id === matchedId);
     matches.push({ pack, entry });
   }
-  if (matches.length === 0) return { status: "MISS", reason_code: "NO_MATCH" };
+  if (matches.length === 0) {
+    const result = { status: "MISS", reason_code: "NO_MATCH" };
+    const suggestions = suggestFallback(packs[0].terms, query);
+    if (suggestions.length > 0) result.suggestions = suggestions;
+    return result;
+  }
   if (matches.length > 1) deny("QUERY_CONFLICT", 67);
   const card = await readMatchedCard(matches[0].pack, matches[0].entry);
   return { status: "ALLOW", reason_code: "OK", card };
@@ -631,6 +737,7 @@ export {
   normalizeTerm,
   parseStrictJson,
   queryPublicCard,
+  suggestFallback,
   validateCard,
   validateIndex
 };

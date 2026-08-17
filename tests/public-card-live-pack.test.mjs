@@ -37,6 +37,17 @@ test("the approved first PublicCard is loadable by an alias", () => {
   assert.equal(result.card.card_id, "AIHD-PC-000001");
 });
 
+test("a conversational query returns one public-index suggestion without card content", () => {
+  const result = queryPublicPack("AGENTS.md 没生效");
+
+  assert.deepEqual(result, {
+    status: "MISS",
+    reason_code: "NO_MATCH",
+    suggestions: [{ card_id: "AIHD-PC-000001", score: 1000 }]
+  });
+  assert.equal("card" in result, false);
+});
+
 test("an unrelated query still misses the one-card public pack", () => {
   const result = queryPublicPack("完全无关的问题");
 

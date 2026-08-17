@@ -36,7 +36,12 @@ node ~/.agents/skills/ai-native-helpdesk/scripts/query-public-card.mjs \
 
 ### `MISS`
 
-没有已发布卡片命中。转入普通信息检索：优先官方来源，缺证据写 `UNKNOWN`，不假装知识库命中。
+没有已发布卡片精确命中。
+
+- 没有 `suggestions`：转入普通信息检索，优先官方来源，缺证据写 `UNKNOWN`。
+- 有 `suggestions`：只说明“common 索引存在非权威候选”，可给出 `card_id` 供定位，并请用户更完整地重述问题；默认 common 包是公共包，若调用者覆盖路径则由调用者保证索引元数据可暴露；`score` 只用于候选排序，不当作置信度。
+- 不得读取候选正文，也不得自动把候选 question／alias 作为新 query。只有用户明确补充或重述后，才重新守门、判模并调用发布门。
+- 无论是否有候选，都不得声称知识库已经命中。
 
 ### `DENY`
 
@@ -58,7 +63,7 @@ node ~/.agents/skills/ai-native-helpdesk/scripts/query-public-card.mjs \
 ## 失败规则
 
 - 发布门文件缺失或运行失败：按 `DENY`，不模拟。
-- `MISS`：走普通检索，不声称知识库命中。
+- `MISS`：按上面的候选边界处理；没有用户补充时走普通检索，不声称知识库命中。
 - 用户问“为什么”：需要因果分析时转 thinking。
 - 用户说“做不动”：转 action。
 - 用户触红线：转 safety。

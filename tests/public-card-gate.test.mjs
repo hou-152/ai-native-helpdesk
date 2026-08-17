@@ -7,7 +7,7 @@ import { spawnSync } from "node:child_process";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { CARD_KEYS } from "../scripts/query-public-card.mjs";
+import { CARD_KEYS, suggestFallback } from "../scripts/query-public-card.mjs";
 
 const TEST_DIR = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(TEST_DIR, "..");
@@ -131,12 +131,110 @@ test("query normalization matches a public alias", (t) => {
   assert.equal(result.body.status, "ALLOW");
 });
 
+test("fallback uses query coverage, preserves dotted identifiers, and deduplicates cards", () => {
+  const terms = new Map([
+    ["写进 agents.md 的规则，怎样确认在 codex 中生效？", CARD_ID],
+    ["写进 agents.md 为什么没生效？", CARD_ID],
+    ["怎样测试 agents.md 规则有没有生效？", CARD_ID]
+  ]);
+
+  assert.deepEqual(suggestFallback(terms, "AGENTS.md 没生效"), [
+    { card_id: CARD_ID, score: 1000 }
+  ]);
+  assert.deepEqual(suggestFallback(terms, "ａｇｅｎｔｓ．ｍｄ 没生效"), [
+    { card_id: CARD_ID, score: 1000 }
+  ]);
+  assert.deepEqual(suggestFallback(new Map([["ÉQUIPE RÈGLES", CARD_ID]]), "équipe règles"), [
+    { card_id: CARD_ID, score: 1000 }
+  ]);
+});
+
+test("fallback requires corroborating query tokens", () => {
+  const terms = new Map([["写进 agents.md 为什么没生效？", CARD_ID]]);
+  assert.deepEqual(suggestFallback(terms, "README.md 没生效"), []);
+  assert.deepEqual(suggestFallback(terms, "完全不相关的天气"), []);
+  assert.deepEqual(
+    suggestFallback(new Map([["怎样验证 codex 已读取项目规则？", CARD_ID]]), "规则 项目规则"),
+    []
+  );
+  assert.deepEqual(
+    suggestFallback(new Map([["codex 为什么不遵守已经写下的规则？", CARD_ID]]), "法律 遵守 已经"),
+    []
+  );
+});
+
+test("fallback requires enough coverage of the indexed term", () => {
+  const terms = new Map([[
+    "agents.md 没生效 补充说明 运行环境 验证步骤",
+    CARD_ID
+  ]]);
+  assert.deepEqual(suggestFallback(terms, "AGENTS.md 没生效"), []);
+});
+
+test("fallback ordering is deterministic and capped at three cards", () => {
+  const terms = new Map([
+    ["甲 agents.md 为什么没生效？", "TEST-CARD-0004"],
+    ["乙 agents.md 为什么没生效？", "TEST-CARD-0002"],
+    ["丙 agents.md 为什么没生效？", "TEST-CARD-0003"],
+    ["丁 agents.md 为什么没生效？", "TEST-CARD-0001"]
+  ]);
+
+  assert.deepEqual(suggestFallback(terms, "AGENTS.md 没生效"), [
+    { card_id: "TEST-CARD-0001", score: 1000 },
+    { card_id: "TEST-CARD-0002", score: 1000 },
+    { card_id: "TEST-CARD-0003", score: 1000 }
+  ]);
+});
+
+test("fallback prefers stronger term coverage when query scores tie", () => {
+  const terms = new Map([
+    ["甲 agents.md 为什么没生效 额外说明", "TEST-CARD-0001"],
+    ["乙 agents.md 为什么没生效 额外说明", "TEST-CARD-0002"],
+    ["丙 agents.md 为什么没生效 额外说明", "TEST-CARD-0003"],
+    ["agents.md 没生效", "TEST-CARD-9999"]
+  ]);
+
+  assert.deepEqual(suggestFallback(terms, "AGENTS.md 没生效"), [
+    { card_id: "TEST-CARD-9999", score: 1000 },
+    { card_id: "TEST-CARD-0001", score: 1000 },
+    { card_id: "TEST-CARD-0002", score: 1000 }
+  ]);
+});
+
 test("valid explicit community pack returns ALLOW", (t) => {
   const common = makeEmptyPack(t, "common");
   const community = makePack(t, { label: "community" });
   const result = runGate({ common, communities: [community] });
   assert.equal(result.status, 0);
   assert.equal(result.body.status, "ALLOW");
+});
+
+test("community packs do not expose fallback suggestions", (t) => {
+  const common = makeEmptyPack(t, "common");
+  const card = baseCard({
+    question: "写进 AGENTS.md 的规则，怎样确认在 Codex 中生效？",
+    aliases: ["写进 AGENTS.md 为什么没生效？"]
+  });
+  const community = makePack(t, { label: "community", cards: [card] });
+  const result = runGate({ common, communities: [community], query: "AGENTS.md 没生效" });
+  assert.equal(result.status, 0);
+  assert.deepEqual(result.body, { status: "MISS", reason_code: "NO_MATCH" });
+});
+
+test("fallback suggestions do not read a missing card body", (t) => {
+  const card = baseCard({
+    question: "写进 AGENTS.md 的规则，怎样确认在 Codex 中生效？",
+    aliases: ["写进 AGENTS.md 为什么没生效？"]
+  });
+  const common = makePack(t, { cards: [card], skipCards: true });
+  const result = runGate({ common, query: "AGENTS.md 没生效" });
+  assert.equal(result.status, 0);
+  assert.deepEqual(result.body, {
+    status: "MISS",
+    reason_code: "NO_MATCH",
+    suggestions: [{ card_id: CARD_ID, score: 1000 }]
+  });
+  assert.equal("card" in result.body, false);
 });
 
 for (const [field, value] of [
