@@ -39,6 +39,20 @@
     "answer_candidate_created": false,
     "g13b_opened": false
   },
+  "staging_contract": {
+    "event_types": [
+      "STAGING_DECISION",
+      "STAGING_INDEX_RESULT",
+      "STAGING_ALLOW_RESULT"
+    ],
+    "g13b_status_required": "PENDING",
+    "isolation_required": "ISOLATED_CANDIDATE",
+    "formal_publication_state_mutated": false,
+    "formal_index_state_mutated": false,
+    "formal_serving_eligibility_mutated": false,
+    "targeted_tests_passed": 23,
+    "full_tests_passed": 178
+  },
   "not_authorized": [
     "public_card_change",
     "formal_index_change",

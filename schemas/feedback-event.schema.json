@@ -26,6 +26,9 @@
         "FEEDBACK",
         "ANSWER_CANDIDATE",
         "HUMAN_DISTILLATION",
+        "STAGING_DECISION",
+        "STAGING_INDEX_RESULT",
+        "STAGING_ALLOW_RESULT",
         "PUBLICATION_DECISION",
         "INDEX_RESULT",
         "ALLOW_RESULT",
@@ -63,6 +66,18 @@
     {
       "if": { "properties": { "event_type": { "const": "HUMAN_DISTILLATION" } } },
       "then": { "properties": { "payload": { "$ref": "#/$defs/humanDistillation" } } }
+    },
+    {
+      "if": { "properties": { "event_type": { "const": "STAGING_DECISION" } } },
+      "then": { "properties": { "payload": { "$ref": "#/$defs/stagingDecision" } } }
+    },
+    {
+      "if": { "properties": { "event_type": { "const": "STAGING_INDEX_RESULT" } } },
+      "then": { "properties": { "payload": { "$ref": "#/$defs/stagingIndexResult" } } }
+    },
+    {
+      "if": { "properties": { "event_type": { "const": "STAGING_ALLOW_RESULT" } } },
+      "then": { "properties": { "payload": { "$ref": "#/$defs/stagingAllowResult" } } }
     },
     {
       "if": { "properties": { "event_type": { "const": "PUBLICATION_DECISION" } } },
@@ -177,6 +192,48 @@
         "verdict": { "enum": ["PASS", "FAIL"] },
         "private_source_retained": { "const": true },
         "public_text_in_ledger": { "const": false }
+      }
+    },
+    "stagingDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidate_id", "asset_action", "card_id", "target_revision", "editorial", "verification", "privacy_gate", "publication_readiness", "g13b_status", "isolation"],
+      "properties": {
+        "candidate_id": { "type": "string" },
+        "asset_action": { "enum": ["NEW_CARD", "REVISE_CARD"] },
+        "card_id": { "type": "string" },
+        "current_revision": { "type": "string" },
+        "target_revision": { "type": "string" },
+        "editorial": { "enum": ["APPROVED", "REJECTED"] },
+        "verification": { "enum": ["PASS", "FAIL"] },
+        "privacy_gate": { "enum": ["PASS", "FAIL"] },
+        "publication_readiness": { "enum": ["PASS", "FAIL"] },
+        "g13b_status": { "const": "PENDING" },
+        "isolation": { "const": "ISOLATED_CANDIDATE" }
+      }
+    },
+    "stagingIndexResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["card_id", "revision", "result", "reason_code", "isolation"],
+      "properties": {
+        "card_id": { "type": "string" },
+        "revision": { "type": "string" },
+        "result": { "enum": ["SUCCESS", "FAIL"] },
+        "reason_code": { "type": "string" },
+        "isolation": { "const": "ISOLATED_CANDIDATE" }
+      }
+    },
+    "stagingAllowResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["card_id", "revision", "result", "reason_code", "isolation"],
+      "properties": {
+        "card_id": { "type": "string" },
+        "revision": { "type": "string" },
+        "result": { "enum": ["ALLOW", "DENY", "MISS"] },
+        "reason_code": { "type": "string" },
+        "isolation": { "const": "ISOLATED_CANDIDATE" }
       }
     },
     "publicationDecision": {

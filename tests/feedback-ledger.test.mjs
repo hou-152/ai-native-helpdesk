@@ -34,6 +34,9 @@ function event({ id, chain, type, payload, sourceKind, evidenceClass = "SYNTHETI
     FEEDBACK: "USER_FOLLOWUP",
     ANSWER_CANDIDATE: "HUMAN_REVIEW",
     HUMAN_DISTILLATION: "HUMAN_REVIEW",
+    STAGING_DECISION: "HUMAN_REVIEW",
+    STAGING_INDEX_RESULT: "INDEX_SYSTEM",
+    STAGING_ALLOW_RESULT: "LOADER",
     PUBLICATION_DECISION: "PUBLICATION_SYSTEM",
     INDEX_RESULT: "INDEX_SYSTEM",
     ALLOW_RESULT: "LOADER",
@@ -62,11 +65,12 @@ function event({ id, chain, type, payload, sourceKind, evidenceClass = "SYNTHETI
   };
 }
 
-function demand(chain, id = "EVT-DG-001") {
+function demand(chain, id = "EVT-DG-001", evidenceClass = "SYNTHETIC_MECHANISM") {
   return event({
     id,
     chain,
     type: "DEMAND_GAP",
+    evidenceClass,
     payload: {
       demand_summary: "虚构的未命中需求摘要",
       feedback_level: "MISS",
@@ -76,7 +80,7 @@ function demand(chain, id = "EVT-DG-001") {
   });
 }
 
-function feedback(chain, level = "ADOPTED", id = "EVT-FB-001") {
+function feedback(chain, level = "ADOPTED", id = "EVT-FB-001", evidenceClass = "SYNTHETIC_MECHANISM") {
   const signal = {
     ACKNOWLEDGED: "THANKS_ONLY",
     ADOPTED: "EXPLICIT_ADOPTION",
@@ -86,6 +90,7 @@ function feedback(chain, level = "ADOPTED", id = "EVT-FB-001") {
     id,
     chain,
     type: "FEEDBACK",
+    evidenceClass,
     payload: {
       evidence_signal: signal,
       feedback_level: level,
@@ -147,6 +152,54 @@ function publication(chain, options = {}) {
   return event({ id: "EVT-PD-001", chain, type: "PUBLICATION_DECISION", payload });
 }
 
+function stagingDecision(chain, options = {}) {
+  const action = options.action ?? "NEW_CARD";
+  const payload = {
+    candidate_id: options.candidateId ?? "AC-NEW-001",
+    asset_action: action,
+    card_id: options.cardId ?? "AIHD-PC-000099",
+    target_revision: options.targetRevision ?? "1.0.0",
+    editorial: options.editorial ?? "APPROVED",
+    verification: options.verification ?? "PASS",
+    privacy_gate: options.privacyGate ?? "PASS",
+    publication_readiness: options.publicationReadiness ?? "PASS",
+    g13b_status: options.g13bStatus ?? "PENDING",
+    isolation: options.isolation ?? "ISOLATED_CANDIDATE"
+  };
+  if (action === "REVISE_CARD") payload.current_revision = options.currentRevision ?? "1.1.0";
+  return event({ id: options.id ?? "EVT-SD-001", chain, type: "STAGING_DECISION", payload });
+}
+
+function stagingIndexResult(chain, result = "SUCCESS", options = {}) {
+  return event({
+    id: options.id ?? "EVT-SI-001",
+    chain,
+    type: "STAGING_INDEX_RESULT",
+    payload: {
+      card_id: options.cardId ?? "AIHD-PC-000099",
+      revision: options.revision ?? "1.0.0",
+      result,
+      reason_code: result === "SUCCESS" ? "ISOLATED_INDEX_WRITE_OK" : "ISOLATED_INDEX_WRITE_FAILED",
+      isolation: "ISOLATED_CANDIDATE"
+    }
+  });
+}
+
+function stagingAllowResult(chain, options = {}) {
+  return event({
+    id: options.id ?? "EVT-SA-001",
+    chain,
+    type: "STAGING_ALLOW_RESULT",
+    payload: {
+      card_id: options.cardId ?? "AIHD-PC-000099",
+      revision: options.revision ?? "1.0.0",
+      result: "ALLOW",
+      reason_code: "ISOLATED_LOADER_ALLOW_OBSERVED",
+      isolation: "ISOLATED_CANDIDATE"
+    }
+  });
+}
+
 function indexResult(chain, result = "SUCCESS", options = {}) {
   return event({
     id: options.id ?? "EVT-IX-001",
@@ -191,6 +244,19 @@ function syntheticNewCardChain(chain) {
   ];
 }
 
+function isolatedCandidateChain(chain, { real = false } = {}) {
+  const evidenceClass = real ? "REAL_USER_FEEDBACK" : "SYNTHETIC_MECHANISM";
+  return [
+    demand(chain, "EVT-DG-001", evidenceClass),
+    feedback(chain, "ADOPTED", "EVT-FB-001", evidenceClass),
+    answerCandidate(chain),
+    distillation(chain),
+    stagingDecision(chain),
+    stagingIndexResult(chain),
+    stagingAllowResult(chain)
+  ];
+}
+
 function assertReason(fn, reasonCode) {
   assert.throws(fn, (error) => error instanceof LedgerError && error.reason_code === reasonCode);
 }
@@ -214,6 +280,98 @@ test("synthetic full loop replays but never claims a real feedback loop", (t) =>
   assert.equal(state.mechanism_loop_complete, true);
   assert.equal(state.real_loop_complete, false);
   assert.equal(verifyEvents(events).event_count, 7);
+});
+
+test("pre-G13b isolated projection can prove a real rehearsal without formal publication or serving", (t) => {
+  const ledger = tempLedger(t);
+  const chain = "CHAIN-STAGE-REAL-001";
+  appendAll(ledger, isolatedCandidateChain(chain, { real: true }));
+  let state = replayChain(loadLedger(ledger), chain);
+
+  assert.equal(state.lifecycle_state, "STAGING_ALLOW_OBSERVED");
+  assert.equal(state.staging_publication_state, "READY_FOR_G13B_REHEARSAL");
+  assert.equal(state.staging_index_state, "INDEXED");
+  assert.equal(state.staging_allow_state, "ALLOW_OBSERVED");
+  assert.equal(state.staging_serving_eligible, true);
+  assert.equal(state.isolated_mechanism_loop_complete, true);
+  assert.equal(state.isolated_real_loop_complete, true);
+  assert.equal(state.publication_state, "NOT_REVIEWED");
+  assert.equal(state.index_state, "NOT_INDEXED");
+  assert.equal(state.allow_state, "NOT_OBSERVED");
+  assert.equal(state.serving_eligible, false);
+  assert.equal(state.mechanism_loop_complete, false);
+  assert.equal(state.real_loop_complete, false);
+
+  assertReason(() => appendEvent(ledger, indexResult(chain)), "INDEX_WITHOUT_APPROVED_PUBLICATION");
+
+  appendAll(ledger, [publication(chain), indexResult(chain), allowResult(chain)]);
+  state = replayChain(loadLedger(ledger), chain);
+  assert.equal(state.publication_state, "APPROVED_NOT_INDEXED");
+  assert.equal(state.index_state, "INDEXED");
+  assert.equal(state.allow_state, "ALLOW_OBSERVED");
+  assert.equal(state.serving_eligible, true);
+  assert.equal(state.real_loop_complete, true);
+});
+
+test("failed staging gates cannot be indexed and never alter formal publication state", (t) => {
+  const ledger = tempLedger(t);
+  const chain = "CHAIN-STAGE-FAIL-001";
+  appendAll(ledger, [
+    demand(chain),
+    feedback(chain),
+    answerCandidate(chain),
+    distillation(chain),
+    stagingDecision(chain, { publicationReadiness: "FAIL" })
+  ]);
+  assertReason(
+    () => appendEvent(ledger, stagingIndexResult(chain)),
+    "STAGING_INDEX_WITHOUT_APPROVED_REHEARSAL"
+  );
+  const state = replayChain(loadLedger(ledger), chain);
+  assert.equal(state.staging_publication_state, "REJECTED");
+  assert.equal(state.staging_serving_eligible, false);
+  assert.equal(state.publication_state, "NOT_REVIEWED");
+  assert.equal(state.serving_eligible, false);
+});
+
+test("staging cannot claim G13b approval or remove isolation", (t) => {
+  const ledger = tempLedger(t);
+  const chain = "CHAIN-STAGE-SCOPE-001";
+  appendAll(ledger, [demand(chain), feedback(chain), answerCandidate(chain), distillation(chain)]);
+
+  assertReason(
+    () => appendEvent(ledger, stagingDecision(chain, { g13bStatus: "APPROVED" })),
+    "STAGING_REQUIRES_PENDING_G13B"
+  );
+  assertReason(
+    () => appendEvent(ledger, stagingDecision(chain, { isolation: "FORMAL_PUBLIC" })),
+    "STAGING_ISOLATION_REQUIRED"
+  );
+});
+
+test("feedback correction invalidates an isolated staged ALLOW", (t) => {
+  const ledger = tempLedger(t);
+  const chain = "CHAIN-STAGE-COR-001";
+  appendAll(ledger, isolatedCandidateChain(chain));
+  appendEvent(ledger, event({
+    id: "EVT-CR-001",
+    chain,
+    type: "CORRECTION",
+    payload: {
+      target_event_id: "EVT-FB-001",
+      corrected_feedback_level: "ACKNOWLEDGED",
+      reviewer_hash: HASH_B,
+      reason_code: "FEEDBACK_OVERCLASSIFIED",
+      history_rewrite: false
+    }
+  }));
+  const state = replayChain(loadLedger(ledger), chain);
+  assert.equal(state.staging_publication_state, "INVALIDATED_BY_CORRECTION");
+  assert.equal(state.staging_index_state, "INVALIDATED_BY_CORRECTION");
+  assert.equal(state.staging_allow_state, "INVALIDATED_BY_CORRECTION");
+  assert.equal(state.staging_serving_eligible, false);
+  assert.equal(state.isolated_mechanism_loop_complete, false);
+  assert.equal(state.isolated_real_loop_complete, false);
 });
 
 test("thanks-only feedback remains ACKNOWLEDGED and cannot create an answer candidate", (t) => {

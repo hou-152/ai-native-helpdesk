@@ -14,6 +14,9 @@ export const EVENT_TYPES = Object.freeze([
   "FEEDBACK",
   "ANSWER_CANDIDATE",
   "HUMAN_DISTILLATION",
+  "STAGING_DECISION",
+  "STAGING_INDEX_RESULT",
+  "STAGING_ALLOW_RESULT",
   "PUBLICATION_DECISION",
   "INDEX_RESULT",
   "ALLOW_RESULT",
@@ -210,6 +213,58 @@ function validateHumanDistillation(payload) {
   assertBoolean(payload.public_text_in_ledger, false, "PUBLIC_TEXT_IN_LEDGER_FORBIDDEN");
 }
 
+function validateStagingDecision(payload) {
+  assertExactKeys(
+    payload,
+    [
+      "candidate_id",
+      "asset_action",
+      "card_id",
+      "target_revision",
+      "editorial",
+      "verification",
+      "privacy_gate",
+      "publication_readiness",
+      "g13b_status",
+      "isolation"
+    ],
+    ["current_revision"],
+    "INVALID_STAGING_DECISION_PAYLOAD"
+  );
+  assertString(payload.candidate_id, "INVALID_CANDIDATE_ID", { max: 67, pattern: CANDIDATE_ID_RE });
+  assertEnum(payload.asset_action, new Set(["NEW_CARD", "REVISE_CARD"]), "INVALID_ASSET_ACTION");
+  assertCardRevision(payload.card_id, payload.target_revision, "INVALID_STAGING_TARGET");
+  if (payload.asset_action === "REVISE_CARD") {
+    if (!Object.hasOwn(payload, "current_revision")) fail("CURRENT_REVISION_REQUIRED");
+    assertString(payload.current_revision, "INVALID_CURRENT_REVISION", { max: 32, pattern: REVISION_RE });
+    if (payload.current_revision === payload.target_revision) fail("REVISION_MUST_CHANGE");
+  } else if (Object.hasOwn(payload, "current_revision")) {
+    fail("NEW_CARD_CANNOT_HAVE_CURRENT_REVISION");
+  }
+  assertEnum(payload.editorial, new Set(["APPROVED", "REJECTED"]), "INVALID_EDITORIAL_GATE");
+  assertEnum(payload.verification, new Set(["PASS", "FAIL"]), "INVALID_VERIFICATION_GATE");
+  assertEnum(payload.privacy_gate, new Set(["PASS", "FAIL"]), "INVALID_PRIVACY_GATE");
+  assertEnum(payload.publication_readiness, new Set(["PASS", "FAIL"]), "INVALID_PUBLICATION_READINESS");
+  if (payload.g13b_status !== "PENDING") fail("STAGING_REQUIRES_PENDING_G13B");
+  if (payload.isolation !== "ISOLATED_CANDIDATE") fail("STAGING_ISOLATION_REQUIRED");
+}
+
+function validateStagingResult(payload, eventType) {
+  const results = eventType === "STAGING_INDEX_RESULT"
+    ? new Set(["SUCCESS", "FAIL"])
+    : new Set(["ALLOW", "DENY", "MISS"]);
+  assertExactKeys(
+    payload,
+    ["card_id", "revision", "result", "reason_code", "isolation"],
+    [],
+    `INVALID_${eventType}_PAYLOAD`
+  );
+  assertCardRevision(payload.card_id, payload.revision, `INVALID_${eventType}_TARGET`);
+  assertEnum(payload.result, results, `INVALID_${eventType}_RESULT`);
+  assertReason(payload.reason_code, `INVALID_${eventType}_REASON`);
+  if (payload.isolation !== "ISOLATED_CANDIDATE") fail("STAGING_ISOLATION_REQUIRED");
+}
+
 function validatePublicationDecision(payload) {
   assertExactKeys(
     payload,
@@ -279,6 +334,9 @@ const PAYLOAD_VALIDATORS = Object.freeze({
   FEEDBACK: validateFeedback,
   ANSWER_CANDIDATE: validateAnswerCandidate,
   HUMAN_DISTILLATION: validateHumanDistillation,
+  STAGING_DECISION: validateStagingDecision,
+  STAGING_INDEX_RESULT: (payload) => validateStagingResult(payload, "STAGING_INDEX_RESULT"),
+  STAGING_ALLOW_RESULT: (payload) => validateStagingResult(payload, "STAGING_ALLOW_RESULT"),
   PUBLICATION_DECISION: validatePublicationDecision,
   INDEX_RESULT: (payload) => validateCardResult(payload, "INDEX_RESULT"),
   ALLOW_RESULT: (payload) => validateCardResult(payload, "ALLOW_RESULT"),
@@ -398,6 +456,10 @@ function initialState(chainId) {
     current_revision: null,
     target_revision: null,
     human_distillation: "NOT_STARTED",
+    staging_publication_state: "NOT_REVIEWED",
+    staging_index_state: "NOT_INDEXED",
+    staging_allow_state: "NOT_OBSERVED",
+    staging_serving_eligible: false,
     publication_state: "NOT_REVIEWED",
     index_state: "NOT_INDEXED",
     allow_state: "NOT_OBSERVED",
@@ -406,6 +468,8 @@ function initialState(chainId) {
     serving_eligible: false,
     mechanism_loop_complete: false,
     real_loop_complete: false,
+    isolated_mechanism_loop_complete: false,
+    isolated_real_loop_complete: false,
     last_event_hash: null
   };
 }
@@ -418,6 +482,12 @@ function publicationApproved(payload) {
   return payload.editorial === "APPROVED" && payload.verification === "PASS" &&
     payload.privacy_gate === "PASS" && payload.publication === "READY" &&
     payload.owner_decision === "APPROVED";
+}
+
+function stagingApproved(payload) {
+  return payload.editorial === "APPROVED" && payload.verification === "PASS" &&
+    payload.privacy_gate === "PASS" && payload.publication_readiness === "PASS" &&
+    payload.g13b_status === "PENDING" && payload.isolation === "ISOLATED_CANDIDATE";
 }
 
 function replayChainUnchecked(chainEvents, chainId) {
@@ -475,6 +545,54 @@ function replayChainUnchecked(chainEvents, chainId) {
         state.human_distillation = payload.verdict;
         state.candidate_status = payload.verdict === "PASS" ? "HUMAN_DISTILLED" : "DISTILLATION_FAILED";
         state.lifecycle_state = state.candidate_status;
+        break;
+      }
+      case "STAGING_DECISION": {
+        if (state.candidate_status !== "HUMAN_DISTILLED" || state.candidate_id !== payload.candidate_id) {
+          fail("STAGING_WITHOUT_HUMAN_DISTILLATION");
+        }
+        if (state.asset_action !== payload.asset_action || state.card_id !== payload.card_id || state.target_revision !== payload.target_revision) {
+          fail("STAGING_CANDIDATE_MISMATCH");
+        }
+        if (state.asset_action === "REVISE_CARD" && state.current_revision !== payload.current_revision) {
+          fail("STAGING_REVISION_MISMATCH");
+        }
+        if (stagingApproved(payload)) {
+          state.staging_publication_state = "READY_FOR_G13B_REHEARSAL";
+          state.lifecycle_state = "STAGING_APPROVED";
+        } else {
+          state.staging_publication_state = "REJECTED";
+          state.staging_serving_eligible = false;
+          state.lifecycle_state = "STAGING_REJECTED";
+        }
+        break;
+      }
+      case "STAGING_INDEX_RESULT": {
+        if (state.staging_publication_state !== "READY_FOR_G13B_REHEARSAL") {
+          fail("STAGING_INDEX_WITHOUT_APPROVED_REHEARSAL");
+        }
+        if (!new Set(["STAGING_APPROVED", "STAGING_INDEX_FAILED"]).has(state.lifecycle_state)) {
+          fail("STAGING_INDEX_REACTIVATION_REQUIRES_NEW_DECISION");
+        }
+        assertSameCard(state, payload);
+        if (payload.result === "SUCCESS") {
+          state.staging_index_state = "INDEXED";
+          state.staging_serving_eligible = true;
+          state.lifecycle_state = "STAGING_INDEXED";
+        } else {
+          state.staging_index_state = "INDEX_FAILED";
+          state.staging_serving_eligible = false;
+          state.lifecycle_state = "STAGING_INDEX_FAILED";
+        }
+        break;
+      }
+      case "STAGING_ALLOW_RESULT": {
+        assertSameCard(state, payload);
+        if (state.staging_index_state !== "INDEXED" || !state.staging_serving_eligible) {
+          fail("STAGING_ALLOW_WITHOUT_CURRENT_INDEX");
+        }
+        state.staging_allow_state = payload.result === "ALLOW" ? "ALLOW_OBSERVED" : payload.result;
+        if (payload.result === "ALLOW") state.lifecycle_state = "STAGING_ALLOW_OBSERVED";
         break;
       }
       case "PUBLICATION_DECISION": {
@@ -557,6 +675,10 @@ function replayChainUnchecked(chainEvents, chainId) {
           target.source.evidence_class === "REAL_USER_FEEDBACK";
         if (FEEDBACK_RANK[payload.corrected_feedback_level] < FEEDBACK_RANK.ADOPTED && state.candidate_status !== "NONE") {
           state.candidate_status = "INVALIDATED_BY_CORRECTION";
+          state.staging_publication_state = "INVALIDATED_BY_CORRECTION";
+          state.staging_index_state = "INVALIDATED_BY_CORRECTION";
+          state.staging_allow_state = "INVALIDATED_BY_CORRECTION";
+          state.staging_serving_eligible = false;
           state.publication_state = "INVALIDATED_BY_CORRECTION";
           state.index_state = "INVALIDATED_BY_CORRECTION";
           state.lifecycle_state = "INVALIDATED_BY_CORRECTION";
@@ -578,6 +700,9 @@ function replayChainUnchecked(chainEvents, chainId) {
   state.mechanism_loop_complete = state.allow_state === "ALLOW_OBSERVED" && state.serving_eligible;
   state.real_loop_complete = state.mechanism_loop_complete && state.demand_evidence_class === "REAL_USER_FEEDBACK" &&
     state.qualifying_feedback_is_real;
+  state.isolated_mechanism_loop_complete = state.staging_allow_state === "ALLOW_OBSERVED" && state.staging_serving_eligible;
+  state.isolated_real_loop_complete = state.isolated_mechanism_loop_complete &&
+    state.demand_evidence_class === "REAL_USER_FEEDBACK" && state.qualifying_feedback_is_real;
   return state;
 }
 
@@ -667,6 +792,10 @@ function publicState(state) {
     chain_id: state.chain_id,
     effective_feedback_level: state.effective_feedback_level,
     candidate_status: state.candidate_status,
+    staging_publication_state: state.staging_publication_state,
+    staging_index_state: state.staging_index_state,
+    staging_allow_state: state.staging_allow_state,
+    staging_serving_eligible: state.staging_serving_eligible,
     publication_state: state.publication_state,
     index_state: state.index_state,
     allow_state: state.allow_state,
@@ -674,6 +803,8 @@ function publicState(state) {
     serving_eligible: state.serving_eligible,
     mechanism_loop_complete: state.mechanism_loop_complete,
     real_loop_complete: state.real_loop_complete,
+    isolated_mechanism_loop_complete: state.isolated_mechanism_loop_complete,
+    isolated_real_loop_complete: state.isolated_real_loop_complete,
     last_event_hash: state.last_event_hash
   };
 }

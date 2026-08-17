@@ -42,7 +42,7 @@ qualified real question
 → G13b itemized decision
 ```
 
-G13b 前的 `indexed → later ALLOW` 只允许发生在与正式公共 index 隔离的候选投影，用于证明完整机制链；不得修改正式 index，也不得对外表述为已发布。若只收到感谢或理解确认，状态停在 `ACKNOWLEDGED`，不得生成候选。若问题命中现有卡或被拒，只保留真实路由结果并回到 Owner，不伪造缺口。
+G13b 前的 `indexed → later ALLOW` 只允许发生在与正式公共 index 隔离的候选投影，用于证明完整机制链。ledger 使用 `STAGING_DECISION → STAGING_INDEX_RESULT → STAGING_ALLOW_RESULT`，并强制 `g13b_status = PENDING`、`isolation = ISOLATED_CANDIDATE`；正式 `publication_state / index_state / allow_state / serving_eligible` 不得因此改变。G13b 通过后仍须另写正式发布决定并重新运行正式 index／loader。若只收到感谢或理解确认，状态停在 `ACKNOWLEDGED`，不得生成候选。若问题命中现有卡或被拒，只保留真实路由结果并回到 Owner，不伪造缺口。
 
 ## 未授权事项
 
