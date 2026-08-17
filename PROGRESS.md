@@ -1,5 +1,14 @@
 # 受控阶段进度
 
+## G13a 真实反馈隔离闭环（2026-08-18）
+
+- G13a 授权的 1 用户／1 问题已经实际运行；正式三卡查询为 `MISS / NO_MATCH`，因此按合同记录最小化 `DEMAND_GAP`。
+- 同一真实用户随后正向采用回答路径，记录为 `ADOPTED`；没有声明已经执行或产生客观效果。
+- 生成 1 个 `ANSWER_CANDIDATE`，完成人工提炼与 staging 四门预审；候选正文、原问句、反馈原文和私密 ledger 均留在公开仓库外。
+- 隔离候选 pack 的 index 结构复验通过，后续 loader 实际返回 `ALLOW`；正式公共包对同义查询仍为 `MISS`。
+- ledger 7 个事件、1 条 chain，hash 链复验通过；`isolated_real_loop_complete = true`，正式 `real_loop_complete = false`。
+- 当前状态：`AWAITING_G13B_OWNER_DECISION`。正式 PublicCard／index 未改变，Phase 5、push、PR、merge 和外部社区触达均未开始。
+
 ## G13a 受控真实反馈采集授权（2026-08-18）
 
 - Owner 已授权 Phase 4B 使用 1 个真实用户的 1 个真实 AI／Agent／OpenClaw 问题运行当前 Helpdesk；当前 Owner 可以作为该用户。
@@ -8,7 +17,7 @@
 - 当前工程讨论、测试 fixture、Owner 批准和模型自评没有被追溯改写为反馈；目前没有实际查询、私密 ledger 事件或 `ANSWER_CANDIDATE`。
 - 复核发现旧 ledger 只有 Owner 正式批准后才能产生 index／ALLOW，与 G13b 前隔离完整 rehearsal 冲突；现新增 3 类 staging 事件与独立状态，隔离 ALLOW 不再污染正式发布／服务状态。
 - staging 正反测试覆盖：真实反馈链可完成隔离 rehearsal、失败门不得索引、不得伪造 G13b 或移除隔离、反馈更正会撤销 staged ALLOW；Phase 4 定向测试增至 23 项。
-- 当前状态：`G13A_APPROVED / AWAITING_QUALIFIED_HELPDESK_TURN`。G13b、Phase 5 与外部社区触达仍未开启。
+- 本段是采集前授权状态；后续真实隔离闭环已经完成，当前状态见上方新段落。G13b、Phase 5 与外部社区触达仍未开启。
 
 ## Phase 4 MISS 反馈回路（2026-08-18）
 

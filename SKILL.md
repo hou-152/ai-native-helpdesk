@@ -1,13 +1,13 @@
 ---
 name: ai-native-helpdesk
 description: 面向 AI／Agent／OpenClaw 社区的薄入口 Helpdesk Skill。负责守门、判模、按需加载合同，并只通过确定性发布门读取 PublicCard。
-version: 0.6.1-phase4-staging
-status: G13A_APPROVED / 本地正式三卡包 / Phase 4 机制完成 / 等待合格真实问题 / G13b 未开启
+version: 0.6.2-phase4-g13b-candidate
+status: G13A_REAL_ISOLATED_LOOP_COMPLETE / 本地正式三卡包 / 等待 G13b 逐项裁决
 author: 减
 license: internal
 ---
 
-# ai-native-helpdesk v0.6.1-phase4-staging
+# ai-native-helpdesk v0.6.2-phase4-g13b-candidate
 
 > 当前已实现 PublicCard 机器发布门，本地功能分支有 3 张经 G12 逐卡批准的正式卡。三卡本地可用不等于远端已发布、完整知识库上线，也不等于已经完成真实社区端到端验证或解决了用户问题。
 
@@ -124,7 +124,7 @@ PublicCard schema B 为 `0.4`，新增安全 `scope_hint`、判断框架、常�
 
 `scripts/feedback-ledger.mjs` 只向公开仓库外的受控路径追加 hash-chain 事件。反馈等级、候选、人工提炼、发布、索引、后续 ALLOW、验证失败、撤回、过期和更正均通过重放计算；历史事件不能原地修改。
 
-CLI 不回显 payload。`ACKNOWLEDGED`、无反馈模型答案和包含原回答正文的候选会 fail-closed。只有真实 `ADOPTED / OUTCOME_REPORTED` 才能开启实际候选链；synthetic 完整测试最多声明 `mechanism_loop_complete`，不能声明 `real_loop_complete`。G13a 已授权 1 个真实用户／1 个真实问题的受控采集；当前尚未收到明确纳入本轮的 Helpdesk turn，因此 G13b 未开启。
+CLI 不回显 payload。`ACKNOWLEDGED`、无反馈模型答案和包含原回答正文的候选会 fail-closed。只有真实 `ADOPTED / OUTCOME_REPORTED` 才能开启实际候选链；synthetic 完整测试最多声明 `mechanism_loop_complete`，不能声明 `real_loop_complete`。G13a 的 1 用户／1 问题受控采集已经完成，实际 `MISS` 后获得 `ADOPTED` 并跑通隔离候选闭环；该结果不证明执行效果，也没有修改正式发布状态。
 
 G13b 前的完整 rehearsal 使用隔离的 `STAGING_DECISION / STAGING_INDEX_RESULT / STAGING_ALLOW_RESULT`。隔离链只能产生 `isolated_*` 状态，不能设置正式 `publication_state / index_state / allow_state / serving_eligible`；staging 明确保留 `g13b_status = PENDING`。只有 G13b 逐项批准后，才能写正式 `PUBLICATION_DECISION` 并重新验证正式 index 与 loader。
 
@@ -186,7 +186,7 @@ node scripts/helpdesk-turn-contract.mjs \
 - 公开 PublicCard：本地功能分支 3 张，尚未进入远端 `main`。
 - 两张新卡：已按 G12 指定 revision 进入本地正式 index。
 - Phase 4 反馈账本与回滚：机制完成；23 项定向测试通过，包含 G13b 前 staging／formal 状态隔离。
-- Phase 4 真实闭环：`G13A_APPROVED / AWAITING_QUALIFIED_HELPDESK_TURN`；没有实际查询、候选／修订／撤回清单，G13b 未开启。
+- Phase 4 真实闭环：`ISOLATED_REAL_LOOP_COMPLETE / AWAITING_G13B`；唯一候选已跑通隔离 index／ALLOW，正式卡与 index 未改变。
 - 社区真实端到端验证：未完成。
 - 群聊候选、内部证据和审核材料：不属于公开仓库。
 
@@ -202,6 +202,7 @@ node scripts/helpdesk-turn-contract.mjs \
 | v0.5.1-phase3-published | G12_APPROVED | 首批三卡本地正式投影、loader 后验收与真实卡错配回归 |
 | v0.6.0-phase4-mechanism | REAL_LOOP_HOLD | 追加式反馈账本、候选门、状态重放与回滚；无真实反馈时停止 |
 | v0.6.1-phase4-staging | G13A_APPROVED | G13b 前隔离 rehearsal 与正式发布／服务状态分离 |
-| G13a control receipt | AWAITING_REAL_TURN | Owner 授权 1 用户／1 问题受控采集；不自动纳入工程讨论 |
+| v0.6.2-phase4-g13b-candidate | AWAITING_G13B | 真实 `MISS → ADOPTED` 隔离闭环完成；正式发布状态保持未改变 |
+| G13a control receipt | COMPLETED | Owner 授权的 1 用户／1 问题受控采集已完成；公开仓库只留聚合收据 |
 
 后续 PublicCard 仍须逐张独立完成内容修正、真实验证、隐私审查和 Owner 发布批准；首张卡通过不能让其他候选自动晋级。

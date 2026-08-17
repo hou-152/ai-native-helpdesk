@@ -1,6 +1,6 @@
-# ai-native-helpdesk v0.6.1-phase4-staging
+# ai-native-helpdesk v0.6.2-phase4-g13b-candidate
 
-> 当前状态：Owner 已通过 G13a，授权 Phase 4B 采集 1 个真实用户的 1 个真实问题。Phase 4A 的追加式反馈账本与回滚机制已完成；当前尚未收到明确纳入采集的 Helpdesk 问题，因此停在 `AWAITING_QUALIFIED_HELPDESK_TURN`，G13b 未开启，Phase 5 未开始。
+> 当前状态：G13a 授权的 1 用户／1 问题真实采集已完成。正式三卡查询实际 `MISS`，同一用户随后给出 `ADOPTED`；答案候选已完成人工提炼、四门预审、隔离索引和隔离 loader `ALLOW`。正式 PublicCard 与 index 未改变，当前停在 `AWAITING_G13B_OWNER_DECISION`，Phase 5 未开始。
 
 ## 目标
 
@@ -116,7 +116,8 @@ node scripts/feedback-ledger.mjs replay \
 - G13b 前用 `STAGING_DECISION → STAGING_INDEX_RESULT → STAGING_ALLOW_RESULT` 记录隔离候选投影；它可以证明 rehearsal，但正式 `publication_state / index_state / allow_state / serving_eligible` 保持未批准、未索引、未服务。
 - staging 必须保留 `g13b_status = PENDING` 和 `isolation = ISOLATED_CANDIDATE`；不能借隔离 ALLOW 伪造 Owner 批准。G13b 通过后仍须另写正式 `PUBLICATION_DECISION` 并重新执行正式 index 与 loader。
 - 索引失败、验证失败、撤回、过期或反馈更正会取消 serving eligibility，不能沿用旧成功声明。
-- 当前只有 synthetic mechanism 测试；G13a 已授权一轮受控真实采集，但尚未收到合格问题。没有实际查询和真实反馈时不生成候选。
+- G13a 的真实隔离链已经完成；公开仓库只保留聚合收据和 hash 指针，不保存原问句、反馈原文、候选正文或私密 ledger。该链仍只有 `ADOPTED`，不证明用户执行或客观效果。
+- 当前唯一候选停在 G13b；在 Owner 逐项批准前，正式 PublicCard、index、`ALLOW` 和 serving eligibility 均保持未改变。
 
 ## Phase 2 回合合同
 
@@ -168,7 +169,7 @@ node --test
 | Phase 3 schema B 与生产门 | `G12_APPROVED / TESTED` |
 | Phase 3 两张新卡 | `G12_APPROVED / LOCAL_INDEXED` |
 | Phase 4 反馈账本与回滚 | `MECHANISM_COMPLETE / 23 TESTS` |
-| Phase 4 真实反馈闭环 | `G13A_APPROVED / AWAITING_QUALIFIED_HELPDESK_TURN` |
+| Phase 4 真实反馈闭环 | `ISOLATED_REAL_LOOP_COMPLETE / AWAITING_G13B` |
 | 真实社区端到端验证 | `NOT_VERIFIED` |
 
 三张卡只覆盖各自声明的窄 scope。后续卡片仍须逐张经过内容修正、真实环境验证、隐私审查和 Owner 发布批准，不能因首批通过而自动晋级。
