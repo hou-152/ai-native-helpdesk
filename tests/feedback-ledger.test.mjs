@@ -332,6 +332,10 @@ test("approved withdrawal makes an indexed revision ineligible to serve", (t) =>
   assert.equal(state.lifecycle_state, "WITHDRAWN");
   assert.equal(state.serving_eligible, false);
   assertReason(() => appendEvent(ledger, allowResult(chain)), "ALLOW_WITHOUT_CURRENT_INDEX");
+  assertReason(
+    () => appendEvent(ledger, indexResult(chain, "SUCCESS", { id: "EVT-IX-002" })),
+    "INDEX_REACTIVATION_REQUIRES_NEW_PUBLICATION"
+  );
 });
 
 test("verification failure blocks a previously indexed revision", (t) => {
@@ -463,4 +467,21 @@ test("CLI returns only stable receipt metadata and never echoes the demand summa
   assert.equal(receipt.status, "APPENDED");
   assert.equal(receipt.event_type, "DEMAND_GAP");
   assert.equal(Object.hasOwn(receipt, "payload"), false);
+});
+
+test("CLI refuses a symlinked event input", (t) => {
+  const ledger = tempLedger(t);
+  const dir = path.dirname(ledger);
+  const realEvent = path.join(dir, "real-event.json");
+  const linkedEvent = path.join(dir, "linked-event.json");
+  fs.writeFileSync(realEvent, JSON.stringify(demand("CHAIN-LINK-001")), { encoding: "utf8", mode: 0o600 });
+  fs.symlinkSync(realEvent, linkedEvent);
+
+  const result = spawnSync(process.execPath, [SCRIPT, "append", "--ledger", ledger, "--event", linkedEvent], {
+    cwd: REPO_ROOT,
+    encoding: "utf8"
+  });
+  assert.equal(result.status, 1);
+  assert.equal(JSON.parse(result.stdout).reason_code, "EVENT_INPUT_MUST_BE_REGULAR_FILE");
+  assert.equal(fs.existsSync(ledger), false);
 });

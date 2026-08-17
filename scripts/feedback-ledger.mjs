@@ -499,6 +499,9 @@ function replayChainUnchecked(chainEvents, chainId) {
       }
       case "INDEX_RESULT": {
         if (state.publication_state !== "APPROVED_NOT_INDEXED") fail("INDEX_WITHOUT_APPROVED_PUBLICATION");
+        if (!new Set(["PUBLICATION_APPROVED", "INDEX_FAILED"]).has(state.lifecycle_state)) {
+          fail("INDEX_REACTIVATION_REQUIRES_NEW_PUBLICATION");
+        }
         assertSameCard(state, payload);
         if (payload.result === "SUCCESS") {
           state.index_state = "INDEXED";
@@ -646,6 +649,19 @@ export function assertPrivateControlPath(targetPath) {
   return canonical;
 }
 
+function readPrivateEventInput(eventPath) {
+  const canonical = assertPrivateControlPath(eventPath);
+  if (!fs.existsSync(canonical)) fail("EVENT_INPUT_NOT_FOUND");
+  const stat = fs.lstatSync(canonical);
+  if (!stat.isFile() || stat.isSymbolicLink()) fail("EVENT_INPUT_MUST_BE_REGULAR_FILE");
+  try {
+    return JSON.parse(fs.readFileSync(canonical, "utf8"));
+  } catch (error) {
+    if (error instanceof SyntaxError) fail("MALFORMED_EVENT_INPUT_JSON");
+    throw error;
+  }
+}
+
 function publicState(state) {
   return {
     chain_id: state.chain_id,
@@ -721,8 +737,7 @@ function runCli() {
 
     if (command === "append") {
       if (!options.event || options.chain) fail("INVALID_CLI_ARGUMENTS");
-      const eventPath = assertPrivateControlPath(options.event);
-      const input = JSON.parse(fs.readFileSync(eventPath, "utf8"));
+      const input = readPrivateEventInput(options.event);
       emit(appendEvent(ledgerPath, input));
       return;
     }
