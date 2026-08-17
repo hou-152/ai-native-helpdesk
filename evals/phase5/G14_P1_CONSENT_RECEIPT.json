@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "receipt_id": "G14-P1-CONSENT-20260818-001",
+  "relayed_at": "2026-08-18T07:45:09+08:00",
+  "authority": "OWNER_RELAY_OF_P1_RESPONSE",
+  "authorization_receipt_id": "G14-AUTHORIZATION-20260818-001",
+  "designation_receipt_id": "G14-P1-DESIGNATION-20260818-001",
+  "private_consent_receipt_sha256": "4e5f2186f12ddc4a03d1f594e23a60812557615bc283a2fbccdf40d838b74a60",
+  "participant_id": "P1",
+  "consent": {
+    "status": "OBSERVED",
+    "scope": "G14_A_MINIMIZED_TRIAL",
+    "withdrawal_available": true,
+    "raw_response_public": false
+  },
+  "environment": {
+    "evidence_kind": "PARTICIPANT_SELF_REPORT_RELAYED_BY_OWNER",
+    "os": "macOS",
+    "arch": "arm64",
+    "node_major": 24,
+    "gate": "SELF_REPORTED_MATCH",
+    "runtime_readback": "PENDING"
+  },
+  "artifact": {
+    "archive_sha256": "544cae157075dd71b1c0c74395ba54f4420d4b5f96dd7d8c568ca4e7e20ec7c8",
+    "transfer_authorized": true,
+    "transfer_actor": "OWNER",
+    "transferred": false
+  },
+  "trial_started": false,
+  "status": "CONSENT_OBSERVED_ENVIRONMENT_SELF_REPORTED_MATCH_AWAITING_OWNER_TRANSFER"
+}

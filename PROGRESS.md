@@ -1,5 +1,13 @@
 # 受控阶段进度
 
+## P1 已同意，等待 Owner 私下传包（2026-08-18）
+
+- Owner 已转述 P1 的明确同意；私密控制面只保存原始回复 SHA-256，不保存回复正文，公开面只登记 `consent = OBSERVED`。
+- P1 自报 macOS arm64／Node.js 24，当前证据级别为 `SELF_REPORTED_MATCH`；实际 OS／arch／Node 输出仍须在 P1 机器首步读回。
+- 固定 28 文件 archive 已再次通过 SHA-256 和压缩包完整性检查，允许由 Owner 私下传递给 P1。
+- 当前 `package_transferred = false`、`runtime_readback = PENDING`、`trial_started = false`；不得把自报环境或传包授权写成试跑已开始。
+- 当前状态：`CONSENT_OBSERVED_ENVIRONMENT_SELF_REPORTED_MATCH_AWAITING_OWNER_TRANSFER`。
+
 ## P1 已指定，等待 Owner 转发邀请与 P1 同意（2026-08-18）
 
 - Owner 已指定唯一参与者；公开面只登记匿名 `P1`，私密控制面只保留选择标识的不可逆 SHA-256，不保存原始标识或联系方式。
