@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/hou-152/ai-native-helpdesk/schemas/retrieval-eval.schema.json",
+  "title": "AI Native Helpdesk Retrieval Evaluation Set",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "dataset_id", "frozen_at", "cases"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "dataset_id": { "const": "aihd-retrieval-golden-v1" },
+    "frozen_at": { "type": "string", "format": "date-time" },
+    "cases": {
+      "type": "array",
+      "minItems": 50,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "case_id",
+          "split",
+          "query",
+          "expected_status",
+          "expected_candidates",
+          "risk_class",
+          "precondition",
+          "provenance",
+          "rationale",
+          "tags"
+        ],
+        "properties": {
+          "case_id": { "type": "string", "pattern": "^RET-(?:D|B)-[0-9]{3}$" },
+          "split": { "enum": ["DESIGN", "BLIND"] },
+          "query": { "type": "string", "minLength": 1, "maxLength": 500 },
+          "expected_status": { "enum": ["CANDIDATE", "CLARIFY", "MISS", "DENY"] },
+          "expected_candidates": {
+            "type": "array",
+            "maxItems": 3,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^FIX-[A-Z0-9-]+$" }
+          },
+          "risk_class": { "enum": ["LOW", "MEDIUM", "HIGH"] },
+          "precondition": {
+            "enum": ["ELIGIBLE", "DENY_PRIVACY", "DENY_INJECTION", "DENY_INDEX_DRIFT"]
+          },
+          "provenance": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind", "source_ref", "privacy"],
+            "properties": {
+              "kind": { "enum": ["observed_public_safe", "synthetic_fixture"] },
+              "source_ref": { "type": "string", "minLength": 1, "maxLength": 300 },
+              "privacy": { "const": "public_safe" }
+            }
+          },
+          "rationale": { "type": "string", "minLength": 1, "maxLength": 500 },
+          "tags": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^[a-z0-9_-]+$" }
+          }
+        }
+      }
+    }
+  }
+}
