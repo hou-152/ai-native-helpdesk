@@ -1,0 +1,55 @@
+{
+  "schema_version": "1.0",
+  "approved_at": "2026-08-18T05:50:18+08:00",
+  "status": "G13A_APPROVED_AWAITING_QUALIFIED_HELPDESK_TURN",
+  "phase": "PHASE_4B_CONTROLLED_REAL_FEEDBACK",
+  "owner_authorization": {
+    "real_users": 1,
+    "real_questions": 1,
+    "domain": "AI_AGENT_OPENCLAW",
+    "current_owner_may_participate": true,
+    "external_community_contact_authorized": false
+  },
+  "source_qualification": {
+    "accepted": [
+      "new_explicitly_enrolled_turn_after_g13a",
+      "owner_named_existing_turn_with_explicit_retroactive_coverage"
+    ],
+    "not_automatically_accepted": [
+      "current_engineering_conversation",
+      "synthetic_test_fixture",
+      "model_self_assessment",
+      "g12_or_g13a_approval"
+    ]
+  },
+  "required_observation": [
+    "actual_public_card_query_result",
+    "demand_gap_only_if_actual_miss",
+    "real_user_adopted_or_outcome_reported",
+    "answer_candidate",
+    "human_distillation",
+    "four_gate_pre_review",
+    "isolated_candidate_index_and_later_allow_evidence"
+  ],
+  "current_observation": {
+    "qualified_helpdesk_turn_received": false,
+    "actual_query_run": false,
+    "demand_gap_recorded": false,
+    "adopted_or_outcome_reported": false,
+    "answer_candidate_created": false,
+    "g13b_opened": false
+  },
+  "not_authorized": [
+    "public_card_change",
+    "formal_index_change",
+    "push",
+    "pull_request",
+    "merge",
+    "external_community_contact",
+    "phase5_community_trial",
+    "bulk_private_candidate_promotion"
+  ],
+  "plan_ref": "workspace-lobster2@7c5f469f7f8650cea42665eec4ddaae637552f6b:docs/ai-native-helpdesk-PP-v0.3.2-final.md",
+  "phase4a_baseline": "9b572bc919843847aec501f113949ac9ec70fdb9",
+  "historical_no_feedback_receipt": "evals/phase4/NO_REAL_FEEDBACK_RECEIPT.json"
+}

@@ -1,6 +1,6 @@
 # ai-native-helpdesk v0.6.0-phase4-mechanism
 
-> 当前状态：Owner 已通过 G12；本地正式三卡包和真实卡错配回归已通过。Phase 4 的追加式反馈账本与回滚机制已完成，但授权范围内没有真实有效反馈，因此真实晋级链保持 `HOLD`，G13 未开启，Phase 5 未开始。
+> 当前状态：Owner 已通过 G13a，授权 Phase 4B 采集 1 个真实用户的 1 个真实问题。Phase 4A 的追加式反馈账本与回滚机制已完成；当前尚未收到明确纳入采集的 Helpdesk 问题，因此停在 `AWAITING_QUALIFIED_HELPDESK_TURN`，G13b 未开启，Phase 5 未开始。
 
 ## 目标
 
@@ -114,7 +114,7 @@ node scripts/feedback-ledger.mjs replay \
 - CLI 只返回稳定 ID、hash、状态和 reason code，不回显需求摘要或 payload。
 - “谢谢”只能记为 `ACKNOWLEDGED`；`ADOPTED / OUTCOME_REPORTED` 才有候选资格，且仍需人工提炼、四门与 Owner 逐项批准。
 - 索引失败、验证失败、撤回、过期或反馈更正会取消 serving eligibility，不能沿用旧成功声明。
-- 当前只有 synthetic mechanism 测试；没有真实反馈时不生成实际候选。
+- 当前只有 synthetic mechanism 测试；G13a 已授权一轮受控真实采集，但尚未收到合格问题。没有实际查询和真实反馈时不生成候选。
 
 ## Phase 2 回合合同
 
@@ -166,7 +166,7 @@ node --test
 | Phase 3 schema B 与生产门 | `G12_APPROVED / TESTED` |
 | Phase 3 两张新卡 | `G12_APPROVED / LOCAL_INDEXED` |
 | Phase 4 反馈账本与回滚 | `MECHANISM_COMPLETE / 19 TESTS` |
-| Phase 4 真实反馈闭环 | `HOLD_NO_REAL_FEEDBACK / G13_NOT_OPENED` |
+| Phase 4 真实反馈闭环 | `G13A_APPROVED / AWAITING_QUALIFIED_HELPDESK_TURN` |
 | 真实社区端到端验证 | `NOT_VERIFIED` |
 
 三张卡只覆盖各自声明的窄 scope。后续卡片仍须逐张经过内容修正、真实环境验证、隐私审查和 Owner 发布批准，不能因首批通过而自动晋级。

@@ -1,5 +1,13 @@
 # 受控阶段进度
 
+## G13a 受控真实反馈采集授权（2026-08-18）
+
+- Owner 已授权 Phase 4B 使用 1 个真实用户的 1 个真实 AI／Agent／OpenClaw 问题运行当前 Helpdesk；当前 Owner 可以作为该用户。
+- 新增 G13a 执行包和机器可读授权收据；v0.3.2 修复 Phase 4／5 启动死锁，但不降低真实证据门。
+- 必须先收到明确纳入本轮的 Helpdesk turn，再实际运行正式三卡查询；只有真实 `MISS` 才能记录 `DEMAND_GAP`。
+- 当前工程讨论、测试 fixture、Owner 批准和模型自评没有被追溯改写为反馈；目前没有实际查询、私密 ledger 事件或 `ANSWER_CANDIDATE`。
+- 当前状态：`G13A_APPROVED / AWAITING_QUALIFIED_HELPDESK_TURN`。G13b、Phase 5 与外部社区触达仍未开启。
+
 ## Phase 4 MISS 反馈回路（2026-08-18）
 
 - `ad83908753412231ee1790dbf4abec3f2d80e664` 在实现前冻结 11 类事件、反馈等级、hash-chain、状态回滚、文件白名单与无真实反馈停止条件。
@@ -9,7 +17,7 @@
 - 新卡完整虚构机制链、既有卡修订、撤回、验证失败、过期、索引失败、反馈更正、篡改与跨链引用均有正反测试。
 - Phase 4 定向测试 19／19 PASS；全量测试 174／174 PASS，0 fail／cancelled／skipped／todo。
 - 授权项目收据中没有可复跑的真实 `ADOPTED / OUTCOME_REPORTED` 反馈；没有生成真实 `ANSWER_CANDIDATE`，也没有修改正式三卡或 index。
-- 当前状态：`MECHANISM_COMPLETE / REAL_LOOP_HOLD_NO_FEEDBACK`。G13 未开启，Phase 5 不得开始。
+- 本段记录 G13a 之前的停止状态；后续授权和当前状态见上方 G13a 段落。
 
 ## G12 正式三卡投影（2026-08-18）
 
