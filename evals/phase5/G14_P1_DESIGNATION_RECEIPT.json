@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "receipt_id": "G14-P1-DESIGNATION-20260818-001",
+  "occurred_at": "2026-08-18T07:41:19+08:00",
+  "authority": "OWNER",
+  "authorization_receipt_id": "G14-AUTHORIZATION-20260818-001",
+  "private_designation_receipt_sha256": "9f6fbbd72a3c4a6e0d5432514ec21d6ccb5994b05b59e76f2ea04d045b626b0c",
+  "participant": {
+    "participant_id": "P1",
+    "designated": true,
+    "identity_public": false,
+    "contact_public": false
+  },
+  "invitation": {
+    "delivery_actor": "OWNER",
+    "template_sha256": "f055c92cff2b012cfa819ff6a19759d988b3f058d716c8ea06b324c6e473077f",
+    "sent": false
+  },
+  "consent": {
+    "status": "NOT_OBSERVED"
+  },
+  "environment": {
+    "required": "MACOS_ARM64_NODE_24",
+    "status": "NOT_OBSERVED"
+  },
+  "artifact": {
+    "archive_sha256": "544cae157075dd71b1c0c74395ba54f4420d4b5f96dd7d8c568ca4e7e20ec7c8",
+    "transferred": false
+  },
+  "trial_started": false,
+  "status": "P1_DESIGNATED_AWAITING_OWNER_INVITATION_AND_CONSENT"
+}

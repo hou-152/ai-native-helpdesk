@@ -1,5 +1,12 @@
 # 受控阶段进度
 
+## P1 已指定，等待 Owner 转发邀请与 P1 同意（2026-08-18）
+
+- Owner 已指定唯一参与者；公开面只登记匿名 `P1`，私密控制面只保留选择标识的不可逆 SHA-256，不保存原始标识或联系方式。
+- 固定邀请由 Owner 转发；当前没有观察到已发送回执，因此 `invitation_sent = false`。
+- P1 明确回复同意并确认 macOS arm64／Node.js 24 前，`consent = NOT_OBSERVED`、`environment = NOT_OBSERVED`、`package_transferred = false`、`trial_started = false`。
+- 当前状态：`P1_DESIGNATED_AWAITING_OWNER_INVITATION_AND_CONSENT`。不得因参与者已指定而提前传包或运行试跑。
+
 ## G14-A 已授权，等待 P1 指定（2026-08-18）
 
 - Owner 已按推荐通过 G14-A：只允许 1 次、1 名 Owner 指定社区成员的最小化邀请；明确同意且环境匹配后才能传递试跑包。
