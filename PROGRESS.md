@@ -1,5 +1,14 @@
 # 受控阶段进度
 
+## G14-A 已授权，等待 P1 指定（2026-08-18）
+
+- Owner 已按推荐通过 G14-A：只允许 1 次、1 名 Owner 指定社区成员的最小化邀请；明确同意且环境匹配后才能传递试跑包。
+- 授权绑定 `c8ace8a25a7e8663d41816f97e60304f6f763201`、release manifest SHA-256 `c820533adc3e2a378db864249b1aa88afc219a1b087a66572ab62a9e29d429f1` 和 28 个安装文件。
+- 私密控制面已生成并 verify 精确 trial artifact；archive SHA-256 为 `544cae157075dd71b1c0c74395ba54f4420d4b5f96dd7d8c568ca4e7e20ec7c8`，未传递。
+- 固定 runbook 只允许 fresh install／verify、000001 与 000004、模型权重近邻反例和可恢复 uninstall；结果只保留最小化枚举字段。
+- 当前 `P1 = NOT_DESIGNATED`、`consent = NOT_OBSERVED`、`invitation_sent = false`、`package_transferred = false`、`trial_started = false`。
+- 当前状态：`G14_APPROVED_AWAITING_P1_DESIGNATION`。仍未授权 push、PR、merge、公开发布或扩大参与者。
+
 ## Phase 5 本地工程验收与 G14 停点（2026-08-18）
 
 - `c8ace8a25a7e8663d41816f97e60304f6f763201` 完成运行路径解耦、标准 Apache 2.0、28 文件 release allowlist，以及显式 target／state 的 install、verify、uninstall 和 rollback。
