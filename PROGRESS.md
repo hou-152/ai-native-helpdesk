@@ -1,4 +1,15 @@
-# v0.3 发布门进度
+# 受控阶段进度
+
+## Phase 3 schema B 与知识生产（2026-08-18）
+
+- Owner 已按推荐通过 G11，本地分支从 `441fffadc0771172d6e305ab4d576ebc058cbf51` 进入 `codex/phase3-knowledge-production`。
+- `c384a664633736ff54a5adfc6aa7cb1023397c4c` 先冻结执行包、首批 3 张清单、100% 人工 QA、负向门和 G12 停点。
+- PublicCard schema 已迁移到 B／`0.4`：新增安全 scope、判断框架、常见错误、行动原则和验证方法；index 新增 revision、完整文件 hash 和 scope 绑定。
+- 普通 Candidate 与 `MISS` 反馈使用两条独立生产门；单次 MISS、ACKNOWLEDGED、未获批 Candidate、未人工提炼和机器结构 PASS 均不能自动晋级。
+- 首批候选固定为 000001 schema 迁移、000002 Codex 权限边界、000003 OpenClaw Gateway 健康检查；两张新卡只用公开官方来源，当前均为 `PENDING_G12`。
+- 正式公共 index 保持 1 张卡；候选投影在 G12 前确定性返回 `HOLD`。
+- 全量测试当前为 `144／144 PASS`，0 fail／cancelled／skipped／todo。候选三卡测试是本地 candidate projection 证据，不是已发布真实三卡验收。
+- 当前停点：准备 G12 包，等待 Owner 对 schema、rubric、实际清单和每张卡做 100% 人工 QA／发布决定；未经 G12 不进入 Phase 4。
 
 ## Phase 1 v2 召回复验（2026-08-18）
 
@@ -6,7 +17,7 @@
 - `1182bd6` 先冻结 v2 协议和 commit-seeded holdout 生成规范；`573cc1c` 后冻结算法、阈值和实现，此时还不存在实际 holdout。
 - combined 方案在 60 条已观察回归上形成 `0.175681` 正负间隔：单候选 30／30、exact 26／30、歧义 7／7、MISS 假阳性 0／17、DENY 6／6。
 - 绑定 `573cc1c` 后生成 30 条唯一 synthetic holdout；combined 首次结果为单候选 15／15、exact 11／15、歧义 6／6、MISS 假阳性 0／6、hard-negative 假阳性 0／5、DENY 3／3。
-- 机械 front runner：`bm25_expansion_keyword@0.8449460370411592 / top_k=3`。当前状态 `AWAITING_G10_OWNER_APPROVAL`；未修改运行时，未进入 Phase 2。
+- 机械 front runner：`bm25_expansion_keyword@0.8449460370411592 / top_k=3`。该段记录当时的 `AWAITING_G10_OWNER_APPROVAL`；后续 G10、G11 已由 Owner 通过。
 
 ## Phase 1 召回评测（2026-08-18）
 

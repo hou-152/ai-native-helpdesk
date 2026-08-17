@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "rubric_id": "AIHD-INTERNAL-CARD-QA-V1",
+  "batch_policy": {
+    "mvp_batch_size": 3,
+    "selection": "ALL_CARDS",
+    "sample_rate": 1,
+    "human_qa_required": true,
+    "machine_pass_is_human_pass": false
+  },
+  "dimensions": [
+    {
+      "id": "ANSWER_CORRECTNESS",
+      "question": "关键判断与动作是否由已核验来源或真实运行证据支持？",
+      "critical": false
+    },
+    {
+      "id": "APPLICABILITY_BOUNDARY",
+      "question": "applies_to、not_for 与 scope_hint 是否足以防止相邻问题错用？",
+      "critical": false
+    },
+    {
+      "id": "SOURCE_TRACEABILITY",
+      "question": "每个关键结论能否追到允许的公开来源、版本和 checked_at？",
+      "critical": true
+    },
+    {
+      "id": "NEXT_ACTION",
+      "question": "next_action 是否单一、最小、可执行且不会扩大风险？",
+      "critical": false
+    },
+    {
+      "id": "VERIFICATION_METHOD",
+      "question": "verification_method 与 verification_steps 是否能区分成功、失败和未知？",
+      "critical": false
+    },
+    {
+      "id": "PRIVACY",
+      "question": "是否没有成员身份、原始聊天、逐字私域引文、本机路径、凭证或可反推私域的信息？",
+      "critical": true
+    },
+    {
+      "id": "NON_PUBLIC_CONTENT",
+      "question": "是否没有内部候选、审核记录、未公开证据或只获私域使用权的材料？",
+      "critical": true
+    },
+    {
+      "id": "MEANING_PRESERVATION",
+      "question": "公开投影是否没有删除关键限制、改变结论或把条件性判断写成确定结论？",
+      "critical": true
+    },
+    {
+      "id": "CANDIDATE_AUTHORIZATION",
+      "question": "该 Candidate 是否由 Owner 明确选择，且未由频率、MISS 或机器评分自动晋级？",
+      "critical": true
+    },
+    {
+      "id": "PUBLICATION_DECISION",
+      "question": "Owner 是否对这一 revision 单独给出发布决定？",
+      "critical": true
+    }
+  ],
+  "allowed_verdicts": ["PASS", "FAIL", "PENDING_G12"],
+  "failure_actions": {
+    "critical_failure": [
+      "BATCH_HOLD",
+      "STOP_AUTOGENERATION",
+      "REVIEW_100_PERCENT_SAME_GENERATION",
+      "REQUIRE_FIX_REVERIFY_OWNER_UNLOCK"
+    ],
+    "general_quality_failure": [
+      "REWORK_FAILED_CARD",
+      "REVIEW_100_PERCENT_BATCH",
+      "REQUIRE_FIX_REVERIFY_OWNER_UNLOCK"
+    ]
+  },
+  "sampling_change_gate": "OWNER_DECISION_AFTER_DEFECT_LEDGER"
+}

@@ -1,16 +1,19 @@
 {
-  "schema_version": "0.3",
+  "schema_version": "0.4",
   "cards": [
     {
       "card_id": "AIHD-PC-000001",
       "file": "cards/AIHD-PC-000001.json",
+      "revision": "1.1.0",
+      "content_sha256": "ca26a3c3d41768ecc9d7e5b9a85a2fcb9e49244d1e8a089d2762fde5834cec6a",
       "question": "写进 AGENTS.md 的规则，怎样确认在 Codex 中生效？",
       "aliases": [
         "写进 AGENTS.md 为什么没生效？",
         "Codex 为什么不遵守已经写下的规则？",
         "怎样验证 Codex 已读取项目规则？",
         "怎样测试 AGENTS.md 规则有没有生效？"
-      ]
+      ],
+      "scope_hint": "排查 Codex 是否发现、读取并触发普通 AGENTS.md 行为规则；不处理技术性权限阻断。"
     }
   ]
 }

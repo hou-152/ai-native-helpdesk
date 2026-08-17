@@ -1,13 +1,13 @@
 ---
 name: ai-native-helpdesk
 description: 面向 AI／Agent／OpenClaw 社区的薄入口 Helpdesk Skill。负责守门、判模、按需加载合同，并只通过确定性发布门读取 PublicCard。
-version: 0.4.0-phase2-candidate
-status: PHASE_2_CANDIDATE / 1 张 PublicCard 试运行 / 待 G11 与真实社区端到端验证
+version: 0.5.0-phase3-candidate
+status: PHASE_3_CANDIDATE / 1 张 PublicCard 试运行 / 两张新卡待 G12 / 真实社区端到端未验证
 author: 减
 license: internal
 ---
 
-# ai-native-helpdesk v0.4.0-phase2-candidate
+# ai-native-helpdesk v0.5.0-phase3-candidate
 
 > 当前已实现 PublicCard 机器发布门，并有 1 张经过单独批准的试运行卡。单卡可用不等于完整知识库上线，也不等于已经完成真实社区端到端验证或解决了用户问题。
 
@@ -21,7 +21,7 @@ license: internal
 2. 判模：选择 1 个主路由。
 3. 按需加载对应 contract。
 4. knowledge 路由只通过确定性脚本查询已发布 PublicCard。
-5. 用 Phase 2 回合合同复验追问次数、自然语言去向和外部来源证据。
+5. 用 Phase 2 回合合同复验追问次数、自然语言去向和外部来源证据；用 Phase 3 生产门阻断未授权 Candidate。
 
 ## 这不是什么
 
@@ -44,7 +44,9 @@ ai-native-helpdesk/
 │   ├── public-card.md
 │   └── safety.md
 ├── schemas/public-card.schema.json
+├── schemas/knowledge-production.schema.json
 ├── scripts/query-public-card.mjs
+├── scripts/knowledge-production.mjs
 ├── policies/external-sources.v1.json
 ├── schemas/helpdesk-turn-contract.schema.json
 ├── schemas/external-source-policy.schema.json
@@ -109,6 +111,12 @@ publication = READY
 
 Phase 1 已由 Owner G10 选择 `bm25_expansion_keyword@0.8449460370411592 / top_k=3` 作为候选召回方案，但当前只有 synthetic mechanism 证据，尚未接入确定性 loader，也不能从分数直接触发 `ALLOW` 或正文读取。
 
+PublicCard schema B 为 `0.4`，新增安全 `scope_hint`、判断框架、常见错误、行动原则和验证方法。index 同时绑定 revision、完整文件 hash 和 scope_hint；任一漂移均 `DENY`。Phase 3 两张新卡只存在于 G12 候选包，禁止直接读取或复制为四门通过卡。
+
+## Phase 3 生产门
+
+`scripts/knowledge-production.mjs` 只处理不含正文的控制收据：普通路径要求 Owner-authorized Candidate；`MISS` 路径额外要求 `ADOPTED / OUTCOME_REPORTED`、获批答案候选与人工提炼。公开投影还要求 100% 人工 QA、四门和逐卡 Owner 发布决定。机器 `PASS`、G11 或候选内容都不能代签 G12。
+
 ## Phase 2 回合合同
 
 合同裁决器：
@@ -162,8 +170,10 @@ node scripts/helpdesk-turn-contract.mjs \
 
 - 发布门代码和合成测试：已建立。
 - Phase 1 召回选择：Owner G10 已通过；只限 synthetic 候选召回证据，尚未接入 loader。
-- Phase 2 回合与外部来源合同：本分支候选实现，待 G11。
+- Phase 2 回合与外部来源合同：G11 已通过；当前仍是本地分支能力。
+- Phase 3 schema B、生产门与候选错配：本地通过，待 G12 逐卡人工 QA 和发布决定。
 - 公开 PublicCard：1 张试运行卡。
+- 两张新卡：`PENDING_G12`，未进入正式 index。
 - 社区真实端到端验证：未完成。
 - 群聊候选、内部证据和审核材料：不属于公开仓库。
 
@@ -175,5 +185,6 @@ node scripts/helpdesk-turn-contract.mjs \
 | v0.2.3-trial | TRIAL | 薄入口和 5 个子合同 |
 | v0.3.0-gate-trial | GATE_TRIAL | PublicCard schema、确定性发布门、公共／社区包边界 |
 | v0.4.0-phase2-candidate | PHASE_2_CANDIDATE | 追问门、8 种回合去向、G6 外部来源政策与逐 claim 来源合同 |
+| v0.5.0-phase3-candidate | PHASE_3_CANDIDATE | schema B、index 完整性绑定、双生产路径、首批 100% QA 与 G12 停点 |
 
 后续 PublicCard 仍须逐张独立完成内容修正、真实验证、隐私审查和 Owner 发布批准；首张卡通过不能让其他候选自动晋级。

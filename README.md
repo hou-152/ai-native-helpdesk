@@ -1,6 +1,6 @@
-# ai-native-helpdesk v0.4.0-phase2-candidate
+# ai-native-helpdesk v0.5.0-phase3-candidate
 
-> 当前状态：发布门代码与 1 张试运行 PublicCard 保持不变；Owner 已通过 Phase 1 召回选择，本分支新增 Phase 2 追问、回合去向和外部来源合同。Phase 2 仍待 G11，不代表完整知识库上线，也不代表已完成真实社区端到端验收。
+> 当前状态：Owner 已通过 G11；本分支进入 Phase 3，建立 schema B、index revision／hash 绑定和两条内部卡生产门。正式公共索引仍只有 1 张卡；两张新卡保持 `PENDING_G12`，不代表 3 张真实卡已经发布，也不代表完成社区端到端验收。
 
 ## 目标
 
@@ -21,7 +21,10 @@ ai-native-helpdesk/
 │   ├── public-card.md
 │   └── safety.md
 ├── schemas/public-card.schema.json
+├── schemas/knowledge-production.schema.json
 ├── scripts/query-public-card.mjs
+├── scripts/knowledge-production.mjs
+├── governance/internal-card-qa-rubric.v1.json
 ├── policies/external-sources.v1.json
 ├── schemas/helpdesk-turn-contract.schema.json
 ├── schemas/external-source-policy.schema.json
@@ -41,7 +44,7 @@ privacy_gate = PASS
 publication = READY
 ```
 
-加载器还会检查 `domain = AI_AGENT_OPENCLAW`、严格 schema、索引一致性、路径和软链边界、重复 JSON 键、敏感字段／模式以及公共包与社区包冲突。所有检查完成前不输出正文。
+加载器还会检查 `domain = AI_AGENT_OPENCLAW`、严格 schema、索引与卡片的 revision／hash／安全 scope_hint 绑定、路径和软链边界、重复 JSON 键、敏感字段／模式以及公共包与社区包冲突。所有检查完成前不输出正文。
 
 三种结果：
 
@@ -66,6 +69,23 @@ node scripts/query-public-card.mjs \
 ```
 
 脚本不会自动扫描当前目录、用户目录、环境变量或个人资料。当前公共索引只有 1 张试运行卡；命中该卡才返回 `ALLOW`，其他问题仍返回 `MISS`。
+
+## Phase 3 生产门
+
+普通语料与 `MISS` 反馈使用独立收据进入 private KnowledgeCard：
+
+```bash
+node scripts/knowledge-production.mjs \
+  --input "/path/to/production-receipt.json" \
+  --target private-card
+```
+
+- 普通路径必须先有 Owner-authorized Candidate。
+- `MISS` 路径必须到 `ADOPTED / OUTCOME_REPORTED`，答案候选获批并完成人工提炼。
+- 公开投影还必须经过首批 100% 人工 QA、四门和逐卡 Owner 发布决定。
+- `PENDING_G12` 在 private 与 public 目标都会返回 `HOLD`，不会写卡片或 index。
+
+首批清单固定为 3 张：现有卡的 schema B 迁移，以及 2 张只使用公开官方来源起草的新候选。G12 前正式 index 不扩张。
 
 ## Phase 1 召回边界
 
@@ -98,7 +118,7 @@ node scripts/helpdesk-turn-contract.mjs \
 node --test
 ```
 
-测试使用纯虚构临时卡片和回合，不包含真实社区数据。覆盖四道门、严格 schema、重复键、敏感内容、路径穿越、软链越界、跨包冲突、拒绝内容不泄露，以及 Phase 2 追问上限、8 种去向、来源 allowlist、时效、风险和逐 claim 来源。
+测试使用纯虚构临时卡片、公开来源候选和结构化回合，不包含真实社区数据。覆盖四道门、严格 schema、revision／hash 漂移、重复键、敏感内容、路径穿越、软链越界、跨包冲突、拒绝内容不泄露，Phase 2 合同，以及 Phase 3 双生产路径、G12 停点和候选三卡错配。
 
 ## 隐私与能力边界
 
@@ -117,7 +137,9 @@ node --test
 | 公共知识卡 | `1` |
 | 第一张真实 PublicCard | `PUBLISHED_TRIAL` |
 | Phase 1 召回选择 | `G10_APPROVED / SYNTHETIC_ONLY / NOT_LOADER_INTEGRATED` |
-| Phase 2 回合合同 | `CANDIDATE / AWAITING_G11` |
+| Phase 2 回合合同 | `G11_APPROVED / LOCAL_ONLY` |
+| Phase 3 schema B 与生产门 | `CANDIDATE / TESTED / AWAITING_G12` |
+| Phase 3 两张新卡 | `PENDING_G12 / NOT_IN_PUBLIC_INDEX` |
 | 真实社区端到端验证 | `NOT_VERIFIED` |
 
 首张卡仅验证了它声明支持的 Codex 版本和加载路径。后续卡片仍须逐张经过内容修正、真实环境验证、隐私审查和 Owner 发布批准，不能因首张卡通过而自动晋级。

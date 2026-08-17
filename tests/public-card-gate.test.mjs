@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import crypto from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -20,16 +21,21 @@ const CANARY = "PRIVATE_CANARY_7F6C2A";
 
 function baseCard(overrides = {}) {
   return {
-    schema_version: "0.3",
+    schema_version: "0.4",
     card_id: CARD_ID,
     domain: "AI_AGENT_OPENCLAW",
     revision: "1.0.0",
     question: QUESTION,
     aliases: [ALIAS],
+    scope_hint: "仅用于虚构的公开测试范围。",
     applies_to: ["仅用于虚构测试"],
     not_for: [],
     answer: "这是完全虚构的公开测试答案。",
+    judgment_framework: ["判断虚构条件是否满足。"],
+    common_mistakes: ["把虚构结果当成真实结果。"],
+    action_principles: ["保持测试无副作用。"],
     next_action: "执行一个虚构测试动作。",
+    verification_method: "观察虚构测试信号并与预期对照。",
     verification_steps: ["观察虚构测试信号。"],
     public_sources: [
       {
@@ -48,12 +54,19 @@ function baseCard(overrides = {}) {
   };
 }
 
+function contentSha256(card) {
+  return crypto.createHash("sha256").update(JSON.stringify(card), "utf8").digest("hex");
+}
+
 function indexEntry(card = baseCard(), overrides = {}) {
   return {
     card_id: card.card_id,
     file: `cards/${card.card_id}.json`,
+    revision: card.revision,
+    content_sha256: contentSha256(card),
     question: card.question,
     aliases: card.aliases,
+    scope_hint: card.scope_hint,
     ...overrides
   };
 }
@@ -70,7 +83,7 @@ function makePack(t, options = {}) {
   fs.mkdirSync(path.join(root, "cards"), { mode: 0o700 });
   const cards = options.cards ?? [baseCard()];
   const entries = options.entries ?? cards.map((card) => indexEntry(card));
-  const indexText = options.indexRaw ?? JSON.stringify({ schema_version: "0.3", cards: entries });
+  const indexText = options.indexRaw ?? JSON.stringify({ schema_version: "0.4", cards: entries });
   fs.writeFileSync(path.join(root, "index.json"), indexText, { mode: 0o600 });
   if (!options.skipCards) {
     for (const card of cards) {
@@ -410,7 +423,7 @@ test("symlinked cards directory outside pack is denied", (t) => {
   const common = makeRoot(t, "middle-link");
   fs.writeFileSync(
     path.join(common, "index.json"),
-    JSON.stringify({ schema_version: "0.3", cards: [indexEntry()] }),
+    JSON.stringify({ schema_version: "0.4", cards: [indexEntry()] }),
     { mode: 0o600 }
   );
   fs.symlinkSync(outsideRoot, path.join(common, "cards"));
@@ -441,6 +454,30 @@ test("card id different from indexed filename is denied", (t) => {
   const common = makePack(t, { cards: [indexed], cardRaw: JSON.stringify(body) });
   const result = runGate({ common });
   assertDeny(result, { reason: "CARD_ID_MISMATCH", roots: [common] });
+});
+
+test("card content drift from the index hash is denied", (t) => {
+  const card = baseCard();
+  const entry = indexEntry(card, { content_sha256: "0".repeat(64) });
+  const common = makePack(t, { cards: [card], entries: [entry] });
+  const result = runGate({ common });
+  assertDeny(result, { reason: "CARD_INDEX_HASH_MISMATCH", roots: [common] });
+});
+
+test("card revision drift from the index is denied", (t) => {
+  const card = baseCard();
+  const entry = indexEntry(card, { revision: "9.9.9" });
+  const common = makePack(t, { cards: [card], entries: [entry] });
+  const result = runGate({ common });
+  assertDeny(result, { reason: "CARD_INDEX_MISMATCH", roots: [common] });
+});
+
+test("audited scope hint drift from the index is denied", (t) => {
+  const card = baseCard();
+  const entry = indexEntry(card, { scope_hint: "另一个未经审核的范围提示。" });
+  const common = makePack(t, { cards: [card], entries: [entry] });
+  const result = runGate({ common });
+  assertDeny(result, { reason: "CARD_INDEX_MISMATCH", roots: [common] });
 });
 
 test("unindexed malformed card does not break a valid hit", (t) => {

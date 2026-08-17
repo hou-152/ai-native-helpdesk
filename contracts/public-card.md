@@ -39,6 +39,10 @@ publication = READY
 
 缺字段、大小写不同、多余空格、`UNKNOWN`、`HOLD` 或其他值都拒绝。`domain` 必须精确为 `AI_AGENT_OPENCLAW`。PublicCard 还必须通过严格字段、文件名、索引一致性、敏感模式和路径边界检查。
 
+schema B（`0.4`）要求每张卡同时提供经过审查的 `scope_hint`、`judgment_framework`、`common_mistakes`、`action_principles` 和 `verification_method`。这些字段补足判断与验证，结构存在仍不等于内容正确。
+
+index 必须绑定卡片的 `revision`、完整文件 `content_sha256` 和经审核的 `scope_hint`。revision、hash、question、aliases 或 scope_hint 任一漂移都返回 `DENY`；候选召回分数不能跳过这一步。
+
 ## 三种结果
 
 | 状态 | 含义 | knowledge 路由动作 |
@@ -54,7 +58,7 @@ publication = READY
 - 公共包位于 `knowledge/public/`，跟随 Skill 分发。
 - 社区包由运行环境显式传入，不能默认读取用户资料。
 - 同一规范化问题命中多张卡时一律 `DENY / QUERY_CONFLICT`，不设置静默覆盖顺序。
-- 当前公共索引只有 1 张试运行卡；单卡可用不等于完整知识库上线。
+- 当前公共索引只有 1 张试运行卡；Phase 3 的两张新卡在 G12 前只位于候选包，不进入本索引。单卡可用不等于完整知识库上线。
 
 ## 隐私能力边界
 
@@ -65,4 +69,5 @@ publication = READY
 - 脚本、schema 或 index 缺失：`DENY`，禁止模拟。
 - 显式社区包缺失或损坏：`DENY`，禁止悄悄忽略。
 - 动态事实：即使 `ALLOW`，仍按 knowledge 合同复核当前官方来源。
+- `PENDING_G12` 候选或人工 QA 未完成：不得复制到公共包，不得合成四门通过状态。
 - 任何拒绝结果出现正文、canary、绝对路径或凭证：视为隐私门实现失败。
