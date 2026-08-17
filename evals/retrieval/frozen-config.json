@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0",
+  "dataset_id": "aihd-retrieval-golden-v1",
+  "hashes": {
+    "dataset_sha256": "7b37a9a301b6b570e7c87578694df5dbef90b3720e62fb6b1dbdd0531965b51c",
+    "fixture_sha256": "3c00560b888b013621d54c7ee55a977e3c5b2a9bcb9464b190a06aa4aada06fe"
+  },
+  "top_k": 3,
+  "hybrid_weights": {
+    "bm25": 0.35,
+    "embedding": 0.65
+  },
+  "threshold_selection": "DESIGN_ONLY_HARD_GATES_THEN_CANDIDATE_CLARIFY_EXACT_HIGHER_THRESHOLD",
+  "thresholds": {
+    "char_ngram": {
+      "available": true,
+      "threshold": 0.35439179203278526,
+      "design_candidate_hit_at_3": 0.9,
+      "design_clarify_full_coverage_at_3": 0.25,
+      "design_hard_gates_passed": true
+    },
+    "bm25": {
+      "available": true,
+      "threshold": 0.7875162839910865,
+      "design_candidate_hit_at_3": 1,
+      "design_clarify_full_coverage_at_3": 0.75,
+      "design_hard_gates_passed": true
+    },
+    "apple_nl_embedding_zh": {
+      "available": true,
+      "threshold": 0.8271494954824448,
+      "design_candidate_hit_at_3": 0.6,
+      "design_clarify_full_coverage_at_3": 0,
+      "design_hard_gates_passed": true
+    },
+    "hybrid": {
+      "available": true,
+      "threshold": 0.8012334513671715,
+      "design_candidate_hit_at_3": 0.85,
+      "design_clarify_full_coverage_at_3": 0.25,
+      "design_hard_gates_passed": true
+    }
+  }
+}
