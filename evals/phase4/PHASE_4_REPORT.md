@@ -2,13 +2,13 @@
 
 日期：2026-08-18
 
-状态：`MECHANISM_COMPLETE / REAL_ISOLATED_LOOP_COMPLETE / AWAITING_G13B`
+状态：`MECHANISM_COMPLETE / G13B_APPROVED_LOCAL_FORMAL_LOOP_COMPLETE`
 
 ## 结论
 
 Phase 4 的追加式事件合同、hash-chain 账本、反馈等级门、候选门、卡片状态回滚和 G13b 前 staging／formal 隔离已经实现并通过测试。G13a 后，1 用户／1 问题的真实受控采集实际获得 `MISS → ADOPTED`，并完成候选、人工提炼、四门预审、隔离 index 与隔离 loader `ALLOW`。
 
-正式 PublicCard、正式 index 与 serving 状态没有改变；当前停在 G13b，等待 Owner 对唯一候选选择批准、修订或撤回。Phase 5 仍不得开始。
+Owner 后续已通过 G13b；`AIHD-PC-000004 v1.0.0` 已按精确候选本地正式投影，正式 index／loader 与全量回归通过。Phase 5 后置入口已打开。
 
 ## G13a 前历史停点
 
@@ -59,4 +59,4 @@ G13a 前的合规项目收据中没有可复跑的真实 `ADOPTED / OUTCOME_REPO
 
 公开聚合报告与机器收据分别为 `G13A_REAL_FEEDBACK_REPORT.md` 和 `G13A_REAL_FEEDBACK_RECEIPT.json`；原问句、反馈原文、候选正文和私密 ledger 不进入公开仓库。
 
-当前 G13b 清单只有 1 个新卡候选。Owner 尚未对精确 revision 作出发布决定，因此本阶段仍没有正式 PublicCard 新增／修订／撤回或正式 index 变更。
+G13b 清单只有 1 个新卡候选；Owner 已批准该精确 revision，无修订、无撤回。正式链追加 publication／index／ALLOW 后，ledger 共 10 个事件，`real_loop_complete = true`。详细收据与报告见 `G13B_PUBLICATION_RECEIPT.json`、`G13B_PUBLICATION_REPORT.md`。

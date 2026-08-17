@@ -1,6 +1,6 @@
-# ai-native-helpdesk v0.6.2-phase4-g13b-candidate
+# ai-native-helpdesk v0.6.3-phase4-g13b-published
 
-> 当前状态：G13a 授权的 1 用户／1 问题真实采集已完成。正式三卡查询实际 `MISS`，同一用户随后给出 `ADOPTED`；答案候选已完成人工提炼、四门预审、隔离索引和隔离 loader `ALLOW`。正式 PublicCard 与 index 未改变，当前停在 `AWAITING_G13B_OWNER_DECISION`，Phase 5 未开始。
+> 当前状态：Owner 已通过 G13b，批准 `AIHD-PC-000004 v1.0.0` 作为新卡正式投影。当前本地正式 index 为 4 张，正式 loader 与 184 项全量回归通过；尚未 push、进入远端 `main` 或完成社区试跑。Phase 5 已获准开始，外部社区触达仍需 G14。
 
 ## 目标
 
@@ -70,7 +70,7 @@ node scripts/query-public-card.mjs \
   --community-pack "/path/to/community-pack"
 ```
 
-脚本不会自动扫描当前目录、用户目录、环境变量或个人资料。当前本地分支的正式公共索引包含 3 张逐卡批准卡；精确命中且通过全部门时才返回 `ALLOW`，其他问题仍返回 `MISS`。
+脚本不会自动扫描当前目录、用户目录、环境变量或个人资料。当前本地分支的正式公共索引包含 4 张逐卡批准卡；精确命中且通过全部门时才返回 `ALLOW`，其他问题仍返回 `MISS`。
 
 ## Phase 3 生产门
 
@@ -117,7 +117,7 @@ node scripts/feedback-ledger.mjs replay \
 - staging 必须保留 `g13b_status = PENDING` 和 `isolation = ISOLATED_CANDIDATE`；不能借隔离 ALLOW 伪造 Owner 批准。G13b 通过后仍须另写正式 `PUBLICATION_DECISION` 并重新执行正式 index 与 loader。
 - 索引失败、验证失败、撤回、过期或反馈更正会取消 serving eligibility，不能沿用旧成功声明。
 - G13a 的真实隔离链已经完成；公开仓库只保留聚合收据和 hash 指针，不保存原问句、反馈原文、候选正文或私密 ledger。该链仍只有 `ADOPTED`，不证明用户执行或客观效果。
-- 当前唯一候选停在 G13b；在 Owner 逐项批准前，正式 PublicCard、index、`ALLOW` 和 serving eligibility 均保持未改变。
+- G13b 已逐项批准唯一候选；正式第四张卡、index 和 loader 后验收均已本地完成。该结果不等于远端发布、社区试跑或用户效果。
 
 ## Phase 2 回合合同
 
@@ -162,14 +162,14 @@ node --test
 | 薄入口与 5 个原有合同 | `TRIAL` |
 | PublicCard schema | `CODE_READY` |
 | 确定性发布门 | `CODE_READY` |
-| 公共知识卡 | `3 / LOCAL_BRANCH` |
+| 公共知识卡 | `4 / LOCAL_BRANCH` |
 | 首批真实 PublicCard | `G12_APPROVED / LOCAL_INDEXED` |
 | Phase 1 召回选择 | `G10_APPROVED / REAL_THREE_CARD_OBSERVED_REGRESSION_PASS` |
 | Phase 2 回合合同 | `G11_APPROVED / LOCAL_ONLY` |
 | Phase 3 schema B 与生产门 | `G12_APPROVED / TESTED` |
 | Phase 3 两张新卡 | `G12_APPROVED / LOCAL_INDEXED` |
 | Phase 4 反馈账本与回滚 | `MECHANISM_COMPLETE / 23 TESTS` |
-| Phase 4 真实反馈闭环 | `ISOLATED_REAL_LOOP_COMPLETE / AWAITING_G13B` |
+| Phase 4 真实反馈闭环 | `G13B_APPROVED / LOCAL_FORMAL_LOOP_COMPLETE` |
 | 真实社区端到端验证 | `NOT_VERIFIED` |
 
 三张卡只覆盖各自声明的窄 scope。后续卡片仍须逐张经过内容修正、真实环境验证、隐私审查和 Owner 发布批准，不能因首批通过而自动晋级。

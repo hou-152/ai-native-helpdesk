@@ -1,13 +1,13 @@
 ---
 name: ai-native-helpdesk
 description: 面向 AI／Agent／OpenClaw 社区的薄入口 Helpdesk Skill。负责守门、判模、按需加载合同，并只通过确定性发布门读取 PublicCard。
-version: 0.6.2-phase4-g13b-candidate
-status: G13A_REAL_ISOLATED_LOOP_COMPLETE / 本地正式三卡包 / 等待 G13b 逐项裁决
+version: 0.6.3-phase4-g13b-published
+status: G13B_APPROVED_LOCAL_FORMAL_LOOP_COMPLETE / 本地正式四卡包 / PHASE5_READY
 author: 减
 license: internal
 ---
 
-# ai-native-helpdesk v0.6.2-phase4-g13b-candidate
+# ai-native-helpdesk v0.6.3-phase4-g13b-published
 
 > 当前已实现 PublicCard 机器发布门，本地功能分支有 3 张经 G12 逐卡批准的正式卡。三卡本地可用不等于远端已发布、完整知识库上线，也不等于已经完成真实社区端到端验证或解决了用户问题。
 
@@ -114,7 +114,7 @@ publication = READY
 
 Phase 1 已由 Owner G10 选择 `bm25_expansion_keyword@0.8449460370411592 / top_k=3` 作为候选召回方案，并通过 synthetic holdout 与 G12 后真实三卡观察回归。它仍不能从分数直接触发 `ALLOW` 或正文读取；宽召回必须先经过适用性裁决。
 
-PublicCard schema B 为 `0.4`，新增安全 `scope_hint`、判断框架、常见错误、行动原则和验证方法。index 同时绑定 revision、完整文件 hash 和 scope_hint；任一漂移均 `DENY`。G12 已批准 000001 v1.1.0、000002 v1.0.0、000003 v1.0.0，本地正式 index 精确绑定这三张卡。
+PublicCard schema B 为 `0.4`，新增安全 `scope_hint`、判断框架、常见错误、行动原则和验证方法。index 同时绑定 revision、完整文件 hash 和 scope_hint；任一漂移均 `DENY`。G12 已批准前三张卡，G13b 已批准 000004 v1.0.0；本地正式 index 精确绑定 4 张卡。
 
 ## Phase 3 生产门
 
@@ -183,10 +183,10 @@ node scripts/helpdesk-turn-contract.mjs \
 - Phase 1 召回选择：Owner G10 已通过；synthetic holdout 与 G12 后真实三卡观察回归均通过，仍须在 loader 前做适用性裁决。
 - Phase 2 回合与外部来源合同：G11 已通过；当前仍是本地分支能力。
 - Phase 3 schema B、生产门与正式三卡错配：G12 已通过，本地验证通过。
-- 公开 PublicCard：本地功能分支 3 张，尚未进入远端 `main`。
+- 公开 PublicCard：本地功能分支 4 张，尚未进入远端 `main`。
 - 两张新卡：已按 G12 指定 revision 进入本地正式 index。
 - Phase 4 反馈账本与回滚：机制完成；23 项定向测试通过，包含 G13b 前 staging／formal 状态隔离。
-- Phase 4 真实闭环：`ISOLATED_REAL_LOOP_COMPLETE / AWAITING_G13B`；唯一候选已跑通隔离 index／ALLOW，正式卡与 index 未改变。
+- Phase 4 真实闭环：`G13B_APPROVED / LOCAL_FORMAL_LOOP_COMPLETE`；第四张卡正式 index／ALLOW 已通过。
 - 社区真实端到端验证：未完成。
 - 群聊候选、内部证据和审核材料：不属于公开仓库。
 
@@ -203,6 +203,7 @@ node scripts/helpdesk-turn-contract.mjs \
 | v0.6.0-phase4-mechanism | REAL_LOOP_HOLD | 追加式反馈账本、候选门、状态重放与回滚；无真实反馈时停止 |
 | v0.6.1-phase4-staging | G13A_APPROVED | G13b 前隔离 rehearsal 与正式发布／服务状态分离 |
 | v0.6.2-phase4-g13b-candidate | AWAITING_G13B | 真实 `MISS → ADOPTED` 隔离闭环完成；正式发布状态保持未改变 |
+| v0.6.3-phase4-g13b-published | PHASE5_READY | G13b 批准第四张卡；本地正式 index／loader 与真实反馈链闭合 |
 | G13a control receipt | COMPLETED | Owner 授权的 1 用户／1 问题受控采集已完成；公开仓库只留聚合收据 |
 
 后续 PublicCard 仍须逐张独立完成内容修正、真实验证、隐私审查和 Owner 发布批准；首张卡通过不能让其他候选自动晋级。

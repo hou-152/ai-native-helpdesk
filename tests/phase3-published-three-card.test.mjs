@@ -49,9 +49,11 @@ test("G12 receipt records three individually approved revisions and full human Q
   ), true);
 });
 
-test("public index binds exactly the three approved card revisions and hashes", () => {
-  assert.deepEqual(index.cards.map((entry) => entry.card_id), receipt.cards.map((card) => card.card_id));
-  for (const entry of index.cards) {
+test("public index preserves the three G12-approved card revisions and hashes", () => {
+  const approvedIds = new Set(receipt.cards.map((card) => card.card_id));
+  const g12Entries = index.cards.filter((entry) => approvedIds.has(entry.card_id));
+  assert.deepEqual(g12Entries.map((entry) => entry.card_id), receipt.cards.map((card) => card.card_id));
+  for (const entry of g12Entries) {
     const text = readText(`knowledge/public/${entry.file}`);
     const card = JSON.parse(text);
     const approved = receipt.cards.find((item) => item.card_id === card.card_id);

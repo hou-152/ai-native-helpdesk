@@ -1,5 +1,14 @@
 # 受控阶段进度
 
+## G13b 第四张卡正式投影（2026-08-18）
+
+- Owner 已批准 `AC-G13A-20260818-001 → AIHD-PC-000004 v1.0.0` 作为 `NEW_CARD` 正式发布；无修订、无撤回。
+- 正式卡与 G13b 候选 byte-identical；正式 index 扩为 4 项并绑定 revision、content hash、question、aliases 和 scope。
+- 标准问题与公开安全 alias 的正式 loader 均返回 `ALLOW`；模型权重训练近邻与无关问题保持 `MISS`。
+- 私密账本追加正式 publication／index／ALLOW 三个事件；共 10 个事件，`real_loop_complete = true`、`serving_eligible = true`。
+- 全量测试 184／184 PASS；0 fail／cancelled／skipped／todo。
+- 当前状态：`G13B_APPROVED_LOCAL_FORMAL_LOOP_COMPLETE / PHASE5_READY`；尚未 push、开 PR、merge 或触达外部社区。
+
 ## G13a 真实反馈隔离闭环（2026-08-18）
 
 - G13a 授权的 1 用户／1 问题已经实际运行；正式三卡查询为 `MISS / NO_MATCH`，因此按合同记录最小化 `DEMAND_GAP`。

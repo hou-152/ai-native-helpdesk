@@ -67,7 +67,29 @@ test("the approved OpenClaw Gateway PublicCard is loadable by an alias", () => {
   assert.equal(result.card.card_id, "AIHD-PC-000003");
 });
 
-test("an unrelated query still misses the three-card public pack", () => {
+test("the G13b-approved OpenClaw self-iteration PublicCard is loadable by its question", () => {
+  const result = queryPublicPack("怎样让 OpenClaw Agent 形成受控自迭代闭环？");
+
+  assert.equal(result.status, "ALLOW");
+  assert.equal(result.reason_code, "OK");
+  assert.equal(result.card.card_id, "AIHD-PC-000004");
+  assert.equal(result.card.revision, "1.0.0");
+});
+
+test("the G13b-approved OpenClaw self-iteration PublicCard is loadable by an alias", () => {
+  const result = queryPublicPack("怎样让我的小龙虾自迭代？");
+
+  assert.equal(result.status, "ALLOW");
+  assert.equal(result.card.card_id, "AIHD-PC-000004");
+});
+
+test("model-weight training remains outside the self-iteration card scope", () => {
+  const result = queryPublicPack("怎样训练 OpenClaw 的模型权重？");
+
+  assert.deepEqual(result, { status: "MISS", reason_code: "NO_MATCH" });
+});
+
+test("an unrelated query still misses the four-card public pack", () => {
   const result = queryPublicPack("完全无关的问题");
 
   assert.deepEqual(result, { status: "MISS", reason_code: "NO_MATCH" });

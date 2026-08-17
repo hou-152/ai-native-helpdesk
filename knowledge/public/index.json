@@ -42,6 +42,20 @@
         "怎样用 --require-rpc 验证 OpenClaw Gateway？"
       ],
       "scope_hint": "验证 OpenClaw Gateway 服务状态、连接握手与 RPC 读探针；不处理安装、重启或凭证分发。"
+    },
+    {
+      "card_id": "AIHD-PC-000004",
+      "file": "cards/AIHD-PC-000004.json",
+      "revision": "1.0.0",
+      "content_sha256": "7f69a420bb9fa774d935ab289859df508f45241fcb42c206cb5d83a7ce1720c6",
+      "question": "怎样让 OpenClaw Agent 形成受控自迭代闭环？",
+      "aliases": [
+        "怎样让我的小龙虾自迭代？",
+        "OpenClaw 怎么从我的纠正中持续改进？",
+        "怎样让 Agent 把真实经验沉淀成 Skill？",
+        "如何让 OpenClaw 自动生成待审提案？"
+      ],
+      "scope_hint": "为已能正常运行的 OpenClaw Agent 接入经验捕获、待审 Skill 提案、多场景验证和 Owner 晋升；不支持无监督自改身份或自动应用提案。"
     }
   ]
 }
