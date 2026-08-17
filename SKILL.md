@@ -1,167 +1,141 @@
 ---
 name: ai-native-helpdesk
-description: AI Native 群高频问答的薄入口 Skill。当用户在群内提问、需要引导问题域识别、调用子 Skill 给出最小下一步时使用。
-version: 0.2.3-trial
-status: TRIAL / 待真实群内验证
+description: 面向 AI／Agent／OpenClaw 社区的薄入口 Helpdesk Skill。负责守门、判模、按需加载合同，并只通过确定性发布门读取 PublicCard。
+version: 0.3.0-gate-trial
+status: GATE_TRIAL / 公开知识包为空 / 待真实社区验证
 author: 减
 license: internal
 ---
 
-# ai-native-helpdesk v0.2.3-trial
+# ai-native-helpdesk v0.3.0-gate-trial
 
-> ⚠️ **这是 trial 版本，尚未在真实群内验证过完整流程。**
-> 设计稿见 https://feishu.cn/docx/DQqBdlPHPoktjNxe8flcSSC0nBf
-> 知识库形态见 https://feishu.cn/docx/YhrUd3qApoXPdWxe9TDcUorknFb
+> 当前已实现 PublicCard 机器发布门，但公开知识包仍为空。代码就绪不等于知识库上线、答案正确或用户问题已解决。
 
 ## 这是什么
 
-AI Native 群的**薄入口 Skill**——当用户在群里提问、需要引导问题域、调用子模块给出最小下一步时使用。
+用于 AI／Agent／OpenClaw 相关社区的薄入口 Skill。AI Native 社区可以提供经过筛选的共同知识来源，但任何群聊原文、成员标识和内部审核材料都不得进入公开运行包。
 
-**只做 3 件事**：
-1. 守门（识别红线 / 隐私 / 不可逆 / 动态事实）
-2. 判模（识别主路由 = good-question / thinking / action / knowledge / safety）
-3. 加载对应子 Skill contract（按需 `read_file`）
+只做 4 件事：
 
-## 这是不是什么
+1. 守门：识别安全、隐私、不可逆和动态事实风险。
+2. 判模：选择 1 个主路由。
+3. 按需加载对应 contract。
+4. knowledge 路由只通过确定性脚本查询已发布 PublicCard。
 
-- ❌ **不是**全量加载的诊断框架（参考 DBS 的反面教训）
-- ❌ **不是**一次性回答所有问题
-- ❌ **不是**个人 Agent 记忆库
-- ❌ **不是**已核验的知识库（v0.3 知识库见飞书文档，当前 HOLD）
+## 这不是什么
 
-## 路径根
+- 不是个人 Agent 记忆。
+- 不是群聊原文搜索器。
+- 不是全量加载的诊断框架。
+- 不是已经有内容的成熟知识库。
+- 不是用测试通过代替人工发布批准的自动发布器。
 
-```
-~/.agents/skills/ai-native-helpdesk/
-├── SKILL.md                    # 本文件（默认全量加载）
-├── contracts/                  # 子 Skill contract（按需 read_file）
+## 目录
+
+```text
+ai-native-helpdesk/
+├── SKILL.md
+├── contracts/
 │   ├── good-question.md
 │   ├── thinking.md
 │   ├── action.md
 │   ├── knowledge.md
+│   ├── public-card.md
 │   └── safety.md
-└── README.md                   # 项目说明 + trial 标记
+├── schemas/public-card.schema.json
+├── scripts/query-public-card.mjs
+└── knowledge/public/index.json
 ```
 
-## 主路由表
+## 主路由
 
-| 用户问题类型 | 主路由 | 加载 contract |
+| 用户问题类型 | 主路由 | 加载合同 |
 |---|---|---|
-| **问题不清楚**（说不清目标/对象/约束） | good-question | `contracts/good-question.md` |
-| **有假设/逻辑/事实要分析** | thinking | `contracts/thinking.md` |
-| **知道该做但做不动** | action | `contracts/action.md` |
-| **要查具体信息/事实** | knowledge | `contracts/knowledge.md` |
-| **触红线**（自伤/违法实施意图/不可逆行动迫近） | safety | `contracts/safety.md` |
+| 问题不清楚 | good-question | `contracts/good-question.md` |
+| 有假设／逻辑／原因要分析 | thinking | `contracts/thinking.md` |
+| 知道该做但做不动 | action | `contracts/action.md` |
+| 查询 AI／Agent／OpenClaw 事实 | knowledge | `contracts/knowledge.md` |
+| 触发安全红线 | safety | `contracts/safety.md` |
 
-**混合信号**：可识别多个标签，但**本轮只执行 1 个主 next_route**，其他进入待处理队列。
+混合信号可以记录多个标签，但本轮只执行 1 个主路由。
 
-## 守门（5 项检查）
+## 守门
 
-每次触发都要先跑一遍：
+每次触发依次检查：
 
-| # | 检查项 | 不通过怎么办 |
-|---|---|---|
-| 1 | 安全红线（自伤/违法实施意图迫近） | 直接转 safety，**终止其他流程** |
-| 2 | 隐私红线（暴露他人姓名/隐私） | 脱敏后才继续 |
-| 3 | 不可逆行动（要删库/转账/全量发消息等） | 暂停 + 确认 |
-| 4 | 动态事实（行情/政策/官方号码） | 核验当前官方源后才继续 |
-| 5 | 个人信息（要保存用户说的话/身份） | 必须用户明确同意 |
+1. 安全红线：迫近的自伤、他伤或违法实施意图直接转 safety。
+2. 隐私红线：出现他人隐私时先脱敏。
+3. 不可逆行动：删除、转账、全量发送等必须暂停确认。
+4. 动态事实：当前价格、政策、版本、官方号码必须核验官方来源。
+5. 个人信息保存：必须获得用户明确同意。
 
-**守门优先级**：安全 > 隐私 > 不可逆 > 动态事实 > 个人信息。
+优先级：安全 > 隐私 > 不可逆 > 动态事实 > 个人信息。
 
-**关键原则**：守门**不一律拒绝**：
-- 焦虑/普通冲突 → 不算危机 → 继续温和承接
-- 违法讨论 → 区分求助 vs 实施意图
-- 动态事实 → 核验后可继续
-- 个人信息 → 不默认保存
+## 合同加载 fail-closed
 
-## 加载合同（fail-closed 规则）
+入口只按需读取对应 contract。合同不存在或读取失败时：
 
-### 默认加载
+- 禁止根据入口摘要模拟合同输出。
+- 明确告知模块暂不可用。
+- 不跨到另一个模块假装完成。
 
-- ✅ 本文件（SKILL.md）—— 每次启动 helpdesk 必读
+入口只负责路由和一句理由；被加载的 contract 负责完整回答与一个最小下一步。
 
-### 按需加载
+## PublicCard 发布门
 
-加载子 contract **必须用 `read_file <path>`**：
+knowledge 路由必须先读取 `contracts/public-card.md`，再调用 `scripts/query-public-card.mjs`。禁止直接 `read_file` 任何知识卡正文。
 
+只有四门精确通过才可能返回正文：
+
+```text
+editorial = APPROVED
+verification = PASS
+privacy_gate = PASS
+publication = READY
 ```
-read_file ~/.agents/skills/ai-native-helpdesk/contracts/good-question.md
-```
 
-### fail-closed（关键）
+- `ALLOW`：使用脚本返回的安全字段；动态事实仍需当前核验。
+- `MISS`：走普通事实检索，不假装命中。
+- `DENY`：说明知识卡分支暂不可用，不读取、不模拟、不回退成被拒卡答案。
 
-如果 contract 文件缺失或加载失败：
-- ❌ **禁止根据 SKILL.md 摘要模拟子 Skill**
-- ✅ **明确告知用户**："模块暂不可用，请换问法或等待修复"
-- ✅ **回到入口**，让用户重述问题
-
-**绝不**根据本文件里的子 Skill 描述**模拟子 Skill 的输出**。
-
-## 输出所有权（唯一）
-
-### 入口（SKILL.md）只输出
-
-- 命中哪个子 Skill（路由）
-- 一句话理由（为什么是这个子 Skill）
-- 加载合同（已 read_file 哪个 contract）
-
-**入口不答下一步**。
-
-### 子 Skill（contract）输出
-
-- 完整的回答（针对该问题的诊断/方案）
-- 一个最小下一步（用户可以做的一个动作）
-
-**子 Skill 不再路由**。
+公共包随 Skill 分发；社区本地包必须由调用者显式给出路径。同一问题命中多卡时拒绝，不设置静默覆盖顺序。
 
 ## 状态维度
 
-每次输出必须包含三个独立维度：
+每次输出仍保持三个独立维度：
 
-| 维度 | 取值 | 含义 |
-|---|---|---|
-| `brief_state` | `NEEDS_INPUT` / `READY` | 问题说明书是否清楚 |
-| `task_mode` | `ANSWER` / `ROUTE` / `AUTOMATION_ASSESS` | 当前在做什么 |
-| `automation_level` | `AUTO_HIGH` / `AUTO_SEMI` / `AUTO_ASSIST` / `AUTO_NOT_READY` | 自动化程度（仅在 task_mode = AUTOMATION_ASSESS 时输出） |
+| 维度 | 取值 |
+|---|---|
+| `brief_state` | `NEEDS_INPUT` / `READY` |
+| `task_mode` | `ANSWER` / `ROUTE` / `AUTOMATION_ASSESS` |
+| `automation_level` | `AUTO_HIGH` / `AUTO_SEMI` / `AUTO_ASSIST` / `AUTO_NOT_READY` |
 
-**关键**：`brief_state = READY` 不允许"半成品"——必须是**可执行的问题说明书**。
-
-## 用户补充信息后
-
-用户补充信息后：
-1. 重新跑守门（可能新增红线）
-2. 重新判模（可能改路由）
-3. 加载对应 contract
-4. 输出完整回答 + 一个最小下一步
+`brief_state = READY` 必须对应可执行的问题说明书，不能把半成品标成 READY。
 
 ## 失败规则
 
 | 场景 | 动作 |
 |---|---|
-| Contract 文件不存在 | 明确告知模块不可用（**不模拟**） |
-| 用户问题触红线 | 转 safety，**终止其他流程** |
-| 多个主路由同时触发 | 本轮只 1 个主 next_route，其他进队列 |
-| 信息不足以判断路由 | good-question 优先（识别问题域）|
-| 用户补充信息 | 重新跑守门 + 判模 |
+| Contract 缺失 | 明确不可用，不模拟 |
+| PublicCard 门返回 `DENY` | 不读正文，不模拟卡片 |
+| PublicCard 门返回 `MISS` | 普通事实检索 |
+| 多个主路由 | 本轮只执行 1 个 |
+| 信息不足 | good-question 优先 |
+| 用户补充信息 | 重新守门、判模、加载合同 |
+
+## 当前状态
+
+- 发布门代码和合成测试：已建立。
+- 公开 PublicCard：0 张。
+- 社区真实端到端验证：未完成。
+- 群聊候选、内部证据和审核材料：不属于公开仓库。
 
 ## 修订记录
 
 | 版本 | 状态 | 改动 |
 |---|---|---|
-| v0.1 / v0.2 / v0.2.1 / v0.2.2 | 已废弃 | 见飞书文档 https://feishu.cn/docx/DQqBdlPHPoktjNxe8flcSSC0nBf |
-| **v0.2.3-trial** | **TRIAL / 待真实群内验证** | 砍版 + 5 子 Skill contract + fail-closed |
+| v0.1—v0.2.2 | 已废弃 | 历史设计 |
+| v0.2.3-trial | TRIAL | 薄入口和 5 个子合同 |
+| v0.3.0-gate-trial | GATE_TRIAL | PublicCard schema、确定性发布门、公共／社区包边界 |
 
-## v0.3 待办（不在本 trial 内）
-
-- [ ] 知识库（Bitable）实际创建 + 数据沉淀
-- [ ] 9 标签阻塞识别全表
-- [ ] 5 档 FAQ 状态跑通完整流程
-- [ ] 典型案例库（已脱敏）
-- [ ] 运行时动态事实自动核验
-- [ ] Codex 群聊记录批量扫描整合
-
----
-
-*v0.2.3-trial = 砍版先做，不假装成熟。*
-*真问题进来后，下一版自然升级到 v0.3。*
+下一阶段是独立完成第一张卡的内容修正、真实验证、隐私审查和 Owner 发布批准，再生成 PublicCard；不能由本阶段自动晋级。
