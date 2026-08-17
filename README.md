@@ -1,6 +1,6 @@
-# ai-native-helpdesk v0.5.1-phase3-published
+# ai-native-helpdesk v0.6.0-phase4-mechanism
 
-> 当前状态：Owner 已通过 G12；本地功能分支的正式公共索引包含 3 张逐卡批准的 PublicCard，确定性 loader 与真实三卡错配回归已通过。尚未 push、建立 PR、合并到远端 `main` 或完成社区端到端验收。
+> 当前状态：Owner 已通过 G12；本地正式三卡包和真实卡错配回归已通过。Phase 4 的追加式反馈账本与回滚机制已完成，但授权范围内没有真实有效反馈，因此真实晋级链保持 `HOLD`，G13 未开启，Phase 5 未开始。
 
 ## 目标
 
@@ -22,8 +22,10 @@ ai-native-helpdesk/
 │   └── safety.md
 ├── schemas/public-card.schema.json
 ├── schemas/knowledge-production.schema.json
+├── schemas/feedback-event.schema.json
 ├── scripts/query-public-card.mjs
 ├── scripts/knowledge-production.mjs
+├── scripts/feedback-ledger.mjs
 ├── governance/internal-card-qa-rubric.v1.json
 ├── policies/external-sources.v1.json
 ├── schemas/helpdesk-turn-contract.schema.json
@@ -91,6 +93,29 @@ node scripts/knowledge-production.mjs \
 
 Owner G10 已选择 `bm25_expansion_keyword@0.8449460370411592 / top_k=3`。它在冻结的 synthetic observed／holdout 门和 G12 后真实三卡观察回归上通过，但仍只允许返回候选 ID 和安全元数据；分数不能触发 `ALLOW`、正文读取或用户语境裁决。回归保留一条 Codex 宽召回，要求 loader 前完成 applicability 裁决。
 
+## Phase 4 反馈账本
+
+反馈事件只能写入公开仓库外的受控私密路径：
+
+```bash
+node scripts/feedback-ledger.mjs append \
+  --ledger "/private/control/feedback.jsonl" \
+  --event "/private/control/next-event.json"
+
+node scripts/feedback-ledger.mjs verify \
+  --ledger "/private/control/feedback.jsonl"
+
+node scripts/feedback-ledger.mjs replay \
+  --ledger "/private/control/feedback.jsonl" \
+  --chain "CHAIN-..."
+```
+
+- ledger 和输入事件路径位于本仓库内时，脚本 fail-closed。
+- CLI 只返回稳定 ID、hash、状态和 reason code，不回显需求摘要或 payload。
+- “谢谢”只能记为 `ACKNOWLEDGED`；`ADOPTED / OUTCOME_REPORTED` 才有候选资格，且仍需人工提炼、四门与 Owner 逐项批准。
+- 索引失败、验证失败、撤回、过期或反馈更正会取消 serving eligibility，不能沿用旧成功声明。
+- 当前只有 synthetic mechanism 测试；没有真实反馈时不生成实际候选。
+
 ## Phase 2 回合合同
 
 结构化回合可以通过独立脚本复验：
@@ -118,7 +143,7 @@ node scripts/helpdesk-turn-contract.mjs \
 node --test
 ```
 
-测试使用纯虚构临时卡片、公开来源卡片和结构化回合，不包含真实社区数据。覆盖四道门、严格 schema、revision／hash 漂移、重复键、敏感内容、路径穿越、软链越界、跨包冲突、拒绝内容不泄露，Phase 2 合同，以及 Phase 3 双生产路径、历史 G12 停点和正式三卡错配。
+测试使用纯虚构临时卡片、公开来源卡片和结构化回合，不包含真实社区数据。覆盖四道门、严格 schema、revision／hash 漂移、重复键、敏感内容、路径穿越、软链越界、跨包冲突、拒绝内容不泄露，Phase 2 合同、Phase 3 双生产路径与正式三卡错配，以及 Phase 4 反馈等级、追加式 hash 链和状态回滚。
 
 ## 隐私与能力边界
 
@@ -140,6 +165,8 @@ node --test
 | Phase 2 回合合同 | `G11_APPROVED / LOCAL_ONLY` |
 | Phase 3 schema B 与生产门 | `G12_APPROVED / TESTED` |
 | Phase 3 两张新卡 | `G12_APPROVED / LOCAL_INDEXED` |
+| Phase 4 反馈账本与回滚 | `MECHANISM_COMPLETE / 19 TESTS` |
+| Phase 4 真实反馈闭环 | `HOLD_NO_REAL_FEEDBACK / G13_NOT_OPENED` |
 | 真实社区端到端验证 | `NOT_VERIFIED` |
 
 三张卡只覆盖各自声明的窄 scope。后续卡片仍须逐张经过内容修正、真实环境验证、隐私审查和 Owner 发布批准，不能因首批通过而自动晋级。

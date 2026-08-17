@@ -1,13 +1,13 @@
 ---
 name: ai-native-helpdesk
 description: 面向 AI／Agent／OpenClaw 社区的薄入口 Helpdesk Skill。负责守门、判模、按需加载合同，并只通过确定性发布门读取 PublicCard。
-version: 0.5.1-phase3-published
-status: G12_APPROVED / 本地正式三卡包 / 真实三卡观察回归通过 / 真实社区端到端未验证
+version: 0.6.0-phase4-mechanism
+status: G12_APPROVED / 本地正式三卡包 / Phase 4 机制完成 / 真实反馈缺失 HOLD / G13 未开启
 author: 减
 license: internal
 ---
 
-# ai-native-helpdesk v0.5.1-phase3-published
+# ai-native-helpdesk v0.6.0-phase4-mechanism
 
 > 当前已实现 PublicCard 机器发布门，本地功能分支有 3 张经 G12 逐卡批准的正式卡。三卡本地可用不等于远端已发布、完整知识库上线，也不等于已经完成真实社区端到端验证或解决了用户问题。
 
@@ -15,13 +15,14 @@ license: internal
 
 用于 AI／Agent／OpenClaw 相关社区的薄入口 Skill。AI Native 社区可以提供经过筛选的共同知识来源，但任何群聊原文、成员标识和内部审核材料都不得进入公开运行包。
 
-只做 5 件事：
+只做 6 件事：
 
 1. 守门：识别安全、隐私、不可逆和动态事实风险。
 2. 判模：选择 1 个主路由。
 3. 按需加载对应 contract。
 4. knowledge 路由只通过确定性脚本查询已发布 PublicCard。
 5. 用 Phase 2 回合合同复验追问次数、自然语言去向和外部来源证据；用 Phase 3 生产门阻断未授权 Candidate。
+6. 在公开仓库外用 Phase 4 追加式账本记录 MISS 与反馈；没有真实有效反馈时不生成候选。
 
 ## 这不是什么
 
@@ -45,8 +46,10 @@ ai-native-helpdesk/
 │   └── safety.md
 ├── schemas/public-card.schema.json
 ├── schemas/knowledge-production.schema.json
+├── schemas/feedback-event.schema.json
 ├── scripts/query-public-card.mjs
 ├── scripts/knowledge-production.mjs
+├── scripts/feedback-ledger.mjs
 ├── policies/external-sources.v1.json
 ├── schemas/helpdesk-turn-contract.schema.json
 ├── schemas/external-source-policy.schema.json
@@ -117,6 +120,12 @@ PublicCard schema B 为 `0.4`，新增安全 `scope_hint`、判断框架、常�
 
 `scripts/knowledge-production.mjs` 只处理不含正文的控制收据：普通路径要求 Owner-authorized Candidate；`MISS` 路径额外要求 `ADOPTED / OUTCOME_REPORTED`、获批答案候选与人工提炼。公开投影还要求 100% 人工 QA、四门和逐卡 Owner 发布决定。机器 `PASS`、G11 或候选内容都不能代签 G12。
 
+## Phase 4 反馈账本
+
+`scripts/feedback-ledger.mjs` 只向公开仓库外的受控路径追加 hash-chain 事件。反馈等级、候选、人工提炼、发布、索引、后续 ALLOW、验证失败、撤回、过期和更正均通过重放计算；历史事件不能原地修改。
+
+CLI 不回显 payload。`ACKNOWLEDGED`、无反馈模型答案和包含原回答正文的候选会 fail-closed。只有真实 `ADOPTED / OUTCOME_REPORTED` 才能开启实际候选链；synthetic 完整测试最多声明 `mechanism_loop_complete`，不能声明 `real_loop_complete`。当前授权收据中没有真实有效反馈，因此 G13 未开启。
+
 ## Phase 2 回合合同
 
 合同裁决器：
@@ -169,11 +178,13 @@ node scripts/helpdesk-turn-contract.mjs \
 ## 当前状态
 
 - 发布门代码和合成测试：已建立。
-- Phase 1 召回选择：Owner G10 已通过；只限 synthetic 候选召回证据，尚未接入 loader。
+- Phase 1 召回选择：Owner G10 已通过；synthetic holdout 与 G12 后真实三卡观察回归均通过，仍须在 loader 前做适用性裁决。
 - Phase 2 回合与外部来源合同：G11 已通过；当前仍是本地分支能力。
 - Phase 3 schema B、生产门与正式三卡错配：G12 已通过，本地验证通过。
 - 公开 PublicCard：本地功能分支 3 张，尚未进入远端 `main`。
 - 两张新卡：已按 G12 指定 revision 进入本地正式 index。
+- Phase 4 反馈账本与回滚：机制完成；19 项定向测试通过。
+- Phase 4 真实闭环：`HOLD_NO_REAL_FEEDBACK`；没有候选／修订／撤回清单，G13 未开启。
 - 社区真实端到端验证：未完成。
 - 群聊候选、内部证据和审核材料：不属于公开仓库。
 
@@ -187,5 +198,6 @@ node scripts/helpdesk-turn-contract.mjs \
 | v0.4.0-phase2-candidate | PHASE_2_CANDIDATE | 追问门、8 种回合去向、G6 外部来源政策与逐 claim 来源合同 |
 | v0.5.0-phase3-candidate | PHASE_3_CANDIDATE | schema B、index 完整性绑定、双生产路径、首批 100% QA 与 G12 停点 |
 | v0.5.1-phase3-published | G12_APPROVED | 首批三卡本地正式投影、loader 后验收与真实卡错配回归 |
+| v0.6.0-phase4-mechanism | REAL_LOOP_HOLD | 追加式反馈账本、候选门、状态重放与回滚；无真实反馈时停止 |
 
 后续 PublicCard 仍须逐张独立完成内容修正、真实验证、隐私审查和 Owner 发布批准；首张卡通过不能让其他候选自动晋级。

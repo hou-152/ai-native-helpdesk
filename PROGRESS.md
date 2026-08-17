@@ -1,5 +1,16 @@
 # 受控阶段进度
 
+## Phase 4 MISS 反馈回路（2026-08-18）
+
+- `ad83908753412231ee1790dbf4abec3f2d80e664` 在实现前冻结 11 类事件、反馈等级、hash-chain、状态回滚、文件白名单与无真实反馈停止条件。
+- `4a77398f0d28f1dc316bee3840fdf8553921f1e4` 实现事件 schema、追加式账本与首轮正反测试；`54ccc1419d73149a730525f466cefd3799662568` 阻断回滚后的静默重新索引和软链事件输入。
+- 新增公开仓库外受控使用的追加式 ledger；事件顺序绑定上一 hash，更正只能新增 `CORRECTION`，CLI 不回显 payload。
+- `ACKNOWLEDGED`、无反馈模型答案、原回答直灌、客观效果漂白和无人工提炼均不能生成有效候选。
+- 新卡完整虚构机制链、既有卡修订、撤回、验证失败、过期、索引失败、反馈更正、篡改与跨链引用均有正反测试。
+- Phase 4 定向测试 19／19 PASS；全量测试 174／174 PASS，0 fail／cancelled／skipped／todo。
+- 授权项目收据中没有可复跑的真实 `ADOPTED / OUTCOME_REPORTED` 反馈；没有生成真实 `ANSWER_CANDIDATE`，也没有修改正式三卡或 index。
+- 当前状态：`MECHANISM_COMPLETE / REAL_LOOP_HOLD_NO_FEEDBACK`。G13 未开启，Phase 5 不得开始。
+
 ## G12 正式三卡投影（2026-08-18）
 
 - Owner 已批准 schema B、QA rubric、首批 000001／000002／000003，并逐卡批准 000001 v1.1.0、000002 v1.0.0、000003 v1.0.0 发布。
