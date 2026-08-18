@@ -2,7 +2,7 @@
 name: ai-native-helpdesk
 description: 面向 AI／Agent／OpenClaw 社区的薄入口 Helpdesk Skill。负责守门、判模、按需加载合同，并只通过确定性发布门读取 PublicCard。
 version: 0.9.0
-status: PP_MECHANISM_COMPLETE / MERGE_MAIN_COMPLETE / GITHUB_RELEASE_COMPLETE / PRODUCT_VALIDATION_DISCOVERY_IN_PROGRESS
+status: PP_MECHANISM_COMPLETE / MERGE_MAIN_COMPLETE / GITHUB_RELEASE_COMPLETE / PRODUCT_VALIDATION_A_OWNER_REVIEW_COMPLETE
 author: 减
 license: Apache-2.0
 ---
@@ -25,6 +25,10 @@ license: Apache-2.0
 4. knowledge 路由只通过确定性脚本查询已发布 PublicCard。
 5. 用 Phase 2 回合合同复验追问次数、自然语言去向和外部来源证据；用 Phase 3 生产门阻断未授权 Candidate。
 6. 在公开仓库外用 Phase 4 追加式账本记录 MISS 与反馈；没有真实有效反馈时不生成候选。
+
+## 范围边界
+
+本帮助台覆盖 AI／Agent／OpenClaw 公共知识包范围内的提问。范围外问题（如泛商业、泛学习、游戏设计、接单定价等）仍按正常路由回答，但走 `MISS` 回退路径，不承诺卡片覆盖；`OUT_OF_SCOPE` 问题不进入新卡提炼候选。
 
 ## 这不是什么
 
@@ -183,7 +187,7 @@ node scripts/helpdesk-turn-contract.mjs \
 
 - PP 机制：`COMPLETE / CLOSED / DECLARABLE`；证据为 8 卡、198／198、可逆安装和逐卡 Owner 批准。
 - merge：`COMPLETE`（PR #5 → `main`，`430b34b`）。tag／GitHub Release：`COMPLETE`（`v0.9.0`，发布于 `2026-08-18T12:30:44Z`）。
-- 30 人产品验证：`POST_RELEASE / A_LAYER_DISCOVERY_IN_PROGRESS / OUTCOME_UNKNOWN`；已冻结 9 个 Owner 本轮输入问题并完成 loader 基线，外部独立用户仍为 0／30。
+- 30 人产品验证：`POST_RELEASE / A_LAYER_OWNER_REVIEW_COMPLETE / EXTERNAL_0_OF_30 / OUTCOME_UNKNOWN`；已冻结 19 题（Owner 集 9 题审阅完成：直接可用 2、有启发 5、会继续追问 7；微信发现集 10 题待审），候选 `AIHD-PC-000009` 为 `PENDING_G12`，外部独立用户仍为 0／30。
 - 发布门代码和合成测试：已建立。
 - Phase 1 召回选择：Owner G10 已通过；synthetic holdout 与 G12 后真实三卡观察回归均通过，仍须在 loader 前做适用性裁决。
 - Phase 2 回合与外部来源合同：G11 已通过并随 PR #5 进入远端 `main`。

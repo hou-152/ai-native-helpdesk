@@ -1,0 +1,177 @@
+{
+  "schema_version": "1.0",
+  "phase": "7",
+  "receipt_id": "AIHD-P7-OWNER-PILOT-V2",
+  "supersedes": "AIHD-P7-OWNER-PILOT-V1",
+  "evaluated_at": "2026-08-19T06:50:00+08:00",
+  "evidence_layer": "A_OWNER_REVIEW_COMPLETE",
+  "public_runtime": {
+    "repository": "hou-152/ai-native-helpdesk",
+    "evaluated_commit": "dafdd17d6299c4f938934a0f2ca67753d3821ed9",
+    "main_card_count": 8,
+    "release_tag": "v0.9.0",
+    "release_published_at": "2026-08-18T12:30:44Z",
+    "release_url": "https://github.com/hou-152/ai-native-helpdesk/releases/tag/v0.9.0"
+  },
+  "private_input": {
+    "question_count": 9,
+    "provenance": "OWNER_TYPED",
+    "question_set_sha256": "9a4f6c79d5102455f02651479b2ab58c615c546b3c7d1592d04ccdcbcba707d7",
+    "question_set_bytes": 3621,
+    "machine_baseline_sha256": "efe99e4ef0a0eb84de8584e2ad33c3e255388000cd5abe0536f0b29a84252fa5",
+    "machine_baseline_bytes": 2498,
+    "owner_review_pack_sha256": "c63a4cd9ccb5c7654abb9dfdeb78a3cec39ebba19a0676009c05d48c8306c7e1",
+    "owner_review_pack_bytes": 17398,
+    "raw_questions_public": false,
+    "external_user_identity_bound": false,
+    "chat_turn_bound": false
+  },
+  "source_screenshots": {
+    "received_count": 3,
+    "unique_image_count": 2,
+    "observed_content": "CONVERSATION_CONTAINER_OR_MEMBER_HEADER_ONLY",
+    "question_body_visible": false,
+    "participant_count_usable_for_validation": false
+  },
+  "loader_baseline": {
+    "implementation": "scripts/query-public-card.mjs",
+    "matching_behavior": "NORMALIZED_EXACT_QUESTION_OR_ALIAS",
+    "allow": 0,
+    "miss": 9,
+    "deny": 0
+  },
+  "candidate_retrieval_diagnostic": {
+    "algorithm": "bm25_expansion_keyword",
+    "threshold": 0.8449460370411592,
+    "top_k": 3,
+    "cases_with_candidate": 5,
+    "cases_without_candidate": 4,
+    "candidate_id_count": 7,
+    "owner_applicability": "NONE_CONFIRMED_APPLICABLE",
+    "serving_authority": false
+  },
+  "owner_review": {
+    "completed": true,
+    "completed_at": "2026-08-19T06:50:00+08:00",
+    "coding": "A: 1=directly_usable, 2=inspiring, 3=no_signal; would_continue=yes when positive signal",
+    "directly_usable_count": 2,
+    "inspiring_count": 5,
+    "would_continue_count": 7,
+    "no_signal_count": 2,
+    "out_of_scope": [
+      "P7-Q08",
+      "P7-Q09"
+    ],
+    "qualitative": "Owner 主观：9 份回退答案整体略高于普通 Codex 直接回答水平；Q08／Q09 明显超出知识包范围。",
+    "cases": [
+      {
+        "question_id": "P7-Q01",
+        "code": 2,
+        "directly_usable": false,
+        "inspiring": true,
+        "would_continue": true,
+        "out_of_scope": false,
+        "note": "进入提炼候选 AIHD-PC-000009"
+      },
+      {
+        "question_id": "P7-Q02",
+        "code": 2,
+        "directly_usable": false,
+        "inspiring": true,
+        "would_continue": true,
+        "out_of_scope": false,
+        "note": "暂缓提炼（thinking 型）"
+      },
+      {
+        "question_id": "P7-Q03",
+        "code": 3,
+        "directly_usable": false,
+        "inspiring": false,
+        "would_continue": false,
+        "out_of_scope": false,
+        "note": "无信号"
+      },
+      {
+        "question_id": "P7-Q04",
+        "code": 1,
+        "directly_usable": true,
+        "inspiring": false,
+        "would_continue": true,
+        "out_of_scope": false,
+        "note": "范围外（泛商业），不进候选"
+      },
+      {
+        "question_id": "P7-Q05",
+        "code": 1,
+        "directly_usable": true,
+        "inspiring": false,
+        "would_continue": true,
+        "out_of_scope": false,
+        "note": "范围外（泛学习），不进候选"
+      },
+      {
+        "question_id": "P7-Q06",
+        "code": 2,
+        "directly_usable": false,
+        "inspiring": true,
+        "would_continue": true,
+        "out_of_scope": false,
+        "note": "暂缓提炼（动态研究证据）"
+      },
+      {
+        "question_id": "P7-Q07",
+        "code": 3,
+        "directly_usable": false,
+        "inspiring": false,
+        "would_continue": false,
+        "out_of_scope": false,
+        "note": "无信号"
+      },
+      {
+        "question_id": "P7-Q08",
+        "code": 2,
+        "directly_usable": false,
+        "inspiring": true,
+        "would_continue": true,
+        "out_of_scope": true,
+        "note": "OUT_OF_SCOPE"
+      },
+      {
+        "question_id": "P7-Q09",
+        "code": 2,
+        "directly_usable": false,
+        "inspiring": true,
+        "would_continue": true,
+        "out_of_scope": true,
+        "note": "OUT_OF_SCOPE"
+      }
+    ]
+  },
+  "candidate_distillation": {
+    "question_id": "P7-Q01",
+    "candidate_card_id": "AIHD-PC-000009",
+    "candidate_file": "evals/phase7/candidates/AIHD-PC-000009.candidate.json",
+    "status": "PENDING_G12",
+    "machine_gate": {
+      "target": "private-card",
+      "result": "HOLD",
+      "reason_code": "CANDIDATE_AUTHORIZATION_REQUIRED"
+    },
+    "loader_result_for_original_query": "MISS",
+    "serving_authority": false
+  },
+  "external_validation": {
+    "participants": 0,
+    "target": 30,
+    "resolved_or_advanced": "UNKNOWN",
+    "outcome": "UNKNOWN"
+  },
+  "claim_boundary": [
+    "This receipt records the completed Owner review of nine Owner-typed questions (A-layer only).",
+    "Owner review results (2 directly usable / 5 inspiring / 7 would continue) are early signals for the thin-entry plus fallback path; they do not establish PublicCard coverage.",
+    "No BM25 candidate was confirmed applicable; retrieval candidates remain non-serving.",
+    "P7-Q08 and P7-Q09 are marked OUT_OF_SCOPE for the AI/Agent/OpenClaw knowledge pack.",
+    "AIHD-PC-000009 is a PENDING_G12 candidate; it is not indexed, cannot trigger ALLOW, and requires Owner publication decision before any formal projection.",
+    "No 30-person product validation result is established."
+  ]
+}

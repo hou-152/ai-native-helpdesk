@@ -6,6 +6,8 @@
 
 为 AI／Agent／OpenClaw 相关社区提供一个薄入口 Helpdesk：先守门和路由，再按需加载合同；知识问答只能读取已经通过编辑、验证、隐私和发布四道门的 PublicCard。
 
+覆盖范围为 AI／Agent／OpenClaw 公共知识包；范围外问题（泛商业、泛学习、游戏设计、接单定价等）仍正常回答，但走 `MISS` 回退路径，不承诺卡片覆盖，也不进入新卡提炼候选。
+
 AI Native 社区可以作为共同知识的高质量来源，但私密群聊、成员信息、原话和内部审核材料不进入本仓库。未来其他社区可以显式挂载自己的本地知识包，不与公共包混写。
 
 ## 运行结构
@@ -163,7 +165,7 @@ node --test
 
 ## 当前完成度
 
-任何进度汇报必须同时声明：`PP_MECHANISM = COMPLETE`、`MERGE_MAIN = COMPLETE`、`GITHUB_RELEASE = COMPLETE`、`PRODUCT_VALIDATION_30 = A_LAYER_DISCOVERY_IN_PROGRESS / EXTERNAL_0_OF_30 / UNKNOWN`。
+任何进度汇报必须同时声明：`PP_MECHANISM = COMPLETE`、`MERGE_MAIN = COMPLETE`、`GITHUB_RELEASE = COMPLETE`、`PRODUCT_VALIDATION_30 = A_LAYER_OWNER_REVIEW_COMPLETE / EXTERNAL_0_OF_30 / UNKNOWN`。
 
 | 项目 | 状态 |
 |---|---|
@@ -183,6 +185,6 @@ node --test
 | Phase 6 首批知识规模化 | `4 NEW CARDS APPROVED / EIGHT_CARD_PACK / MERGED_TO_MAIN` |
 | merge | `COMPLETE (PR #5 → main 430b34b)` |
 | tag／GitHub Release | `COMPLETE (v0.9.0)` |
-| 30 人产品验证 | `A_LAYER_DISCOVERY_IN_PROGRESS / EXTERNAL_0_OF_30 / OUTCOME_UNKNOWN` |
+| 30 人产品验证 | `A_LAYER_OWNER_REVIEW_COMPLETE (2/5/7) / EXTERNAL_0_OF_30 / OUTCOME_UNKNOWN` |
 
-八张卡只覆盖各自声明的窄 scope。后续卡片仍须逐张经过内容修正、真实环境验证、隐私审查和 Owner 发布批准，不能因现有卡片通过而自动晋级。8 卡已通过 PR #5 merge 到 `main`；Phase 7 A 层发现已经开始，30 人外部产品验证仍为 0／30。
+八张卡只覆盖各自声明的窄 scope。后续卡片仍须逐张经过内容修正、真实环境验证、隐私审查和 Owner 发布批准，不能因现有卡片通过而自动晋级。8 卡已通过 PR #5 merge 到 `main`；Phase 7 A 层发现已冻结 19 题，Owner 集 9 题审阅完成（直接可用 2／9、有启发 5／9、会继续追问 7／9），候选 `AIHD-PC-000009` 为 `PENDING_G12`，30 人外部产品验证仍为 0／30。

@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "record_id": "AIHD-PC-000009",
+  "source_lane": "ORDINARY_AUTHORIZED_CANDIDATE",
+  "candidate_authorization": "PENDING_G12",
+  "feedback_level": "NOT_APPLICABLE",
+  "answer_candidate_status": "NOT_APPLICABLE",
+  "human_distillation": "NOT_APPLICABLE",
+  "answer_status": "READY",
+  "applicability_status": "READY",
+  "next_action_status": "READY",
+  "verification_method_status": "READY",
+  "machine_structure": "PASS",
+  "human_qa": "PENDING_G12",
+  "editorial": "HOLD",
+  "verification": "HOLD",
+  "privacy_gate": "HOLD",
+  "publication": "HOLD",
+  "owner_publication_decision": "PENDING_G12"
+}

@@ -2,6 +2,15 @@
 
 > 当前状态统一入口：[`docs/PP.md`](docs/PP.md)。本文件保留阶段证据与历史，不再承担当前完成度解释。下文旧阶段中的“4 张”“本地”“未 push”“Draft PR”与 `STOP_BEFORE_PR` 都是带日期的冻结时点，不得覆盖当前 8 卡已 merge main 状态。
 
+## Phase 7 A 层：Owner 集审阅完成＋首张提炼候选（2026-08-19）
+
+- Owner 集 9 题三项判断完成（编码 A）：直接可用 2／9（P7-Q04、P7-Q05）、有启发 5／9、会继续追问 7／9；P7-Q03、P7-Q07 无信号；P7-Q08、P7-Q09 标记 `OUT_OF_SCOPE`。
+- Owner 主观反馈：9 份回退答案整体略高于普通 Codex 直接回答水平；BM25 候选 9 题全部确认 `NONE_CONFIRMED_APPLICABLE`，不接入生产查询。
+- P7-Q01（Agent 元技能）完成简化提炼：候选 `AIHD-PC-000009`（`PENDING_G12`）进入 `evals/phase7/candidates/`；生产门返回 `HOLD / CANDIDATE_AUTHORIZATION_REQUIRED`，loader 对原问句仍为 `MISS`，未索引、不可触发 `ALLOW`。
+- 私密审阅包已填入判断；公开侧新增 `PILOT_BASELINE_RECEIPT.v2.json`（v1 保持 byte-identical），SKILL.md／README／PP.md 同步 A 层状态与范围边界（范围外问题走 MISS 回退、不承诺卡片覆盖、不进提炼候选）。
+- 全量测试 198／198 PASS；0 fail／cancelled／skipped／todo。
+- 该结果只支持“薄入口＋回退回答有早期正面信号”，不改变 PublicCard 覆盖结论；微信发现集 10 题待 Owner 审阅，外部独立用户仍 0／30。
+
 ## 当前：私密小样本提案待 Owner 决定（2026-08-18）
 
 - 3—5 人私密小样本只是建议，Owner 尚未批准是否进行、参与者、时间或执行方式；状态为 `PILOT_PROPOSED_AWAITING_OWNER_DECISION`。

@@ -1,0 +1,131 @@
+{
+  "candidate_schema_version": "1.0",
+  "candidate_status": "PENDING_G12",
+  "source_lane": "ORDINARY_AUTHORIZED_CANDIDATE",
+  "origin": {
+    "phase7_question_id": "P7-Q01",
+    "provenance": "OWNER_TYPED",
+    "owner_review": {
+      "directly_usable": false,
+      "inspiring": true,
+      "would_continue": true
+    },
+    "distillation_basis": "P7-Q01 Owner 审阅答案（本机 skill-creator 方法＋模型推理）经简化提炼"
+  },
+  "production_receipt": {
+    "schema_version": "1.0",
+    "record_id": "AIHD-PC-000009",
+    "source_lane": "ORDINARY_AUTHORIZED_CANDIDATE",
+    "candidate_authorization": "PENDING_G12",
+    "feedback_level": "NOT_APPLICABLE",
+    "answer_candidate_status": "NOT_APPLICABLE",
+    "human_distillation": "NOT_APPLICABLE",
+    "answer_status": "READY",
+    "applicability_status": "READY",
+    "next_action_status": "READY",
+    "verification_method_status": "READY",
+    "machine_structure": "PASS",
+    "human_qa": "PENDING_G12",
+    "editorial": "HOLD",
+    "verification": "HOLD",
+    "privacy_gate": "HOLD",
+    "publication": "HOLD",
+    "owner_publication_decision": "PENDING_G12"
+  },
+  "proposed_public_fields": {
+    "schema_version": "0.4",
+    "card_id": "AIHD-PC-000009",
+    "domain": "AI_AGENT_OPENCLAW",
+    "revision": "1.0.0",
+    "question": "怎样构建一个使用 Agent 的「元技能」？比如搭建「建站元技能」需要哪些前置知识？",
+    "aliases": [
+      "如何构建使用 Agent 的元技能？",
+      "元技能应该怎么设计？",
+      "搭建一个 Skill 之前需要知道什么？",
+      "怎样把一类任务沉淀成可复用的 Agent 技能？",
+      "建站元技能的前置知识有哪些？",
+      "怎样让 Agent 稳定推进一类项目到可验收结果？"
+    ],
+    "scope_hint": "设计 Agent「元技能」的控制流、前置知识与验收方法；不覆盖某个具体工具的内部命令。",
+    "applies_to": [
+      "想把一类反复出现的任务（如建站）沉淀为可复用 Agent 技能的人",
+      "希望技能入口是控制器而不是文档堆积的人",
+      "已有稳定单 Agent 使用经验、准备把流程固化成技能的人"
+    ],
+    "not_for": [
+      "一次性任务（直接执行，不需要元技能）",
+      "把某个工具的命令文档抄成技能正文的文档型技能",
+      "无人工验收点的全自动流程"
+    ],
+    "answer": "把「元技能」设计成一个控制器：识别目标和现状，选择路径，按需加载资料，调用工具，验证产物，失败时停下或回滚。搭建前先补五类前置知识：一、对象模型——这类任务涉及的用户、任务、页面、内容、状态、数据与转化目标；二、交付链——需求、信息架构、内容、视觉、代码、测试、部署的完整链路；三、技术边界——HTML／CSS／JavaScript、一个主框架、域名与部署、响应式、可访问性和基础安全，不必全部精通，但要清楚谁负责、怎样验收；四、Agent 工程——触发条件、权限、上下文、状态持久化、工具失败和人工停点；五、评测——功能、视觉、移动端、性能、可访问性、内容完整性和回滚能否被实际复验。起点先拿 3 个同类真实任务找出共同闭环，再写 SKILL.md：把稳定流程留在薄入口，框架差异放进 references，反复且脆弱的动作做成 scripts，可复用模板放进 assets。如果三条任务没有共同验收面，先补领域模型，再写技能。最小下一步：写出 3 条真实触发语句和每条任务的完成定义。",
+    "judgment_framework": [
+      "控制器：技能入口是否只保留「识别目标 → 选择路径 → 按需加载 → 验证产物 → 失败回滚」的控制流。",
+      "对象模型：能否说清这类任务涉及的对象、状态与验收标准。",
+      "交付链：是否覆盖从需求到部署的完整链路，还是只覆盖生成页面。",
+      "边界与停点：工具失败、权限不足和人工验收点是否明确。",
+      "评测闭环：功能、视觉、性能与回滚是否可被实际复验。"
+    ],
+    "common_mistakes": [
+      "一上来就写 SKILL.md，没有先冻结 3 个真实任务的共同闭环。",
+      "把工具文档全量抄进技能正文，入口变成文档堆积。",
+      "没有共同验收面就宣称可以做成元技能。",
+      "用技能数量或字数代替任务完成率。",
+      "缺少人工停点，让 Agent 一路跑到不可回滚的状态。"
+    ],
+    "action_principles": [
+      "先拿 3 个同类真实任务，找出共同闭环和验收面。",
+      "薄入口只留控制流；框架差异进 references；反复且脆弱的动作做成 scripts；模板进 assets。",
+      "每个技能写清触发语句和完成定义。",
+      "上线前用同类新任务复验，并保留失败回滚。",
+      "三条任务没有共同验收面时，先补领域模型。"
+    ],
+    "next_action": "写出 3 条真实触发语句和每条任务的完成定义；如果三条任务没有共同验收面，先补领域模型再写 SKILL.md。",
+    "verification_method": "用 3 个同类真实任务实际跑一遍技能：记录每个任务的触发、路径选择、按需加载、产物验收和失败回滚。只有三个任务都达到各自完成定义且回滚可用时，技能才算成立。",
+    "verification_steps": [
+      "记录 3 个同类真实任务和各自的完成定义。",
+      "只写薄入口控制流，把差异内容移入 references／scripts／assets。",
+      "用第一个任务跑通主路径并记录卡点。",
+      "用第二、第三个任务复验并修正入口。",
+      "检查工具失败与人工停点是否按设计生效。",
+      "对比使用前后的完成时间与返工次数。"
+    ],
+    "public_sources": [
+      {
+        "title": "Anthropic：Claude Code Skills",
+        "url": "https://code.claude.com/docs/en/skills",
+        "checked_at": "2026-08-19"
+      },
+      {
+        "title": "Anthropic：Building effective agents",
+        "url": "https://www.anthropic.com/engineering/building-effective-agents",
+        "checked_at": "2026-08-19"
+      }
+    ],
+    "supported_versions": [
+      "方法论卡，不绑定具体工具版本"
+    ],
+    "last_verified": "2026-08-19"
+  },
+  "machine_precheck": {
+    "status": "PASS",
+    "checked_at": "2026-08-19",
+    "claim_boundary": "结构、公开来源格式与隐私模式预检；不代表人工 QA、Owner 批准或正式索引，候选不得触发 ALLOW。"
+  },
+  "human_qa": {
+    "rubric_id": "AIHD-INTERNAL-CARD-QA-V1",
+    "selection": "SINGLE_CARD_000009",
+    "verdict": "PENDING_G12",
+    "dimensions": {
+      "ANSWER_CORRECTNESS": "PENDING_G12",
+      "APPLICABILITY_BOUNDARY": "PENDING_G12",
+      "SOURCE_TRACEABILITY": "PENDING_G12",
+      "NEXT_ACTION": "PENDING_G12",
+      "VERIFICATION_METHOD": "PENDING_G12",
+      "PRIVACY": "PENDING_G12",
+      "NON_PUBLIC_CONTENT": "PENDING_G12",
+      "MEANING_PRESERVATION": "PENDING_G12",
+      "CANDIDATE_AUTHORIZATION": "PENDING_G12",
+      "PUBLICATION_DECISION": "PENDING_G12"
+    }
+  }
+}
