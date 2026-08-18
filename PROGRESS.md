@@ -1,10 +1,16 @@
 # 受控阶段进度
 
-## 收到合法最小结果，但参与者来源未绑定（2026-08-18）
+## 最小结果来源已绑定为执行 Agent（2026-08-18）
+
+- Owner 明确确认上一份最小 JSON 来自执行 Agent，而非真人社区成员。公开面不保存 Agent 别名；私密控制面只保存不可逆 hash。
+- 执行侧结果正式分类为 `EXECUTOR_SMOKE_PASS_WITH_PATH_SETUP_CONFUSION`：artifact hash、install、verify、两卡、近邻 MISS 与 uninstall 均报告符合预期；`PATH_SETUP` 保留为执行器侧困惑，不冒充参与者体验。
+- 该结果不能提供真人身份或知情同意，不能完成 G14 社区试跑。当前仍等待 Owner 指定真人 P1；原未绑定收据保留并由本来源绑定收据追加解释。
+
+## 历史：收到合法最小结果，但参与者来源未绑定（2026-08-18）
 
 - Owner 转发的 JSON 精确包含 Runbook 第 6 节的 12 个字段；枚举、布尔值和 `PATH_SETUP` 困惑标签均合法。报告值为 artifact hash 匹配、install／verify／uninstall PASS、000001／000004 ALLOW、模型权重近邻 MISS。
 - 该 JSON 自报 `participant_id = P1` 和 `consent = OBSERVED`，但在此前绑定纠错后，真人 P1 仍未指定；本消息也没有绑定发送者、执行者或 artifact 传递来源。因此它最多证明一份结构合法的执行结果被观察到，不能自证真人同意或社区试跑。
-- 当前分类为 `G14_RESULT_RELAY_OBSERVED_HOLD_UNBOUND_PARTICIPANT`。G14 完成资格为 false，社区试跑保持 `NOT_VERIFIED`；若来源是执行 Agent，只能计为 executor smoke result。
+- 该历史状态随后已绑定为 executor smoke result；G14 完成资格仍为 false。
 
 ## P1 参与者绑定纠错，恢复等待真人指定（2026-08-18）
 

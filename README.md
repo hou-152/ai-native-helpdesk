@@ -1,6 +1,6 @@
 # ai-native-helpdesk v0.7.0-phase5-g14-ready
 
-> 当前状态：Owner 已通过 G13b，批准 `AIHD-PC-000004 v1.0.0` 作为新卡正式投影。当前本地正式 index 为 4 张；Phase 5 的路径解耦、Apache 2.0、可逆安装与隔离路径矩阵已通过本地工程验收。G14-A 已授权，并收到一份步骤全 PASS 的最小结果，但发送者／参与者未绑定；合格真人 P1 仍未指定，执行结果不能自证社区成员身份或知情同意。尚未 push、进入远端 `main` 或完成社区试跑。
+> 当前状态：Owner 已通过 G13b，批准 `AIHD-PC-000004 v1.0.0` 作为新卡正式投影。当前本地正式 index 为 4 张；Phase 5 的路径解耦、Apache 2.0、可逆安装与隔离路径矩阵已通过本地工程验收。G14-A 已授权，Owner 指定执行 Agent 的 smoke run 报告全步骤符合预期并保留 `PATH_SETUP` 困惑；但合格真人 P1 仍未指定，Agent 结果不能替代社区成员身份或知情同意。当前功能分支不等于远端 `main`，社区试跑尚未完成。
 
 ## 目标
 
@@ -177,6 +177,6 @@ node --test
 | Phase 4 反馈账本与回滚 | `MECHANISM_COMPLETE / 23 TESTS` |
 | Phase 4 真实反馈闭环 | `G13B_APPROVED / LOCAL_FORMAL_LOOP_COMPLETE` |
 | Phase 5 安装与发布工程 | `ENGINEERING_ACCEPTANCE_PASS / G14_AUTHORIZED` |
-| 真实社区端到端验证 | `NOT_VERIFIED / UNBOUND_RESULT_OBSERVED` |
+| 真实社区端到端验证 | `NOT_STARTED / EXECUTOR_SMOKE_PASS_ONLY` |
 
 三张卡只覆盖各自声明的窄 scope。后续卡片仍须逐张经过内容修正、真实环境验证、隐私审查和 Owner 发布批准，不能因首批通过而自动晋级。
