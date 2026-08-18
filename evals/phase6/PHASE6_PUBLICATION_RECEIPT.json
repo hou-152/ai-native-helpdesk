@@ -1,0 +1,121 @@
+{
+  "schema_version": "1.0",
+  "approved_at": "2026-08-18T16:55:58+08:00",
+  "projection_completed_at": "2026-08-18T17:03:17+08:00",
+  "status": "PHASE6_OWNER_APPROVED_LOCAL_EIGHT_CARD_PACK_COMPLETE",
+  "owner_decision": {
+    "status": "APPROVED_PER_CARD_PUBLICATION",
+    "human_qa_policy": "ALL_CARDS_100_PERCENT",
+    "private_decision_receipt_sha256": "58832bd58cb010cc960e22226a7974c88f71083d89bae8758ce8971d93a186bd",
+    "stop_point": "LOCAL_COMMIT_READY_BEFORE_PULL_REQUEST"
+  },
+  "cards": [
+    {
+      "knowledge_card_id": "AIHD-KC-000005",
+      "card_id": "AIHD-PC-000005",
+      "revision": "1.0.0",
+      "source_formal_card_sha256": "849f763583a75dcb25bae1fc0eb1eca43b467ec37fb72792650fad3d0d55f921",
+      "source_qa_receipt_sha256": "a28779ffa27235d7864386fcc9ae8f7f5aca9e8b5314d53bb99db508675b6134",
+      "publication_record_sha256": "b897fa3691d18b86fc195c5b52e08a6c354184a22a7ff362d54839095b7014a0",
+      "public_content_sha256": "6b0866ce43309e5972f1ad869c79e18741b0347972e87c11f25ee0d6a6f1ae2b",
+      "human_qa": "PASS",
+      "editorial": "APPROVED",
+      "verification": "PASS",
+      "privacy_gate": "PASS",
+      "publication": "READY",
+      "owner_publication_decision": "APPROVED",
+      "source_public_fields_equal": true
+    },
+    {
+      "knowledge_card_id": "AIHD-KC-000006",
+      "card_id": "AIHD-PC-000006",
+      "revision": "1.0.0",
+      "source_formal_card_sha256": "6bc8e7096399b47322792fedf397188338e9fead69040fcc746ffce738588d70",
+      "source_qa_receipt_sha256": "2d47665aed0da197510e82f81dfcfc5dbf4db167c6ebbdc5e3eb01ccd90ad484",
+      "publication_record_sha256": "7ec6fc9c0c814787c511f43c79513c546984b5a0cb158cd7d6eeec12536ad142",
+      "public_content_sha256": "d6413201c216e457e38acb7933a5a8a1d66245f74aa02798d770c63a55609e4f",
+      "human_qa": "PASS",
+      "editorial": "APPROVED",
+      "verification": "PASS",
+      "privacy_gate": "PASS",
+      "publication": "READY",
+      "owner_publication_decision": "APPROVED",
+      "source_public_fields_equal": true
+    },
+    {
+      "knowledge_card_id": "AIHD-KC-000007",
+      "card_id": "AIHD-PC-000007",
+      "revision": "1.0.0",
+      "source_formal_card_sha256": "39863daf3277d2b152634f9e0f96ce792ab5d746fd529146d9b68a7646c1449c",
+      "source_qa_receipt_sha256": "aff72325037c1f72c1059d19b5d0d263ac161121d77ae0887ccef68ca0649516",
+      "publication_record_sha256": "31df80849f593aa9487e7284e54239361436a162997418c3dc7e28081b1d565c",
+      "public_content_sha256": "ec711b47bdcc5a0519e67e943aa51e79954bbf9a3208f59a3c51c4ec73cf7c2a",
+      "human_qa": "PASS",
+      "editorial": "APPROVED",
+      "verification": "PASS",
+      "privacy_gate": "PASS",
+      "publication": "READY",
+      "owner_publication_decision": "APPROVED",
+      "source_public_fields_equal": true
+    },
+    {
+      "knowledge_card_id": "AIHD-KC-000008",
+      "card_id": "AIHD-PC-000008",
+      "revision": "1.0.0",
+      "source_formal_card_sha256": "4ee86b468965de185c009db871177c9f2104f91185d7b4024953d24027fa2d74",
+      "source_qa_receipt_sha256": "34b4f9cce42a1e4b7aa61b58c7999446f9b963d93128d9122fd601f3e4ec6c34",
+      "publication_record_sha256": "d844af1b3f29b7818acb883b6806a830cb049e91172c798389d981ce7983fce6",
+      "public_content_sha256": "1230b6a7679d9981542991e8c33e7c1e1ec7e831a8845e5f43466690d69400b8",
+      "human_qa": "PASS",
+      "editorial": "APPROVED",
+      "verification": "PASS",
+      "privacy_gate": "PASS",
+      "publication": "READY",
+      "owner_publication_decision": "APPROVED",
+      "source_public_fields_equal": true
+    }
+  ],
+  "formal_index": {
+    "card_count": 8,
+    "sha256": "65c4db9e9ef63ff9fa23c71caf6c971caf364e198d5bcfbf28ad0eb242293e44",
+    "result": "SUCCESS"
+  },
+  "formal_loader": {
+    "question_and_alias_checks": 41,
+    "allow_correct_card": 41,
+    "unrelated_miss_checks": 1,
+    "unrelated_miss_false_positive": 0,
+    "result": "PASS"
+  },
+  "eight_card_regression": {
+    "dataset_sha256": "cab7d2e0729ce04b58d98cbd1ec554babb33a94db9297cdc4681a582b2af0899",
+    "report_sha256": "605f0eb23130a068b38156dc0d621fef1738d7dbc621c4673244659ac385db79",
+    "tests": 25,
+    "passed": 25,
+    "failed": 0,
+    "evidence_class": "OBSERVED_ACCEPTANCE_REGRESSION"
+  },
+  "full_regression": {
+    "tests": 198,
+    "passed": 198,
+    "failed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "release_allowlist": {
+    "manifest_sha256": "0209e4d7891f81c9ca297492e4a00a6c40361f833430c2a0c157f2e689c913a4",
+    "listed_files": 31,
+    "installed_files_including_manifest": 32,
+    "historical_g14_28_file_artifact_unchanged": true
+  },
+  "boundary": {
+    "local_branch_only": true,
+    "pushed": false,
+    "pull_request_created": false,
+    "merged": false,
+    "tag_or_release_created": false,
+    "community_coverage_proven": false,
+    "user_effect_proven": false
+  }
+}

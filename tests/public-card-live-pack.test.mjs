@@ -89,7 +89,7 @@ test("model-weight training remains outside the self-iteration card scope", () =
   assert.deepEqual(result, { status: "MISS", reason_code: "NO_MATCH" });
 });
 
-test("an unrelated query still misses the four-card public pack", () => {
+test("an unrelated query still misses the expanded public pack", () => {
   const result = queryPublicPack("完全无关的问题");
 
   assert.deepEqual(result, { status: "MISS", reason_code: "NO_MATCH" });

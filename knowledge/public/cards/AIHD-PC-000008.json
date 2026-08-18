@@ -1,0 +1,89 @@
+{
+  "schema_version": "0.4",
+  "card_id": "AIHD-PC-000008",
+  "domain": "AI_AGENT_OPENCLAW",
+  "revision": "1.0.0",
+  "question": "Compaction 之后怎样读回目标、硬约束和下一步？",
+  "aliases": [
+    "旧工具结果太多时，应该用 Compaction 还是 Session pruning？",
+    "OpenClaw compact 之后怎样避免丢任务？",
+    "当前会话上下文快溢出了怎么 compact？",
+    "长任务跨会话怎样保留目标和下一步？",
+    "compaction、pruning 和新会话应该选哪个？"
+  ],
+  "scope_hint": "在 OpenClaw 长任务中选择 Compaction、Session pruning 或新会话，并用可核验断点恢复目标、决定、约束和下一步。",
+  "applies_to": [
+    "会话接近模型上下文窗口，出现上下文过长或自动压缩信号",
+    "长任务需要压缩历史，但必须保留目标、决定、约束、证据、未决项和下一步",
+    "压缩后感觉陈旧或遗漏，需要判断该压缩、裁剪还是开新会话"
+  ],
+  "not_for": [
+    "问题来自模型认证、Gateway 离线或工具权限，而不是上下文长度",
+    "需要删除或销毁历史数据；Compaction 改变后续模型看到的上下文，不等于删除磁盘记录",
+    "要求逐字保留原始对话用于审计；应使用独立受控记录，而不是依赖摘要"
+  ],
+  "answer": "先保存任务断点，再压缩。断点至少写清当前目标、已确认决定、硬约束、证据指针、未决问题和下一条动作。OpenClaw 接近上下文上限或遇到溢出时会自动 Compaction：把较早内容总结进 session transcript，并保留近期尾部。聊天中的手动 `/compact` 可以附聚焦要求；若配置了 `agents.defaults.compaction.keepRecentTokens`，它会保留相应近期尾部，否则手动压缩是硬断点，后续从新摘要继续。若主要负担是旧工具结果，优先用 Session pruning；它只在每次请求前裁减旧工具输出，不改磁盘 transcript，也不保存摘要。若目标已经变化或旧上下文会误导，则在保存断点后开新会话。对于卡住或过大的现有会话，可用 `openclaw sessions compact <key>`；命令非零退出必须按失败处理。压缩完成后必须读回六项断点并核对一个真实证据指针，不能只看成功提示。",
+  "judgment_framework": [
+    "连续长任务接近上下文上限：保存断点后使用 Compaction。",
+    "主要负担是旧工具结果、核心对话仍清晰：使用 Session pruning。",
+    "运行中的会话卡住或过大：使用 `openclaw sessions compact <key>`，并以退出状态判断成功。",
+    "目标已改变、旧上下文会误导且已有可靠断点：开启新会话并从断点恢复。",
+    "需要数据删除或逐字审计：不要把 Compaction 当作销毁或原始记录系统。"
+  ],
+  "common_mistakes": [
+    "等到溢出后才第一次记录目标、决定和下一步。",
+    "把 Compaction 当成删除原始历史或合规销毁。",
+    "假设手动 `/compact` 总会保留近期尾部，忽略未配置 `keepRecentTokens` 时的硬断点行为。",
+    "在 CLI 中使用 `openclaw agent --message '/compact ...'`，误以为等同于 `sessions compact`。",
+    "摘要只写过程叙事，没有硬约束、证据指针和未决问题。",
+    "压缩后直接继续高风险动作，没有读回关键状态。",
+    "把 Pruning 和 Compaction 混为一谈，导致需要持久摘要时只裁掉工具结果。"
+  ],
+  "action_principles": [
+    "断点先于压缩，恢复先于继续执行。",
+    "断点写事实和状态，不复制整段对话。",
+    "工具结果过大用 Pruning，连续长任务用 Compaction，目标切换用新会话。",
+    "摘要可能遗漏，关键约束必须由恢复后的 Agent 明确复述并由人核对。",
+    "原始记录、Compaction 摘要和当前模型上下文是三个不同对象。"
+  ],
+  "next_action": "先写一个六项断点：目标、已确认决定、硬约束、证据指针、未决项、下一步；再在当前聊天运行 `/compact Focus on the goal, confirmed decisions, hard constraints, evidence pointers, unresolved items, and next action`，随后逐项读回。",
+  "verification_method": "压缩前冻结六项断点；压缩后让 Agent 逐项复述并只比较语义和状态，再只读打开一个证据指针。六项均可恢复、证据存在且上下文负担下降才算通过；CLI 路径非零退出、任一字段缺失或证据不存在都保持失败。通过不证明摘要完整、任务完成、磁盘历史已删除或业务结果正确。",
+  "verification_steps": [
+    "压缩前保存六项断点，并为每项标明当前状态。",
+    "当前聊天使用 `/compact`；若需处理运行中的卡住会话，使用 `openclaw sessions compact <key>`。",
+    "检查 `/status`、Gateway 日志或 CLI 结果中的压缩信号；CLI 非零退出按失败处理。",
+    "让压缩后的 Agent 列出六项断点，只比较语义和状态，不要求逐字复现。",
+    "对一个关键证据指针做只读打开，确认不是摘要编造。",
+    "只有六项均可读回且证据存在，才执行下一步。"
+  ],
+  "public_sources": [
+    {
+      "title": "OpenClaw Compaction",
+      "url": "https://docs.openclaw.ai/compaction",
+      "checked_at": "2026-08-18"
+    },
+    {
+      "title": "OpenClaw Sessions CLI",
+      "url": "https://docs.openclaw.ai/cli/sessions",
+      "checked_at": "2026-08-18"
+    },
+    {
+      "title": "OpenClaw Session pruning",
+      "url": "https://docs.openclaw.ai/concepts/session-pruning",
+      "checked_at": "2026-08-18"
+    },
+    {
+      "title": "OpenClaw Memory overview",
+      "url": "https://docs.openclaw.ai/concepts/memory",
+      "checked_at": "2026-08-18"
+    }
+  ],
+  "supported_versions": [
+    "OpenClaw official documentation checked 2026-08-18"
+  ],
+  "last_verified": "2026-08-18",
+  "editorial": "APPROVED",
+  "verification": "PASS",
+  "privacy_gate": "PASS",
+  "publication": "READY"
+}

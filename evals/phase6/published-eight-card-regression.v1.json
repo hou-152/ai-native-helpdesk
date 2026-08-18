@@ -1,0 +1,170 @@
+{
+  "schema_version": "1.0",
+  "dataset_id": "aihd-phase6-published-eight-card-regression-v1",
+  "evidence_class": "OBSERVED_ACCEPTANCE_REGRESSION",
+  "algorithm": "bm25_expansion_keyword",
+  "threshold": 0.8449460370411592,
+  "top_k": 3,
+  "claim_boundary": "local_branch_eight_approved_publiccards_not_blind_not_remote_main_not_user_effect",
+  "cases": [
+    {
+      "case_id": "P6-8C-001",
+      "query": "OpenClaw 心跳怎样配置，才能主动检查但不空转或打扰？",
+      "expected_public_card_ids": ["AIHD-PC-000005"],
+      "tags": ["heartbeat", "question"]
+    },
+    {
+      "case_id": "P6-8C-002",
+      "query": "Heartbeat 怎样设置成无事静默、有事提醒？",
+      "expected_public_card_ids": ["AIHD-PC-000005"],
+      "tags": ["heartbeat", "alias"]
+    },
+    {
+      "case_id": "P6-8C-003",
+      "query": "OpenClaw 心跳为什么一直空跑？",
+      "expected_public_card_ids": ["AIHD-PC-000005"],
+      "tags": ["heartbeat", "alias"]
+    },
+    {
+      "case_id": "P6-8C-004",
+      "query": "怎样限制 Agent 只在合适时间主动提醒？",
+      "expected_public_card_ids": ["AIHD-PC-000005"],
+      "tags": ["heartbeat", "alias"]
+    },
+    {
+      "case_id": "P6-8C-005",
+      "query": "心跳没触发或触发了没消息，先查什么？",
+      "expected_public_card_ids": ["AIHD-PC-000005"],
+      "tags": ["heartbeat", "alias"]
+    },
+    {
+      "case_id": "P6-8C-006",
+      "query": "OpenClaw 的 USER.md、MEMORY.md 和日期记忆应该怎样分层归档？",
+      "expected_public_card_ids": ["AIHD-PC-000006"],
+      "tags": ["memory", "question"]
+    },
+    {
+      "case_id": "P6-8C-007",
+      "query": "MEMORY.md 太长了应该怎么拆？",
+      "expected_public_card_ids": ["AIHD-PC-000006"],
+      "tags": ["memory", "alias"]
+    },
+    {
+      "case_id": "P6-8C-008",
+      "query": "哪些内容放长期记忆，哪些放每日笔记？",
+      "expected_public_card_ids": ["AIHD-PC-000006"],
+      "tags": ["memory", "alias"]
+    },
+    {
+      "case_id": "P6-8C-009",
+      "query": "小龙虾的记忆文件怎样整理才不会越来越乱？",
+      "expected_public_card_ids": ["AIHD-PC-000006"],
+      "tags": ["memory", "alias"]
+    },
+    {
+      "case_id": "P6-8C-010",
+      "query": "怎样让旧记忆能检索，但不全部塞进上下文？",
+      "expected_public_card_ids": ["AIHD-PC-000006"],
+      "tags": ["memory", "alias"]
+    },
+    {
+      "case_id": "P6-8C-011",
+      "query": "什么时候用单 Agent，什么时候拆成多 Agent 或子 Agent？",
+      "expected_public_card_ids": ["AIHD-PC-000007"],
+      "tags": ["agent-topology", "question"]
+    },
+    {
+      "case_id": "P6-8C-012",
+      "query": "复杂任务应该自己做还是派子 Agent？",
+      "expected_public_card_ids": ["AIHD-PC-000007"],
+      "tags": ["agent-topology", "alias"]
+    },
+    {
+      "case_id": "P6-8C-013",
+      "query": "长期角色隔离用 persistent multi-agent，短期并行用 Sub-agent 吗？",
+      "expected_public_card_ids": ["AIHD-PC-000007"],
+      "tags": ["agent-topology", "alias"]
+    },
+    {
+      "case_id": "P6-8C-014",
+      "query": "每个角色都要建一个独立 Agent 吗？",
+      "expected_public_card_ids": ["AIHD-PC-000007"],
+      "tags": ["agent-topology", "alias"]
+    },
+    {
+      "case_id": "P6-8C-015",
+      "query": "持久多 Agent 和一次性 sub-agent 有什么区别？",
+      "expected_public_card_ids": ["AIHD-PC-000007"],
+      "tags": ["agent-topology", "alias"]
+    },
+    {
+      "case_id": "P6-8C-016",
+      "query": "Compaction 之后怎样读回目标、硬约束和下一步？",
+      "expected_public_card_ids": ["AIHD-PC-000008"],
+      "tags": ["compaction", "question"]
+    },
+    {
+      "case_id": "P6-8C-017",
+      "query": "旧工具结果太多时，应该用 Compaction 还是 Session pruning？",
+      "expected_public_card_ids": ["AIHD-PC-000008"],
+      "tags": ["compaction", "alias"]
+    },
+    {
+      "case_id": "P6-8C-018",
+      "query": "OpenClaw compact 之后怎样避免丢任务？",
+      "expected_public_card_ids": ["AIHD-PC-000008"],
+      "tags": ["compaction", "alias"]
+    },
+    {
+      "case_id": "P6-8C-019",
+      "query": "当前会话上下文快溢出了怎么 compact？",
+      "expected_public_card_ids": ["AIHD-PC-000008"],
+      "tags": ["compaction", "alias"]
+    },
+    {
+      "case_id": "P6-8C-020",
+      "query": "长任务跨会话怎样保留目标和下一步？",
+      "expected_public_card_ids": ["AIHD-PC-000008"],
+      "tags": ["compaction", "alias"]
+    },
+    {
+      "case_id": "P6-8C-021",
+      "query": "compaction、pruning 和新会话应该选哪个？",
+      "expected_public_card_ids": ["AIHD-PC-000008"],
+      "tags": ["compaction", "alias"]
+    },
+    {
+      "case_id": "P6-8C-022",
+      "query": "Gateway 显示 running 但连不上怎么办？",
+      "expected_public_card_ids": ["AIHD-PC-000003"],
+      "tags": ["hard-separation", "gateway-not-heartbeat"]
+    },
+    {
+      "case_id": "P6-8C-023",
+      "query": "MEMORY.md 太长但不是当前会话溢出，应该怎样分层归档？",
+      "expected_public_card_ids": ["AIHD-PC-000006"],
+      "tags": ["hard-separation", "memory-not-compaction"]
+    },
+    {
+      "case_id": "P6-8C-024",
+      "query": "当前会话上下文溢出，要保留目标和硬约束后再 compact",
+      "expected_public_card_ids": ["AIHD-PC-000008"],
+      "tags": ["hard-separation", "compaction-not-memory"]
+    },
+    {
+      "case_id": "P6-8C-025",
+      "query": "今天天气怎么样？",
+      "expected_public_card_ids": [],
+      "tags": ["unrelated", "miss"]
+    }
+  ],
+  "acceptance": {
+    "total_cases": 25,
+    "target_cases": 24,
+    "target_hit": 24,
+    "exact_single_target": 24,
+    "over_recall": 0,
+    "miss_false_positive": 0,
+    "safe_output_rate": 1
+  }
+}

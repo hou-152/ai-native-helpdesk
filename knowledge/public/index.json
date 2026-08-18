@@ -56,6 +56,63 @@
         "如何让 OpenClaw 自动生成待审提案？"
       ],
       "scope_hint": "为已能正常运行的 OpenClaw Agent 接入经验捕获、待审 Skill 提案、多场景验证和 Owner 晋升；不支持无监督自改身份或自动应用提案。"
+    },
+    {
+      "card_id": "AIHD-PC-000005",
+      "file": "cards/AIHD-PC-000005.json",
+      "revision": "1.0.0",
+      "content_sha256": "6b0866ce43309e5972f1ad869c79e18741b0347972e87c11f25ee0d6a6f1ae2b",
+      "question": "OpenClaw 心跳怎样配置，才能主动检查但不空转或打扰？",
+      "aliases": [
+        "Heartbeat 怎样设置成无事静默、有事提醒？",
+        "OpenClaw 心跳为什么一直空跑？",
+        "怎样限制 Agent 只在合适时间主动提醒？",
+        "心跳没触发或触发了没消息，先查什么？"
+      ],
+      "scope_hint": "配置和排查 OpenClaw Heartbeat 的周期、投递、活跃时段、静默行为及其与 Automation 的边界。"
+    },
+    {
+      "card_id": "AIHD-PC-000006",
+      "file": "cards/AIHD-PC-000006.json",
+      "revision": "1.0.0",
+      "content_sha256": "d6413201c216e457e38acb7933a5a8a1d66245f74aa02798d770c63a55609e4f",
+      "question": "OpenClaw 的 USER.md、MEMORY.md 和日期记忆应该怎样分层归档？",
+      "aliases": [
+        "MEMORY.md 太长了应该怎么拆？",
+        "哪些内容放长期记忆，哪些放每日笔记？",
+        "小龙虾的记忆文件怎样整理才不会越来越乱？",
+        "怎样让旧记忆能检索，但不全部塞进上下文？"
+      ],
+      "scope_hint": "整理 OpenClaw 的 USER.md、MEMORY.md、日期记忆与受控原始证据，减少启动上下文膨胀并保持按需召回。"
+    },
+    {
+      "card_id": "AIHD-PC-000007",
+      "file": "cards/AIHD-PC-000007.json",
+      "revision": "1.0.0",
+      "content_sha256": "ec711b47bdcc5a0519e67e943aa51e79954bbf9a3208f59a3c51c4ec73cf7c2a",
+      "question": "什么时候用单 Agent，什么时候拆成多 Agent 或子 Agent？",
+      "aliases": [
+        "复杂任务应该自己做还是派子 Agent？",
+        "长期角色隔离用 persistent multi-agent，短期并行用 Sub-agent 吗？",
+        "每个角色都要建一个独立 Agent 吗？",
+        "持久多 Agent 和一次性 sub-agent 有什么区别？"
+      ],
+      "scope_hint": "在 OpenClaw 中区分单 Agent、持久多 Agent 与一次性 Sub-agent，并按状态隔离、任务依赖和验收成本决定是否拆分。"
+    },
+    {
+      "card_id": "AIHD-PC-000008",
+      "file": "cards/AIHD-PC-000008.json",
+      "revision": "1.0.0",
+      "content_sha256": "1230b6a7679d9981542991e8c33e7c1e1ec7e831a8845e5f43466690d69400b8",
+      "question": "Compaction 之后怎样读回目标、硬约束和下一步？",
+      "aliases": [
+        "旧工具结果太多时，应该用 Compaction 还是 Session pruning？",
+        "OpenClaw compact 之后怎样避免丢任务？",
+        "当前会话上下文快溢出了怎么 compact？",
+        "长任务跨会话怎样保留目标和下一步？",
+        "compaction、pruning 和新会话应该选哪个？"
+      ],
+      "scope_hint": "在 OpenClaw 长任务中选择 Compaction、Session pruning 或新会话，并用可核验断点恢复目标、决定、约束和下一步。"
     }
   ]
 }

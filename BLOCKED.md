@@ -6,5 +6,6 @@
 - Phase 5 本地工程验收已通过：路径解耦、Apache 2.0、28 文件 allowlist、安装／验证／卸载／回滚与陌生目录矩阵完成，全量回归 192／192 PASS。
 - G14-A 已通过；此前 P1 指定／同意已因参与者与执行器误绑而失效。Owner 随后确认最小结果来自执行 Agent，当前只计 `EXECUTOR_SMOKE_PASS_WITH_PATH_SETUP_CONFUSION`；真人 P1 尚未指定或同意，社区试跑未开始。
 - PP 严格 Phase 完成度为 5／6；Phase 5 的本地工程和 executor smoke 已完成，仍停在真人 P1 的 G14 社区试跑。
-- Owner 已授权并完成当前功能分支 push；仍未授权 PR、merge、把功能分支写成远端 `main`、扩大参与者或 192 类私域候选批量晋级。
+- Phase 6 首批 000005—000008 已逐卡通过人工 QA 与发布决定；本地 8 卡正式投影、index、loader、25／25 观察回归、32 文件安装和 198／198 全量回归通过。
+- 远端功能分支仍停在 `708f753` 的 4 卡状态；Phase 6 本地提交未获 push 授权。仍未授权 PR、merge、把功能分支写成远端 `main`、扩大参与者或其余私域候选批量晋级。
 - Linux、Windows 和其他 Node major 均为 `NOT_VERIFIED`；本地隔离路径通过不能写成真实社区或跨平台验收。

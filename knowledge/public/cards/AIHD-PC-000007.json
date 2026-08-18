@@ -1,0 +1,81 @@
+{
+  "schema_version": "0.4",
+  "card_id": "AIHD-PC-000007",
+  "domain": "AI_AGENT_OPENCLAW",
+  "revision": "1.0.0",
+  "question": "什么时候用单 Agent，什么时候拆成多 Agent 或子 Agent？",
+  "aliases": [
+    "复杂任务应该自己做还是派子 Agent？",
+    "长期角色隔离用 persistent multi-agent，短期并行用 Sub-agent 吗？",
+    "每个角色都要建一个独立 Agent 吗？",
+    "持久多 Agent 和一次性 sub-agent 有什么区别？"
+  ],
+  "scope_hint": "在 OpenClaw 中区分单 Agent、持久多 Agent 与一次性 Sub-agent，并按状态隔离、任务依赖和验收成本决定是否拆分。",
+  "applies_to": [
+    "同一个 OpenClaw 系统出现多个长期角色、账号、工作区或权限边界",
+    "主任务包含可独立并行且能单独验收的研究或慢工具子任务",
+    "需要在成本、隔离、共享上下文和协调复杂度之间做选择"
+  ],
+  "not_for": [
+    "只是同一个 Agent 依次调用多个工具；工具多不等于 Agent 多",
+    "任务只有一个短步骤，拆分成本高于执行成本",
+    "需要操作系统级或敌对租户级安全隔离；Agent workspace 本身不是硬沙箱"
+  ],
+  "answer": "默认先用单 Agent：同一目标、同一责任人、同一 workspace 和同一权限面时，一个上下文最容易验收。只有出现长期隔离或一次性并行的明确证据才拆分。不同角色需要各自的 workspace、agentDir、认证资料、会话历史或消息绑定时，使用持久多 Agent；某个子任务输入清楚、可独立运行、完成后由主 Agent 复核与合成时，使用 Sub-agent。不要因为任务“看起来复杂”就拆分，也不要把每个工具包装成 Agent。拆分前必须写清每个单元的 Owner、输入、输出、权限、停止条件和合并点；workspace 只是默认 cwd，未启用沙箱时并不是主机安全边界。",
+  "judgment_framework": [
+    "持续时间：同一长期角色保持单 Agent；多个长期身份使用持久多 Agent；一次性后台子任务使用 Sub-agent。",
+    "状态隔离：共享 workspace、认证和会话状态可接受时保持单 Agent；必须隔离这些状态时使用持久多 Agent。",
+    "任务依赖：步骤强依赖且频繁共享中间判断时不拆；子任务输入和验收可独立冻结时才并行。",
+    "成本与责任：拆分只有在隔离或并行收益高于额外模型、上下文、协调和冲突成本时成立，最终责任仍在主 Agent。",
+    "安全边界：Agent workspace 不是硬沙箱；敌对租户、敏感凭证或高风险操作需要真正的运行时／主机隔离。"
+  ],
+  "common_mistakes": [
+    "把每个工具、步骤或提示词都包装成一个 Agent。",
+    "多个持久 Agent 复用同一个 agentDir，造成认证或会话状态碰撞。",
+    "把 workspace 当成安全沙箱；未启用沙箱时绝对路径仍可能访问其他主机位置。",
+    "给 Sub-agent 模糊目标，没有输入边界、终止条件和结果格式。",
+    "Sub-agent 返回后直接宣告完成，主 Agent 没做读回与交叉核验。",
+    "为了并行而并行，忽略子任务间的串行依赖和合并冲突。"
+  ],
+  "action_principles": [
+    "先证明单 Agent 路线不足，再新增一个最小分工单元。",
+    "长期身份隔离用持久 Agent；短期并行用 Sub-agent；工具调用留在当前 Agent。",
+    "每次拆分都写清 Owner、输入、输出、权限、停止条件和合并点。",
+    "Sub-agent 结果是待复核证据，不是最终决定。",
+    "涉及敌对租户或高风险凭证时另用真正的运行时／主机安全边界。"
+  ],
+  "next_action": "拿当前任务列三栏：长期独立身份、可并行独立子任务、必须共享上下文的步骤。只有第一栏考虑持久 Agent，第二栏最多挑 1 项做 Sub-agent 试验，其余保持单 Agent；写不出独立输入、输出和验收条件就不拆。",
+  "verification_method": "持久多 Agent 必须能读回各自 workspace、agentDir、认证与 binding；Sub-agent 必须有明确派发记录、独立终态和回传结果，并由主 Agent 复核至少一项关键事实。最后比较拆分前后的耗时、模型调用、冲突和返工；没有可测净收益就回到单 Agent。Agent 数量增加不证明质量提高，也不构成主机级安全隔离。",
+  "verification_steps": [
+    "用 `openclaw agents list --bindings` 确认目标 Agent、workspace 和绑定关系符合预期。",
+    "检查不同持久 Agent 没有复用同一 agentDir，并确认工具／Skill 可见性没有意外扩大。",
+    "确认 Sub-agent 派发记录有明确目标、输入和终止条件，完成结果回到请求方。",
+    "由主 Agent 对一项关键事实做独立读回，再决定是否合并结果。",
+    "比较拆分前后的总耗时、模型调用、冲突数和返工；没有净收益就恢复单 Agent。"
+  ],
+  "public_sources": [
+    {
+      "title": "OpenClaw Multi-agent routing",
+      "url": "https://docs.openclaw.ai/concepts/multi-agent",
+      "checked_at": "2026-08-18"
+    },
+    {
+      "title": "OpenClaw Sub-agents",
+      "url": "https://docs.openclaw.ai/tools/subagents",
+      "checked_at": "2026-08-18"
+    },
+    {
+      "title": "OpenClaw Capabilities overview",
+      "url": "https://docs.openclaw.ai/tools",
+      "checked_at": "2026-08-18"
+    }
+  ],
+  "supported_versions": [
+    "OpenClaw official documentation checked 2026-08-18"
+  ],
+  "last_verified": "2026-08-18",
+  "editorial": "APPROVED",
+  "verification": "PASS",
+  "privacy_gate": "PASS",
+  "publication": "READY"
+}

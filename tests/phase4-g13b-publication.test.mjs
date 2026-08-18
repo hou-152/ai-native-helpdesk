@@ -36,7 +36,7 @@ test("G13b receipt binds the exact approved new-card revision and formal loop", 
   assert.equal(receipt.boundary.community_trial_started, false);
 });
 
-test("formal index binds AIHD-PC-000004 revision, content hash, question, aliases, and scope", () => {
+test("current index preserves AIHD-PC-000004 while the G13b four-card receipt stays immutable", () => {
   const entry = index.cards.find((item) => item.card_id === "AIHD-PC-000004");
   assert.ok(entry);
   assert.equal(entry.revision, card.revision);
@@ -44,7 +44,9 @@ test("formal index binds AIHD-PC-000004 revision, content hash, question, aliase
   assert.equal(entry.question, card.question);
   assert.deepEqual(entry.aliases, card.aliases);
   assert.equal(entry.scope_hint, card.scope_hint);
-  assert.equal(receipt.formal_index.sha256, sha256(readText("knowledge/public/index.json")));
+  assert.equal(receipt.formal_index.card_count, 4);
+  assert.equal(receipt.formal_index.sha256, "792301b0219db84d80e6eefae8e10fd7323a53f61fbdb4437ef24215b11c6b31");
+  assert.notEqual(receipt.formal_index.sha256, sha256(readText("knowledge/public/index.json")));
 });
 
 test("the formal card retains all four exact publication gates", () => {

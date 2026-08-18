@@ -42,7 +42,7 @@ function installFresh({ root, unrelated }, name = "installed skill") {
   return { target, state };
 }
 
-test("fresh spaced-path install verifies from unrelated cwd and serves two approved cards", (t) => {
+test("fresh spaced-path install verifies from unrelated cwd and serves the expanded approved pack", (t) => {
   const fixture = tempCase(t);
   const { target, state } = installFresh(fixture);
   const installedInstaller = path.join(target, "scripts", "manage-install.mjs");
@@ -54,7 +54,9 @@ test("fresh spaced-path install verifies from unrelated cwd and serves two appro
 
   for (const [query, cardId] of [
     ["写进 AGENTS.md 的规则，怎样确认在 Codex 中生效？", "AIHD-PC-000001"],
-    ["怎样让 OpenClaw Agent 形成受控自迭代闭环？", "AIHD-PC-000004"]
+    ["怎样让 OpenClaw Agent 形成受控自迭代闭环？", "AIHD-PC-000004"],
+    ["OpenClaw 心跳怎样配置，才能主动检查但不空转或打扰？", "AIHD-PC-000005"],
+    ["Compaction 之后怎样读回目标、硬约束和下一步？", "AIHD-PC-000008"]
   ]) {
     const result = run(installedLoader, ["--query", query], fixture.unrelated);
     assert.equal(result.status, 0, result.stdout);
