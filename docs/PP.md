@@ -47,7 +47,7 @@ Phase 6 不回写原 PP 0—5 的分母。当前状态为 `REMOTE_EIGHT_CARD_PAC
 
 ## 唯一剩余推进路径
 
-1. 当前停点为 Draft PR #5；现场读回 113 个文件、40 个提交、状态 `MERGEABLE`，尚无 checks 或 review。
+1. 当前停点为 Draft PR #5；文件、提交、mergeability、checks 与 review 以 GitHub PR 页面实时状态为准，空 checks 不表述为“全部通过”。
 2. 第二云端执行体的可选测评由 Owner 自行管理；本项目不主动恢复或追踪，也不把它计作 G14 真人证据。
 3. 按已批准的 G14-A，指定 1 名可明确同意和撤回的合格真人社区成员，完成固定范围试跑；失败即停。
 4. Owner 审阅 PR，并另行决定是否将 Draft 转为 ready 以及是否 merge；两项授权不能互相替代。
