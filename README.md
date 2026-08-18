@@ -1,6 +1,6 @@
-# ai-native-helpdesk v0.8.2-phase6-eight-card-pr
+# ai-native-helpdesk v0.9.0-pp-closed-candidate
 
-> 项目当前推进位置、完成度和发布边界以 [`docs/PP.md`](docs/PP.md) 为唯一入口。摘要：Phase 0—5 原机制门仍为 `5／6`；Phase 6 首批 4 张新增卡已经逐卡批准并进入远端 8 卡功能分支，loader 与观察回归通过；[Draft PR #5](https://github.com/hou-152/ai-native-helpdesk/pull/5) 已打开。远端 `main` 仍为 1 卡。
+> 项目当前推进位置、完成度和发布边界以 [`docs/PP.md`](docs/PP.md) 为唯一入口。摘要：PP 机制已按 Owner 最终定义完成并关门；8 卡、198／198、可逆安装和 [Draft PR #5](https://github.com/hou-152/ai-native-helpdesk/pull/5) 构成可发布候选。merge／Release 与 30 人产品验证分别记账；远端 `main` 仍为 1 卡。
 
 ## 目标
 
@@ -163,8 +163,11 @@ node --test
 
 ## 当前完成度
 
+任何进度汇报必须同时声明：`PP_MECHANISM = COMPLETE`、`MERGE_RELEASE = DRAFT_PR_OPEN`、`PRODUCT_VALIDATION_30 = POST_RELEASE_NOT_STARTED / UNKNOWN`。
+
 | 项目 | 状态 |
 |---|---|
+| PP 机制关门 | `COMPLETE / CLOSED / DECLARABLE` |
 | 薄入口与 5 个原有合同 | `TRIAL` |
 | PublicCard schema | `CODE_READY` |
 | 确定性发布门 | `CODE_READY` |
@@ -176,8 +179,9 @@ node --test
 | Phase 3 两张新卡 | `G12_APPROVED / FEATURE_BRANCH_INDEXED` |
 | Phase 4 反馈账本与回滚 | `MECHANISM_COMPLETE / 23 TESTS` |
 | Phase 4 真实反馈闭环 | `G13B_APPROVED / FEATURE_BRANCH_FORMAL_LOOP_COMPLETE` |
-| Phase 5 安装与发布工程 | `ENGINEERING_ACCEPTANCE_PASS / G14_AUTHORIZED` |
+| Phase 5 安装与发布工程 | `COMPLETE_CANDIDATE_READY` |
 | Phase 6 首批知识规模化 | `4 NEW CARDS APPROVED / REMOTE_EIGHT_CARD_PACK_COMPLETE / DRAFT_PR_OPEN` |
-| 真实社区端到端验证 | `NOT_STARTED / EXECUTOR_SMOKE_PASS_ONLY` |
+| merge／Release | `DRAFT_PR_OPEN / PENDING_OWNER_AUTHORIZATION` |
+| 30 人产品验证 | `POST_RELEASE / NOT_STARTED / OUTCOME_UNKNOWN` |
 
 八张卡只覆盖各自声明的窄 scope。后续卡片仍须逐张经过内容修正、真实环境验证、隐私审查和 Owner 发布批准，不能因现有卡片通过而自动晋级。Draft PR #5 已打开，但尚未 merge `main` 或形成 GitHub Release。

@@ -2,7 +2,14 @@
 
 > 当前状态统一入口：[`docs/PP.md`](docs/PP.md)。本文件保留阶段证据与历史，不再承担当前完成度解释。
 
-## Draft PR #5 已创建（2026-08-18）
+## Owner 最终关门：PP 可发布候选成立（2026-08-18）
+
+- Owner 将 PP 完成定义为：8 卡、198／198、可逆安装、Draft PR；当前 `PP_MECHANISM_COMPLETE / CLOSED / DECLARABLE`。
+- merge／Release 独立记为 `DRAFT_PR_OPEN / PENDING_OWNER_AUTHORIZATION`；ready、merge、tag、GitHub Release 不由 PP 完成自动授权。
+- 30 人产品验证独立记为 `POST_RELEASE_NOT_STARTED / OUTCOME_UNKNOWN`，目标至少 15／30；G14 小样本不再阻断 PP 关门。
+- 从本决定起，任何汇报必须同时带 `PP_MECHANISM`、`MERGE_RELEASE`、`PRODUCT_VALIDATION_30` 三行口径。
+
+## 历史：Draft PR #5 已创建（2026-08-18）
 
 - Owner 授权创建 `codex/phase5-install-release` → `main` 的 PR；[Draft PR #5](https://github.com/hou-152/ai-native-helpdesk/pull/5) 已打开。
 - 创建时读回 113 个变更文件、40 个提交、`MERGEABLE`；checks 为空，review 为空。空 checks 不表述为“全部通过”。

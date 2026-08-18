@@ -1,15 +1,15 @@
 ---
 name: ai-native-helpdesk
 description: 面向 AI／Agent／OpenClaw 社区的薄入口 Helpdesk Skill。负责守门、判模、按需加载合同，并只通过确定性发布门读取 PublicCard。
-version: 0.8.2-phase6-eight-card-pr
-status: PHASE6_REMOTE_EIGHT_CARD_PACK_COMPLETE / DRAFT_PR_OPEN / G14_AUTHORIZED_AWAITING_HUMAN_P1
+version: 0.9.0-pp-closed-candidate
+status: PP_MECHANISM_COMPLETE / DRAFT_PR_OPEN / PRODUCT_VALIDATION_POST_RELEASE
 author: 减
 license: Apache-2.0
 ---
 
-# ai-native-helpdesk v0.8.2-phase6-eight-card-pr
+# ai-native-helpdesk v0.9.0-pp-closed-candidate
 
-> 当前已实现 PublicCard 机器发布门。远端功能分支已经包含 G12／G13b 的 000001—000004 和 Phase 6 逐卡批准的 000005—000008，形成 8 卡 index，并通过 loader、观察错配和安装回归；Draft PR #5 已打开。Phase 5 安装工程与 G14-A 范围授权已通过，但真人社区试跑仍未开始；PR 内 8 卡可用不等于远端 `main`、完整知识库、社区验收或用户效果。
+> PP 机制已按 Owner 最终定义完成并关门：远端功能分支包含 8 张逐卡批准卡，198／198 与可逆安装通过，Draft PR #5 已打开。merge／Release 仍待逐项授权，30 人产品验证属于发布后阶段；PR 内 8 卡可用不等于远端 `main`、完整知识库、社区验收或用户效果。
 
 运行时把本文件所在目录作为唯一 Skill 根目录；所有 contract、schema、policy、script 和 PublicCard 都相对于该目录解析，不猜测用户目录或固定全局安装路径。
 
@@ -181,6 +181,9 @@ node scripts/helpdesk-turn-contract.mjs \
 
 ## 当前状态
 
+- PP 机制：`COMPLETE / CLOSED / DECLARABLE`；证据为 8 卡、198／198、可逆安装和 Draft PR #5。
+- merge／Release：`DRAFT_PR_OPEN / PENDING_OWNER_AUTHORIZATION`；ready、merge、tag、GitHub Release 分别授权。
+- 30 人产品验证：`POST_RELEASE / NOT_STARTED / OUTCOME_UNKNOWN`；目标至少 15／30，当前没有冻结查询集或真人实测。
 - 发布门代码和合成测试：已建立。
 - Phase 1 召回选择：Owner G10 已通过；synthetic holdout 与 G12 后真实三卡观察回归均通过，仍须在 loader 前做适用性裁决。
 - Phase 2 回合与外部来源合同：G11 已通过；当前是远端功能分支能力，尚未进入 `main`。
@@ -210,6 +213,7 @@ node scripts/helpdesk-turn-contract.mjs \
 | v0.8.0-phase6-eight-card-local | STOP_BEFORE_PR | Phase 6 逐卡批准新增 4 卡；本地 8 卡 index／loader／错配／安装与全量回归通过 |
 | v0.8.1-phase6-eight-card-branch | STOP_BEFORE_PR | 8 卡提交已 push 到远端功能分支；同步当前文档，尚未创建 PR |
 | v0.8.2-phase6-eight-card-pr | DRAFT_PR_OPEN | Draft PR #5 已创建；未 merge、tag 或 GitHub Release |
+| v0.9.0-pp-closed-candidate | PP_MECHANISM_COMPLETE | Owner 以 8 卡、198／198、可逆安装和 Draft PR 正式关门；发布与产品验证分账 |
 | G13a control receipt | COMPLETED | Owner 授权的 1 用户／1 问题受控采集已完成；公开仓库只留聚合收据 |
 
 后续 PublicCard 仍须逐张独立完成内容修正、真实验证、隐私审查和 Owner 发布批准；首张卡通过不能让其他候选自动晋级。
