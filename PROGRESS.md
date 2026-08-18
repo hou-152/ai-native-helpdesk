@@ -2,7 +2,13 @@
 
 > 当前状态统一入口：[`docs/PP.md`](docs/PP.md)。本文件保留阶段证据与历史，不再承担当前完成度解释。
 
-## Phase 6 首批四卡本地正式投影（2026-08-18）
+## Phase 6 八卡功能分支已推送（2026-08-18）
+
+- Owner 授权的 8 卡实现 commit `3ba59ad13339b94e70511b2da6db16e960bfc80d` 已快进 push 到 `codex/phase5-install-release`，远端 ref 与 8 卡 index 现场读回一致。
+- 当前状态为 `REMOTE_EIGHT_CARD_PACK_COMPLETE / STOP_BEFORE_PR`；没有创建 PR、merge `main`、tag 或 GitHub Release。
+- 本节只同步当前公开文档；卡片、index、loader、测试和绑定 hash 的 Phase 6 历史收据均未改写。
+
+## 历史：Phase 6 首批四卡本地正式投影（2026-08-18）
 
 - Owner 逐卡通过 000005—000008 v1.0.0 的 100% 人工 QA 与发布决定；私密旧 `HOLD` 收据保持不可变，新增控制收据对 `public-projection` 均返回 `READY / PUBLIC_PROJECTION_READY`。
 - 4 张公开卡与获批私域 KnowledgeCard 的 `proposed_public_fields` 逐字段相等；补齐四门后，正式本地 index 从 4 张扩为 8 张并绑定 revision、完整文件 hash、question、aliases 和 scope。
@@ -11,7 +17,7 @@
 - release allowlist 从历史 G14 artifact 的 28 个安装文件扩为当前 32 个安装文件；历史 G14 artifact／hash 保持不变。含空格隔离路径 install／verify／查询／uninstall 通过。
 - 全量测试 198／198 PASS；0 fail／cancelled／skipped／todo。当前只完成本地提交候选；未 push、未创建 PR、未 merge、未 tag 或 Release。
 
-## 当前 Phase 1—5 功能分支已推送（2026-08-18）
+## 历史：Phase 1—5 功能分支已推送（2026-08-18）
 
 - Owner 已授权并完成 `codex/phase5-install-release` 功能分支 push；远端读回与本地提交一致。
 - 本次只创建／更新远端功能分支，没有创建 PR、没有 merge `main`，也没有扩大社区参与者或私域候选范围。

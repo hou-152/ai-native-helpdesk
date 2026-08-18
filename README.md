@@ -1,6 +1,6 @@
-# ai-native-helpdesk v0.8.0-phase6-eight-card-local
+# ai-native-helpdesk v0.8.1-phase6-eight-card-branch
 
-> 项目当前推进位置、完成度和发布边界以 [`docs/PP.md`](docs/PP.md) 为唯一入口。摘要：Phase 0—5 原机制门仍为 `5／6`；Phase 6 首批 4 张新增卡已在本地完成逐卡批准、正式投影、8 卡 index、loader 与观察回归，停在 push／PR 前。远端功能分支仍为原 4 卡，`main` 仍为 1 卡。
+> 项目当前推进位置、完成度和发布边界以 [`docs/PP.md`](docs/PP.md) 为唯一入口。摘要：Phase 0—5 原机制门仍为 `5／6`；Phase 6 首批 4 张新增卡已经逐卡批准并进入远端 8 卡功能分支，loader 与观察回归通过，停在创建 PR 前。远端 `main` 仍为 1 卡。
 
 ## 目标
 
@@ -70,7 +70,7 @@ node scripts/query-public-card.mjs \
   --community-pack "/path/to/community-pack"
 ```
 
-脚本不会自动扫描当前目录、用户目录、环境变量或个人资料。当前本地分支的正式公共索引包含 8 张逐卡批准卡；精确命中且通过全部门时才返回 `ALLOW`，其他问题仍返回 `MISS`。
+脚本不会自动扫描当前目录、用户目录、环境变量或个人资料。当前功能分支的正式公共索引包含 8 张逐卡批准卡；精确命中且通过全部门时才返回 `ALLOW`，其他问题仍返回 `MISS`。
 
 安装、验证、卸载与回滚使用显式目标路径和可读回 state；完整步骤见 [`docs/INSTALL.md`](docs/INSTALL.md)。运行时只从 `SKILL.md` 所在目录解析资源，不依赖固定的用户目录。
 
@@ -93,7 +93,7 @@ node scripts/knowledge-production.mjs \
 - 公开投影还必须经过首批 100% 人工 QA、四门和逐卡 Owner 发布决定。
 - 历史 `PENDING_G12` 收据在 private 与 public 目标仍返回 `HOLD`，不会因后续批准而被静默改写。
 
-G12 首批清单固定为 3 张：现有卡的 schema B 迁移，以及 2 张只使用公开官方来源起草的新卡。G12 已逐卡批准指定 revision；正式 index 的扩张和真实三卡回归均有独立收据。Phase 6 又逐卡批准 000005—000008 v1.0.0；本地 8 卡投影、41 条 loader question／alias 检查和 25 条观察回归另有独立收据，不追溯改写 G12／G13b 历史收据。
+G12 首批清单固定为 3 张：现有卡的 schema B 迁移，以及 2 张只使用公开官方来源起草的新卡。G12 已逐卡批准指定 revision；正式 index 的扩张和真实三卡回归均有独立收据。Phase 6 又逐卡批准 000005—000008 v1.0.0；功能分支 8 卡投影、41 条 loader question／alias 检查和 25 条观察回归另有独立收据，不追溯改写 G12／G13b 历史收据。
 
 ## Phase 1 召回边界
 
@@ -123,7 +123,7 @@ node scripts/feedback-ledger.mjs replay \
 - staging 必须保留 `g13b_status = PENDING` 和 `isolation = ISOLATED_CANDIDATE`；不能借隔离 ALLOW 伪造 Owner 批准。G13b 通过后仍须另写正式 `PUBLICATION_DECISION` 并重新执行正式 index 与 loader。
 - 索引失败、验证失败、撤回、过期或反馈更正会取消 serving eligibility，不能沿用旧成功声明。
 - G13a 的真实隔离链已经完成；公开仓库只保留聚合收据和 hash 指针，不保存原问句、反馈原文、候选正文或私密 ledger。该链仍只有 `ADOPTED`，不证明用户执行或客观效果。
-- G13b 已逐项批准唯一候选；正式第四张卡、index 和 loader 后验收均已本地完成。该结果不等于远端发布、社区试跑或用户效果。
+- G13b 已逐项批准唯一候选；正式第四张卡、index 和 loader 后验收已经完成并进入远端功能分支。该结果不等于进入 `main`、社区试跑或用户效果。
 
 ## Phase 2 回合合同
 
@@ -168,16 +168,16 @@ node --test
 | 薄入口与 5 个原有合同 | `TRIAL` |
 | PublicCard schema | `CODE_READY` |
 | 确定性发布门 | `CODE_READY` |
-| 公共知识卡 | `8 / LOCAL_BRANCH / NOT_PUSHED` |
-| 首批真实 PublicCard | `G12_APPROVED / LOCAL_INDEXED` |
+| 公共知识卡 | `8 / REMOTE_FEATURE_BRANCH / NOT_MAIN` |
+| 首批真实 PublicCard | `G12_APPROVED / FEATURE_BRANCH_INDEXED` |
 | Phase 1 召回选择 | `G10_APPROVED / REAL_THREE_CARD_OBSERVED_REGRESSION_PASS` |
-| Phase 2 回合合同 | `G11_APPROVED / LOCAL_ONLY` |
+| Phase 2 回合合同 | `G11_APPROVED / FEATURE_BRANCH_ONLY` |
 | Phase 3 schema B 与生产门 | `G12_APPROVED / TESTED` |
-| Phase 3 两张新卡 | `G12_APPROVED / LOCAL_INDEXED` |
+| Phase 3 两张新卡 | `G12_APPROVED / FEATURE_BRANCH_INDEXED` |
 | Phase 4 反馈账本与回滚 | `MECHANISM_COMPLETE / 23 TESTS` |
-| Phase 4 真实反馈闭环 | `G13B_APPROVED / LOCAL_FORMAL_LOOP_COMPLETE` |
+| Phase 4 真实反馈闭环 | `G13B_APPROVED / FEATURE_BRANCH_FORMAL_LOOP_COMPLETE` |
 | Phase 5 安装与发布工程 | `ENGINEERING_ACCEPTANCE_PASS / G14_AUTHORIZED` |
-| Phase 6 首批知识规模化 | `4 NEW CARDS APPROVED / LOCAL_EIGHT_CARD_PACK_COMPLETE` |
+| Phase 6 首批知识规模化 | `4 NEW CARDS APPROVED / REMOTE_EIGHT_CARD_PACK_COMPLETE / STOP_BEFORE_PR` |
 | 真实社区端到端验证 | `NOT_STARTED / EXECUTOR_SMOKE_PASS_ONLY` |
 
-八张卡只覆盖各自声明的窄 scope。后续卡片仍须逐张经过内容修正、真实环境验证、隐私审查和 Owner 发布批准，不能因现有卡片通过而自动晋级。本地 8 卡投影尚未 push、创建 PR、合并 `main` 或形成 GitHub Release。
+八张卡只覆盖各自声明的窄 scope。后续卡片仍须逐张经过内容修正、真实环境验证、隐私审查和 Owner 发布批准，不能因现有卡片通过而自动晋级。8 卡已经进入远端功能分支，但尚未创建 PR、合并 `main` 或形成 GitHub Release。
