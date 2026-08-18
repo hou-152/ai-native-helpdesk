@@ -1,6 +1,6 @@
-# ai-native-helpdesk v0.9.0-pp-closed-candidate
+# ai-native-helpdesk v0.9.0
 
-> 项目当前推进位置、完成度和发布边界以 [`docs/PP.md`](docs/PP.md) 为唯一入口。摘要：PP 机制已按 Owner 最终定义完成并关门；8 卡、198／198、可逆安装和 [Draft PR #5](https://github.com/hou-152/ai-native-helpdesk/pull/5) 构成可发布候选。merge／Release 与 30 人产品验证分别记账；远端 `main` 仍为 1 卡。
+> 项目当前推进位置、完成度和发布边界以 [`docs/PP.md`](docs/PP.md) 为唯一入口。摘要：PP 机制已按 Owner 最终定义完成并关门；8 卡、198／198、可逆安装已通过 [PR #5](https://github.com/hou-152/ai-native-helpdesk/pull/5) merge 到远端 `main`（merge commit `430b34b`）。tag／GitHub Release 与 30 人产品验证分别记账，产品效果尚未证明。
 
 ## 目标
 
@@ -163,7 +163,7 @@ node --test
 
 ## 当前完成度
 
-任何进度汇报必须同时声明：`PP_MECHANISM = COMPLETE`、`MERGE_RELEASE = DRAFT_PR_OPEN`、`PRODUCT_VALIDATION_30 = POST_RELEASE_NOT_STARTED / UNKNOWN`。
+任何进度汇报必须同时声明：`PP_MECHANISM = COMPLETE`、`MERGE_MAIN = COMPLETE`、`GITHUB_RELEASE = NOT_STARTED`、`PRODUCT_VALIDATION_30 = POST_RELEASE_NOT_STARTED / UNKNOWN`。
 
 | 项目 | 状态 |
 |---|---|
@@ -171,7 +171,7 @@ node --test
 | 薄入口与 5 个原有合同 | `TRIAL` |
 | PublicCard schema | `CODE_READY` |
 | 确定性发布门 | `CODE_READY` |
-| 公共知识卡 | `8 / REMOTE_FEATURE_BRANCH / NOT_MAIN` |
+| 公共知识卡 | `8 / MAIN (PR #5 merged 430b34b)` |
 | 首批真实 PublicCard | `G12_APPROVED / FEATURE_BRANCH_INDEXED` |
 | Phase 1 召回选择 | `G10_APPROVED / REAL_THREE_CARD_OBSERVED_REGRESSION_PASS` |
 | Phase 2 回合合同 | `G11_APPROVED / FEATURE_BRANCH_ONLY` |
@@ -180,8 +180,9 @@ node --test
 | Phase 4 反馈账本与回滚 | `MECHANISM_COMPLETE / 23 TESTS` |
 | Phase 4 真实反馈闭环 | `G13B_APPROVED / FEATURE_BRANCH_FORMAL_LOOP_COMPLETE` |
 | Phase 5 安装与发布工程 | `COMPLETE_CANDIDATE_READY` |
-| Phase 6 首批知识规模化 | `4 NEW CARDS APPROVED / REMOTE_EIGHT_CARD_PACK_COMPLETE / DRAFT_PR_OPEN` |
-| merge／Release | `DRAFT_PR_OPEN / PENDING_OWNER_AUTHORIZATION` |
+| Phase 6 首批知识规模化 | `4 NEW CARDS APPROVED / EIGHT_CARD_PACK / MERGED_TO_MAIN` |
+| merge | `COMPLETE (PR #5 → main 430b34b)` |
+| tag／GitHub Release | `NOT_STARTED / PENDING_OWNER_AUTHORIZATION` |
 | 30 人产品验证 | `POST_RELEASE / NOT_STARTED / OUTCOME_UNKNOWN` |
 
-八张卡只覆盖各自声明的窄 scope。后续卡片仍须逐张经过内容修正、真实环境验证、隐私审查和 Owner 发布批准，不能因现有卡片通过而自动晋级。Draft PR #5 已打开，但尚未 merge `main` 或形成 GitHub Release。
+八张卡只覆盖各自声明的窄 scope。后续卡片仍须逐张经过内容修正、真实环境验证、隐私审查和 Owner 发布批准，不能因现有卡片通过而自动晋级。8 卡已通过 PR #5 merge 到 `main`；30 人产品覆盖仍属发布后验证，尚未开始。

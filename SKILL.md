@@ -1,15 +1,15 @@
 ---
 name: ai-native-helpdesk
 description: 面向 AI／Agent／OpenClaw 社区的薄入口 Helpdesk Skill。负责守门、判模、按需加载合同，并只通过确定性发布门读取 PublicCard。
-version: 0.9.0-pp-closed-candidate
-status: PP_MECHANISM_COMPLETE / DRAFT_PR_OPEN / PRODUCT_VALIDATION_POST_RELEASE
+version: 0.9.0
+status: PP_MECHANISM_COMPLETE / MERGE_MAIN_COMPLETE / GITHUB_RELEASE_NOT_STARTED / PRODUCT_VALIDATION_POST_RELEASE
 author: 减
 license: Apache-2.0
 ---
 
 # ai-native-helpdesk v0.9.0-pp-closed-candidate
 
-> PP 机制已按 Owner 最终定义完成并关门：远端功能分支包含 8 张逐卡批准卡，198／198 与可逆安装通过，Draft PR #5 已打开。merge／Release 仍待逐项授权，30 人产品验证属于发布后阶段；PR 内 8 卡可用不等于远端 `main`、完整知识库、社区验收或用户效果。
+> PP 机制已按 Owner 最终定义完成并关门：8 张逐卡批准卡已通过 PR #5 merge 到远端 `main`（`430b34b`），198／198 与可逆安装通过。tag／GitHub Release 仍待逐项授权，30 人产品验证属于发布后阶段；8 卡可用不等于完整知识库、社区验收或用户效果。
 
 运行时把本文件所在目录作为唯一 Skill 根目录；所有 contract、schema、policy、script 和 PublicCard 都相对于该目录解析，不猜测用户目录或固定全局安装路径。
 
@@ -181,18 +181,18 @@ node scripts/helpdesk-turn-contract.mjs \
 
 ## 当前状态
 
-- PP 机制：`COMPLETE / CLOSED / DECLARABLE`；证据为 8 卡、198／198、可逆安装和 Draft PR #5。
-- merge／Release：`DRAFT_PR_OPEN / PENDING_OWNER_AUTHORIZATION`；ready、merge、tag、GitHub Release 分别授权。
+- PP 机制：`COMPLETE / CLOSED / DECLARABLE`；证据为 8 卡、198／198、可逆安装和逐卡 Owner 批准。
+- merge：`COMPLETE`（PR #5 → `main`，`430b34b`）。tag／GitHub Release：`NOT_STARTED / PENDING_OWNER_AUTHORIZATION`，分别授权。
 - 30 人产品验证：`POST_RELEASE / NOT_STARTED / OUTCOME_UNKNOWN`；目标至少 15／30，当前没有冻结查询集或真人实测。
 - 发布门代码和合成测试：已建立。
 - Phase 1 召回选择：Owner G10 已通过；synthetic holdout 与 G12 后真实三卡观察回归均通过，仍须在 loader 前做适用性裁决。
 - Phase 2 回合与外部来源合同：G11 已通过；当前是远端功能分支能力，尚未进入 `main`。
 - Phase 3 schema B、生产门与正式三卡错配：G12 已通过，功能分支验证通过。
-- 公开 PublicCard：远端功能分支 8 张，远端 `main` 仍为 1 张；功能分支不等于正式发布面。
+- 公开 PublicCard：远端 `main` 8 张（经 PR #5 merge，`430b34b`）。
 - 两张新卡：已按 G12 指定 revision 进入功能分支正式 index。
 - Phase 4 反馈账本与回滚：机制完成；23 项定向测试通过，包含 G13b 前 staging／formal 状态隔离。
 - Phase 4 真实闭环：`G13B_APPROVED / FEATURE_BRANCH_FORMAL_LOOP_COMPLETE`；第四张卡正式 index／ALLOW 已通过。
-- Phase 6 首批知识规模化：000005—000008 已逐卡通过人工 QA 与发布决定；远端功能分支 8 卡 index、41 条 loader 检查、25／25 观察错配回归和 198／198 全量测试通过；Draft PR #5 已打开但未 merge。
+- Phase 6 首批知识规模化：000005—000008 已逐卡通过人工 QA 与发布决定；远端 `main` 8 卡 index、41 条 loader 检查、25／25 观察错配回归和 198／198 全量测试通过；已 merge，tag／Release 未创建。
 - 社区真实端到端验证：未完成。
 - 群聊候选、内部证据和审核材料：不属于公开仓库。
 
@@ -212,8 +212,8 @@ node scripts/helpdesk-turn-contract.mjs \
 | v0.6.3-phase4-g13b-published | PHASE5_READY | G13b 批准第四张卡；本地正式 index／loader 与真实反馈链闭合 |
 | v0.8.0-phase6-eight-card-local | HISTORICAL_STOP_BEFORE_PR | Phase 6 逐卡批准新增 4 卡；该冻结时点的本地 8 卡 index／loader／错配／安装与全量回归通过 |
 | v0.8.1-phase6-eight-card-branch | HISTORICAL_STOP_BEFORE_PR | 8 卡提交已 push 到远端功能分支；该冻结时点尚未创建 PR，后续已由 v0.8.2 取代 |
-| v0.8.2-phase6-eight-card-pr | DRAFT_PR_OPEN | Draft PR #5 已创建；未 merge、tag 或 GitHub Release |
-| v0.9.0-pp-closed-candidate | PP_MECHANISM_COMPLETE | Owner 以 8 卡、198／198、可逆安装和 Draft PR 正式关门；发布与产品验证分账 |
+| v0.8.2-phase6-eight-card-pr | HISTORICAL_DRAFT_PR_OPEN | Draft PR #5 已创建；该冻结点未 merge，后续已 merge `main` |
+| v0.9.0 | PP_MECHANISM_COMPLETE + MERGE_MAIN_COMPLETE | Owner 以 8 卡、198／198、可逆安装关门；PR #5 已 merge `main`（`430b34b`）；发布与产品验证分账 |
 | G13a control receipt | COMPLETED | Owner 授权的 1 用户／1 问题受控采集已完成；公开仓库只留聚合收据 |
 
 后续 PublicCard 仍须逐张独立完成内容修正、真实验证、隐私审查和 Owner 发布批准；首张卡通过不能让其他候选自动晋级。

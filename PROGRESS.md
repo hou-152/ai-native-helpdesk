@@ -1,17 +1,17 @@
 # 受控阶段进度
 
-> 当前状态统一入口：[`docs/PP.md`](docs/PP.md)。本文件保留阶段证据与历史，不再承担当前完成度解释。下文旧阶段中的“4 张”“本地”“未 push”与 `STOP_BEFORE_PR` 都是带日期的冻结时点，不得覆盖当前 8 卡 Draft PR 状态。
+> 当前状态统一入口：[`docs/PP.md`](docs/PP.md)。本文件保留阶段证据与历史，不再承担当前完成度解释。下文旧阶段中的“4 张”“本地”“未 push”“Draft PR”与 `STOP_BEFORE_PR` 都是带日期的冻结时点，不得覆盖当前 8 卡已 merge main 状态。
 
 ## 当前：私密小样本提案待 Owner 决定（2026-08-18）
 
 - 3—5 人私密小样本只是建议，Owner 尚未批准是否进行、参与者、时间或执行方式；状态为 `PILOT_PROPOSED_AWAITING_OWNER_DECISION`。
-- 当前未授权选人、邀请、传包或收集反馈，也未把该提案设为 Draft 转 Ready 的前置条件。
-- PR 仍为 Draft；ready、merge、tag 与 GitHub Release 分别等待 Owner 明确决定。
+- 当前未授权选人、邀请、传包或收集反馈，也未把该提案设为 Release 的前置条件。
+- PR #5 已 merge `main`；tag、GitHub Release 与内测分别等待 Owner 明确决定。
 
 ## Owner 最终关门：PP 可发布候选成立（2026-08-18）
 
-- Owner 将 PP 完成定义为：8 卡、198／198、可逆安装、Draft PR；当前 `PP_MECHANISM_COMPLETE / CLOSED / DECLARABLE`。
-- merge／Release 独立记为 `DRAFT_PR_OPEN / PENDING_OWNER_AUTHORIZATION`；ready、merge、tag、GitHub Release 不由 PP 完成自动授权。
+- Owner 将 PP 完成定义为：8 卡、198／198、可逆安装、逐卡批准；当前 `PP_MECHANISM_COMPLETE / CLOSED / DECLARABLE`。
+- merge 已完成：PR #5 → `main`（merge commit `430b34b`）。tag／GitHub Release 独立记为 `RELEASE_NOT_STARTED / PENDING_OWNER_AUTHORIZATION`，不由 PP 完成自动授权。
 - 30 人产品验证独立记为 `POST_RELEASE_NOT_STARTED / OUTCOME_UNKNOWN`，目标至少 15／30；G14 小样本不再阻断 PP 关门。
 - 从本决定起，任何汇报必须同时带 `PP_MECHANISM`、`MERGE_RELEASE`、`PRODUCT_VALIDATION_30` 三行口径。
 
@@ -19,7 +19,7 @@
 
 - Owner 授权创建 `codex/phase5-install-release` → `main` 的 PR；[Draft PR #5](https://github.com/hou-152/ai-native-helpdesk/pull/5) 已打开。
 - 创建时读回 113 个变更文件、40 个提交、`MERGEABLE`；checks 为空，review 为空。空 checks 不表述为“全部通过”。
-- 当前状态为 `DRAFT_PR_OPEN / NOT_MERGED`；未授权 merge、tag、GitHub Release 或社区可用声明。
+- 该历史冻结点状态为 `DRAFT_PR_OPEN / NOT_MERGED`；后续已由 Owner 授权 merge，进入 `main` 的 8 卡状态取代本冻结点。
 
 ## 历史：Phase 6 八卡功能分支已推送（2026-08-18）
 
