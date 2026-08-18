@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0",
+  "phase": "7",
+  "receipt_id": "AIHD-P7-OWNER-PILOT-V1",
+  "evaluated_at": "2026-08-19T05:50:46+08:00",
+  "evidence_layer": "A_OWNER_DISCOVERY",
+  "public_runtime": {
+    "repository": "hou-152/ai-native-helpdesk",
+    "evaluated_commit": "4c066af7e81cc929e33ec17fd97eb9ce50b746e5",
+    "main_card_count": 8,
+    "release_tag": "v0.9.0",
+    "release_published_at": "2026-08-18T12:30:44Z",
+    "release_url": "https://github.com/hou-152/ai-native-helpdesk/releases/tag/v0.9.0"
+  },
+  "private_input": {
+    "question_count": 9,
+    "provenance": "OWNER_TYPED",
+    "question_set_sha256": "9a4f6c79d5102455f02651479b2ab58c615c546b3c7d1592d04ccdcbcba707d7",
+    "question_set_bytes": 3621,
+    "machine_baseline_sha256": "efe99e4ef0a0eb84de8584e2ad33c3e255388000cd5abe0536f0b29a84252fa5",
+    "machine_baseline_bytes": 2498,
+    "owner_review_pack_sha256": "e524be3625d1479747762e44981ae37b0fe4e93e94be5c5dfd17b3f0f804b6ad",
+    "owner_review_pack_bytes": 16490,
+    "raw_questions_public": false,
+    "external_user_identity_bound": false,
+    "chat_turn_bound": false
+  },
+  "source_screenshots": {
+    "received_count": 3,
+    "unique_image_count": 2,
+    "observed_content": "CONVERSATION_CONTAINER_OR_MEMBER_HEADER_ONLY",
+    "question_body_visible": false,
+    "participant_count_usable_for_validation": false
+  },
+  "loader_baseline": {
+    "implementation": "scripts/query-public-card.mjs",
+    "matching_behavior": "NORMALIZED_EXACT_QUESTION_OR_ALIAS",
+    "allow": 0,
+    "miss": 9,
+    "deny": 0
+  },
+  "candidate_retrieval_diagnostic": {
+    "algorithm": "bm25_expansion_keyword",
+    "threshold": 0.8449460370411592,
+    "top_k": 3,
+    "cases_with_candidate": 5,
+    "cases_without_candidate": 4,
+    "candidate_id_count": 7,
+    "owner_applicability": "UNKNOWN",
+    "serving_authority": false
+  },
+  "owner_review": {
+    "directly_usable": "UNKNOWN",
+    "inspiring": "UNKNOWN",
+    "would_continue": "UNKNOWN"
+  },
+  "external_validation": {
+    "participants": 0,
+    "target": 30,
+    "resolved_or_advanced": "UNKNOWN",
+    "outcome": "UNKNOWN"
+  },
+  "claim_boundary": [
+    "This receipt proves only the mechanical baseline for nine Owner-typed questions.",
+    "It does not bind questions to external users or visible chat containers.",
+    "Retrieval candidates do not establish semantic applicability or authorize card loading.",
+    "Prepared fallback answers are not PublicCard hits and remain pending Owner judgment.",
+    "No 30-person product validation result is established."
+  ]
+}

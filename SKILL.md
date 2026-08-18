@@ -2,14 +2,14 @@
 name: ai-native-helpdesk
 description: 面向 AI／Agent／OpenClaw 社区的薄入口 Helpdesk Skill。负责守门、判模、按需加载合同，并只通过确定性发布门读取 PublicCard。
 version: 0.9.0
-status: PP_MECHANISM_COMPLETE / MERGE_MAIN_COMPLETE / GITHUB_RELEASE_NOT_STARTED / PRODUCT_VALIDATION_POST_RELEASE
+status: PP_MECHANISM_COMPLETE / MERGE_MAIN_COMPLETE / GITHUB_RELEASE_COMPLETE / PRODUCT_VALIDATION_DISCOVERY_IN_PROGRESS
 author: 减
 license: Apache-2.0
 ---
 
-# ai-native-helpdesk v0.9.0-pp-closed-candidate
+# ai-native-helpdesk v0.9.0
 
-> PP 机制已按 Owner 最终定义完成并关门：8 张逐卡批准卡已通过 PR #5 merge 到远端 `main`（`430b34b`），198／198 与可逆安装通过。tag／GitHub Release 仍待逐项授权，30 人产品验证属于发布后阶段；8 卡可用不等于完整知识库、社区验收或用户效果。
+> PP 机制已按 Owner 最终定义完成并关门：8 张逐卡批准卡已通过 PR #5 merge 到远端 `main`（`430b34b`），198／198 与可逆安装通过；`v0.9.0` tag 与 GitHub Release 已发布。30 人产品验证仍是独立的发布后阶段；8 卡可用与 Release 存在都不等于完整知识库、社区验收或用户效果。
 
 运行时把本文件所在目录作为唯一 Skill 根目录；所有 contract、schema、policy、script 和 PublicCard 都相对于该目录解析，不猜测用户目录或固定全局安装路径。
 
@@ -116,7 +116,7 @@ publication = READY
 
 Phase 1 已由 Owner G10 选择 `bm25_expansion_keyword@0.8449460370411592 / top_k=3` 作为候选召回方案，并通过 synthetic holdout、G12 后三卡观察回归与 Phase 6 的 8 卡观察回归。它仍不能从分数直接触发 `ALLOW` 或正文读取；宽召回必须先经过适用性裁决。Phase 6 的 25 条用例不是 blind 或真人覆盖证据。
 
-PublicCard schema B 为 `0.4`，新增安全 `scope_hint`、判断框架、常见错误、行动原则和验证方法。index 同时绑定 revision、完整文件 hash 和 scope_hint；任一漂移均 `DENY`。G12 已批准前三张卡，G13b 已批准 000004 v1.0.0，Phase 6 已逐卡批准 000005—000008 v1.0.0；功能分支正式 index 精确绑定 8 张卡。
+PublicCard schema B 为 `0.4`，新增安全 `scope_hint`、判断框架、常见错误、行动原则和验证方法。index 同时绑定 revision、完整文件 hash 和 scope_hint；任一漂移均 `DENY`。G12 已批准前三张卡，G13b 已批准 000004 v1.0.0，Phase 6 已逐卡批准 000005—000008 v1.0.0；远端 `main` 的正式 index 精确绑定 8 张卡。
 
 ## Phase 3 生产门
 
@@ -182,17 +182,17 @@ node scripts/helpdesk-turn-contract.mjs \
 ## 当前状态
 
 - PP 机制：`COMPLETE / CLOSED / DECLARABLE`；证据为 8 卡、198／198、可逆安装和逐卡 Owner 批准。
-- merge：`COMPLETE`（PR #5 → `main`，`430b34b`）。tag／GitHub Release：`NOT_STARTED / PENDING_OWNER_AUTHORIZATION`，分别授权。
-- 30 人产品验证：`POST_RELEASE / NOT_STARTED / OUTCOME_UNKNOWN`；目标至少 15／30，当前没有冻结查询集或真人实测。
+- merge：`COMPLETE`（PR #5 → `main`，`430b34b`）。tag／GitHub Release：`COMPLETE`（`v0.9.0`，发布于 `2026-08-18T12:30:44Z`）。
+- 30 人产品验证：`POST_RELEASE / A_LAYER_DISCOVERY_IN_PROGRESS / OUTCOME_UNKNOWN`；已冻结 9 个 Owner 本轮输入问题并完成 loader 基线，外部独立用户仍为 0／30。
 - 发布门代码和合成测试：已建立。
 - Phase 1 召回选择：Owner G10 已通过；synthetic holdout 与 G12 后真实三卡观察回归均通过，仍须在 loader 前做适用性裁决。
-- Phase 2 回合与外部来源合同：G11 已通过；当前是远端功能分支能力，尚未进入 `main`。
-- Phase 3 schema B、生产门与正式三卡错配：G12 已通过，功能分支验证通过。
+- Phase 2 回合与外部来源合同：G11 已通过并随 PR #5 进入远端 `main`。
+- Phase 3 schema B、生产门与正式三卡错配：G12 已通过并随 PR #5 进入远端 `main`。
 - 公开 PublicCard：远端 `main` 8 张（经 PR #5 merge，`430b34b`）。
-- 两张新卡：已按 G12 指定 revision 进入功能分支正式 index。
+- 两张新卡：已按 G12 指定 revision 进入远端 `main` 的正式 index。
 - Phase 4 反馈账本与回滚：机制完成；23 项定向测试通过，包含 G13b 前 staging／formal 状态隔离。
-- Phase 4 真实闭环：`G13B_APPROVED / FEATURE_BRANCH_FORMAL_LOOP_COMPLETE`；第四张卡正式 index／ALLOW 已通过。
-- Phase 6 首批知识规模化：000005—000008 已逐卡通过人工 QA 与发布决定；远端 `main` 8 卡 index、41 条 loader 检查、25／25 观察错配回归和 198／198 全量测试通过；已 merge，tag／Release 未创建。
+- Phase 4 真实闭环：`G13B_APPROVED / MAIN_FORMAL_LOOP_COMPLETE`；第四张卡正式 index／ALLOW 已通过并随 PR #5 进入 `main`。
+- Phase 6 首批知识规模化：000005—000008 已逐卡通过人工 QA 与发布决定；远端 `main` 8 卡 index、41 条 loader 检查、25／25 观察错配回归和 198／198 全量测试通过；已 merge 并发布 `v0.9.0` GitHub Release。
 - 社区真实端到端验证：未完成。
 - 群聊候选、内部证据和审核材料：不属于公开仓库。
 
@@ -213,7 +213,7 @@ node scripts/helpdesk-turn-contract.mjs \
 | v0.8.0-phase6-eight-card-local | HISTORICAL_STOP_BEFORE_PR | Phase 6 逐卡批准新增 4 卡；该冻结时点的本地 8 卡 index／loader／错配／安装与全量回归通过 |
 | v0.8.1-phase6-eight-card-branch | HISTORICAL_STOP_BEFORE_PR | 8 卡提交已 push 到远端功能分支；该冻结时点尚未创建 PR，后续已由 v0.8.2 取代 |
 | v0.8.2-phase6-eight-card-pr | HISTORICAL_DRAFT_PR_OPEN | Draft PR #5 已创建；该冻结点未 merge，后续已 merge `main` |
-| v0.9.0 | PP_MECHANISM_COMPLETE + MERGE_MAIN_COMPLETE | Owner 以 8 卡、198／198、可逆安装关门；PR #5 已 merge `main`（`430b34b`）；发布与产品验证分账 |
+| v0.9.0 | PP_MECHANISM_COMPLETE + MERGE_MAIN_COMPLETE + GITHUB_RELEASE_COMPLETE | Owner 以 8 卡、198／198、可逆安装关门；PR #5 已 merge `main`（`430b34b`）；tag／GitHub Release 已发布，产品验证继续独立记账 |
 | G13a control receipt | COMPLETED | Owner 授权的 1 用户／1 问题受控采集已完成；公开仓库只留聚合收据 |
 
 后续 PublicCard 仍须逐张独立完成内容修正、真实验证、隐私审查和 Owner 发布批准；首张卡通过不能让其他候选自动晋级。

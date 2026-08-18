@@ -1,6 +1,6 @@
 # ai-native-helpdesk v0.9.0
 
-> 项目当前推进位置、完成度和发布边界以 [`docs/PP.md`](docs/PP.md) 为唯一入口。摘要：PP 机制已按 Owner 最终定义完成并关门；8 卡、198／198、可逆安装已通过 [PR #5](https://github.com/hou-152/ai-native-helpdesk/pull/5) merge 到远端 `main`（merge commit `430b34b`）。tag／GitHub Release 与 30 人产品验证分别记账，产品效果尚未证明。
+> 项目当前推进位置、完成度和发布边界以 [`docs/PP.md`](docs/PP.md) 为唯一入口。摘要：PP 机制已按 Owner 最终定义完成并关门；8 卡、198／198、可逆安装已通过 [PR #5](https://github.com/hou-152/ai-native-helpdesk/pull/5) merge 到远端 `main`（merge commit `430b34b`），[`v0.9.0` GitHub Release](https://github.com/hou-152/ai-native-helpdesk/releases/tag/v0.9.0) 已发布。30 人产品验证独立记账，产品效果尚未证明。
 
 ## 目标
 
@@ -70,7 +70,7 @@ node scripts/query-public-card.mjs \
   --community-pack "/path/to/community-pack"
 ```
 
-脚本不会自动扫描当前目录、用户目录、环境变量或个人资料。当前功能分支的正式公共索引包含 8 张逐卡批准卡；精确命中且通过全部门时才返回 `ALLOW`，其他问题仍返回 `MISS`。
+脚本不会自动扫描当前目录、用户目录、环境变量或个人资料。当前远端 `main` 的正式公共索引包含 8 张逐卡批准卡；精确命中且通过全部门时才返回 `ALLOW`，其他问题仍返回 `MISS`。
 
 安装、验证、卸载与回滚使用显式目标路径和可读回 state；完整步骤见 [`docs/INSTALL.md`](docs/INSTALL.md)。运行时只从 `SKILL.md` 所在目录解析资源，不依赖固定的用户目录。
 
@@ -93,7 +93,7 @@ node scripts/knowledge-production.mjs \
 - 公开投影还必须经过首批 100% 人工 QA、四门和逐卡 Owner 发布决定。
 - 历史 `PENDING_G12` 收据在 private 与 public 目标仍返回 `HOLD`，不会因后续批准而被静默改写。
 
-G12 首批清单固定为 3 张：现有卡的 schema B 迁移，以及 2 张只使用公开官方来源起草的新卡。G12 已逐卡批准指定 revision；正式 index 的扩张和真实三卡回归均有独立收据。Phase 6 又逐卡批准 000005—000008 v1.0.0；功能分支 8 卡投影、41 条 loader question／alias 检查和 25 条观察回归另有独立收据，不追溯改写 G12／G13b 历史收据。
+G12 首批清单固定为 3 张：现有卡的 schema B 迁移，以及 2 张只使用公开官方来源起草的新卡。G12 已逐卡批准指定 revision；正式 index 的扩张和真实三卡回归均有独立收据。Phase 6 又逐卡批准 000005—000008 v1.0.0；远端 `main` 的 8 卡投影、41 条 loader question／alias 检查和 25 条观察回归另有独立收据，不追溯改写 G12／G13b 历史收据。
 
 ## Phase 1 召回边界
 
@@ -123,7 +123,7 @@ node scripts/feedback-ledger.mjs replay \
 - staging 必须保留 `g13b_status = PENDING` 和 `isolation = ISOLATED_CANDIDATE`；不能借隔离 ALLOW 伪造 Owner 批准。G13b 通过后仍须另写正式 `PUBLICATION_DECISION` 并重新执行正式 index 与 loader。
 - 索引失败、验证失败、撤回、过期或反馈更正会取消 serving eligibility，不能沿用旧成功声明。
 - G13a 的真实隔离链已经完成；公开仓库只保留聚合收据和 hash 指针，不保存原问句、反馈原文、候选正文或私密 ledger。该链仍只有 `ADOPTED`，不证明用户执行或客观效果。
-- G13b 已逐项批准唯一候选；正式第四张卡、index 和 loader 后验收已经完成并进入远端功能分支。该结果不等于进入 `main`、社区试跑或用户效果。
+- G13b 已逐项批准唯一候选；正式第四张卡、index 和 loader 后验收已经完成并随 PR #5 进入远端 `main`。该结果不等于社区试跑或用户效果。
 
 ## Phase 2 回合合同
 
@@ -163,7 +163,7 @@ node --test
 
 ## 当前完成度
 
-任何进度汇报必须同时声明：`PP_MECHANISM = COMPLETE`、`MERGE_MAIN = COMPLETE`、`GITHUB_RELEASE = NOT_STARTED`、`PRODUCT_VALIDATION_30 = POST_RELEASE_NOT_STARTED / UNKNOWN`。
+任何进度汇报必须同时声明：`PP_MECHANISM = COMPLETE`、`MERGE_MAIN = COMPLETE`、`GITHUB_RELEASE = COMPLETE`、`PRODUCT_VALIDATION_30 = A_LAYER_DISCOVERY_IN_PROGRESS / EXTERNAL_0_OF_30 / UNKNOWN`。
 
 | 项目 | 状态 |
 |---|---|
@@ -172,17 +172,17 @@ node --test
 | PublicCard schema | `CODE_READY` |
 | 确定性发布门 | `CODE_READY` |
 | 公共知识卡 | `8 / MAIN (PR #5 merged 430b34b)` |
-| 首批真实 PublicCard | `G12_APPROVED / FEATURE_BRANCH_INDEXED` |
+| 首批真实 PublicCard | `G12_APPROVED / MAIN_INDEXED` |
 | Phase 1 召回选择 | `G10_APPROVED / REAL_THREE_CARD_OBSERVED_REGRESSION_PASS` |
-| Phase 2 回合合同 | `G11_APPROVED / FEATURE_BRANCH_ONLY` |
+| Phase 2 回合合同 | `G11_APPROVED / MAIN` |
 | Phase 3 schema B 与生产门 | `G12_APPROVED / TESTED` |
-| Phase 3 两张新卡 | `G12_APPROVED / FEATURE_BRANCH_INDEXED` |
+| Phase 3 两张新卡 | `G12_APPROVED / MAIN_INDEXED` |
 | Phase 4 反馈账本与回滚 | `MECHANISM_COMPLETE / 23 TESTS` |
-| Phase 4 真实反馈闭环 | `G13B_APPROVED / FEATURE_BRANCH_FORMAL_LOOP_COMPLETE` |
+| Phase 4 真实反馈闭环 | `G13B_APPROVED / MAIN_FORMAL_LOOP_COMPLETE` |
 | Phase 5 安装与发布工程 | `COMPLETE_CANDIDATE_READY` |
 | Phase 6 首批知识规模化 | `4 NEW CARDS APPROVED / EIGHT_CARD_PACK / MERGED_TO_MAIN` |
 | merge | `COMPLETE (PR #5 → main 430b34b)` |
-| tag／GitHub Release | `NOT_STARTED / PENDING_OWNER_AUTHORIZATION` |
-| 30 人产品验证 | `POST_RELEASE / NOT_STARTED / OUTCOME_UNKNOWN` |
+| tag／GitHub Release | `COMPLETE (v0.9.0)` |
+| 30 人产品验证 | `A_LAYER_DISCOVERY_IN_PROGRESS / EXTERNAL_0_OF_30 / OUTCOME_UNKNOWN` |
 
-八张卡只覆盖各自声明的窄 scope。后续卡片仍须逐张经过内容修正、真实环境验证、隐私审查和 Owner 发布批准，不能因现有卡片通过而自动晋级。8 卡已通过 PR #5 merge 到 `main`；30 人产品覆盖仍属发布后验证，尚未开始。
+八张卡只覆盖各自声明的窄 scope。后续卡片仍须逐张经过内容修正、真实环境验证、隐私审查和 Owner 发布批准，不能因现有卡片通过而自动晋级。8 卡已通过 PR #5 merge 到 `main`；Phase 7 A 层发现已经开始，30 人外部产品验证仍为 0／30。
