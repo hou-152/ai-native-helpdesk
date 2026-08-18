@@ -2,7 +2,13 @@
 
 > 当前状态统一入口：[`docs/PP.md`](docs/PP.md)。本文件保留阶段证据与历史，不再承担当前完成度解释。
 
-## Phase 6 八卡功能分支已推送（2026-08-18）
+## Draft PR #5 已创建（2026-08-18）
+
+- Owner 授权创建 `codex/phase5-install-release` → `main` 的 PR；[Draft PR #5](https://github.com/hou-152/ai-native-helpdesk/pull/5) 已打开。
+- 创建时读回 113 个变更文件、40 个提交、`MERGEABLE`；checks 为空，review 为空。空 checks 不表述为“全部通过”。
+- 当前状态为 `DRAFT_PR_OPEN / NOT_MERGED`；未授权 merge、tag、GitHub Release 或社区可用声明。
+
+## 历史：Phase 6 八卡功能分支已推送（2026-08-18）
 
 - Owner 授权的 8 卡实现 commit `3ba59ad13339b94e70511b2da6db16e960bfc80d` 已快进 push 到 `codex/phase5-install-release`，远端 ref 与 8 卡 index 现场读回一致。
 - 当前状态为 `REMOTE_EIGHT_CARD_PACK_COMPLETE / STOP_BEFORE_PR`；没有创建 PR、merge `main`、tag 或 GitHub Release。

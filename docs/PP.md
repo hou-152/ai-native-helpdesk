@@ -8,7 +8,7 @@
 
 ## 一句话状态
 
-PP 0—5 按原 6 个 Phase 的严格关门口径仍完成 `5／6`，即 `83.3%`：Phase 5 仍缺 G14 真人社区试跑与正式 GitHub 发布链。独立的知识规模化 Phase 6 首批已经完成 4 张新增卡的逐卡人工 QA、8 卡功能分支投影、loader、观察错配、全量回归和 push，停在创建 PR 前。
+PP 0—5 按原 6 个 Phase 的严格关门口径仍完成 `5／6`，即 `83.3%`：Phase 5 仍缺 G14 真人社区试跑与正式 GitHub 发布链。独立的知识规模化 Phase 6 首批已经完成 4 张新增卡的逐卡人工 QA、8 卡功能分支投影、loader、观察错配、全量回归和 push；[Draft PR #5](https://github.com/hou-152/ai-native-helpdesk/pull/5) 已打开。
 
 ## Phase 状态
 
@@ -19,16 +19,16 @@ PP 0—5 按原 6 个 Phase 的严格关门口径仍完成 `5／6`，即 `83.3%`
 | Phase 2 | `COMPLETE_LOCAL` | G11 回合合同与外部来源门 | 进入 `main` 后再声明远端能力 |
 | Phase 3 | `COMPLETE_LOCAL` | G12 schema B、100% QA、前三卡 | 进入 `main` 后再声明远端能力 |
 | Phase 4 | `COMPLETE_LOCAL` | G13a 真实反馈链、G13b 第四卡 | 进入 `main` 后再声明远端能力 |
-| Phase 5 | `PARTIAL_RELEASE_PENDING` | Apache 2.0、28 文件包、install／verify／uninstall／rollback、192／192、executor smoke、功能分支 push | G14 合格真人社区试跑未开始；PR、merge `main`、tag／Release 尚未完成 |
+| Phase 5 | `PARTIAL_RELEASE_PENDING` | Apache 2.0、28 文件包、install／verify／uninstall／rollback、192／192、executor smoke、功能分支 push、Draft PR #5 | G14 合格真人社区试跑未开始；merge `main`、tag／Release 尚未完成 |
 
-Phase 6 不回写原 PP 0—5 的分母。当前状态为 `REMOTE_EIGHT_CARD_PACK_COMPLETE / STOP_BEFORE_PR`：000005—000008 v1.0.0 已逐卡获批，8 卡 loader 的 41 个 question／alias 全部命中正确卡，25／25 观察错配回归与 198／198 全量测试通过；30 人产品覆盖仍为 `UNKNOWN`。
+Phase 6 不回写原 PP 0—5 的分母。当前状态为 `REMOTE_EIGHT_CARD_PACK_COMPLETE / DRAFT_PR_OPEN`：000005—000008 v1.0.0 已逐卡获批，8 卡 loader 的 41 个 question／alias 全部命中正确卡，25／25 观察错配回归与 198／198 全量测试通过；30 人产品覆盖仍为 `UNKNOWN`。
 
 ## 当前 GitHub 层级
 
 ```text
 远端功能分支：8 卡，已 push
 → G14 真人社区试跑：未开始；executor smoke 不能替代
-→ PR：未创建
+→ PR #5：DRAFT／OPEN
 → merge main：未完成
 → tag／GitHub Release：未完成
 → 社区正式可用声明：未授权
@@ -43,15 +43,15 @@ Phase 6 不回写原 PP 0—5 的分母。当前状态为 `REMOTE_EIGHT_CARD_PAC
 - `能用`：历史 G14 artifact 在 macOS arm64／Node.js 24 范围已有安装生命周期、两卡 ALLOW、近邻 MISS 和可恢复卸载证据；当前功能分支 8 卡包另通过 32 文件安装、loader 与回归。
 - `未证明`：Linux、Windows、其他 Node major、合格真人独立使用和普遍社区效果。
 - `已上传 GitHub`：8 卡实现与聚合证据已经进入远端功能分支；尚未进入 `main`。
-- `尚未正式发布`：没有 PR、没有 merge `main`、没有 tag 或 GitHub Release。
+- `尚未正式发布`：Draft PR #5 已打开，但没有 merge `main`、tag 或 GitHub Release。
 
 ## 唯一剩余推进路径
 
-1. 当前停点为远端 8 卡功能分支；创建 PR 等待 Owner 授权。
+1. 当前停点为 Draft PR #5；现场读回 113 个文件、40 个提交、状态 `MERGEABLE`，尚无 checks 或 review。
 2. 第二云端执行体的可选测评由 Owner 自行管理；本项目不主动恢复或追踪，也不把它计作 G14 真人证据。
 3. 按已批准的 G14-A，指定 1 名可明确同意和撤回的合格真人社区成员，完成固定范围试跑；失败即停。
-4. 获得授权后创建 PR，并读回文件、提交和 checks。
-5. Owner 再明确授权后 merge `main`，重新运行 loader 与全量回归；tag／GitHub Release 和对外表述另行决定。
+4. Owner 审阅 PR，并另行决定是否将 Draft 转为 ready 以及是否 merge；两项授权不能互相替代。
+5. Owner 明确授权 merge 后，重新运行 loader 与全量回归；tag／GitHub Release 和对外表述另行决定。
 
 ## 公开边界
 
