@@ -1,0 +1,79 @@
+{
+  "schema_version": "1.0",
+  "phase": "7",
+  "receipt_id": "AIHD-P7-WECHAT-DISCOVERY-V1",
+  "evaluated_at": "2026-08-19T06:42:06+08:00",
+  "evidence_layer": "A_REAL_QUESTION_DISCOVERY",
+  "collection": {
+    "method": "LOCAL_WECHAT_CLI_EXPORT",
+    "source_count": 2,
+    "message_count": 2702,
+    "requested_date_from": "2026-08-01",
+    "requested_date_to_exclusive": "2026-08-20",
+    "raw_exports_public": false,
+    "source_names_public": false,
+    "speaker_names_public": false,
+    "speaker_ids_public": false
+  },
+  "private_input": {
+    "question_count": 10,
+    "distinct_speaker_count": 9,
+    "provenance": "WECHAT_GROUP_MESSAGE",
+    "wording_preserved": true,
+    "deduplicated": true,
+    "question_set_sha256": "85200ee9d544a64d590ab93f3504753045375b5acc3c060117a60dfe739622d4",
+    "question_set_bytes": 8052,
+    "machine_baseline_sha256": "b118e78124635d403a9e140386571f36138187915a796a9f8b2c5491f1d5f8b1",
+    "machine_baseline_bytes": 3404,
+    "external_user_identity_bound_privately": true,
+    "external_validation_consent_bound": false,
+    "external_product_use_bound": false,
+    "external_outcome_bound": false
+  },
+  "public_runtime": {
+    "repository": "hou-152/ai-native-helpdesk",
+    "evaluated_commit": "4c066af7e81cc929e33ec17fd97eb9ce50b746e5",
+    "main_card_count": 8,
+    "local_checkout_head": "dafdd17d6299c4f938934a0f2ca67753d3821ed9",
+    "runtime_files_equal_to_evaluated_commit": true
+  },
+  "loader_baseline": {
+    "implementation": "scripts/query-public-card.mjs",
+    "matching_behavior": "NORMALIZED_EXACT_QUESTION_OR_ALIAS",
+    "allow": 0,
+    "miss": 10,
+    "deny": 0
+  },
+  "candidate_retrieval_diagnostic": {
+    "algorithm": "bm25_expansion_keyword",
+    "threshold": 0.8449460370411592,
+    "top_k": 3,
+    "cases_with_candidate": 5,
+    "cases_without_candidate": 5,
+    "owner_applicability": "UNKNOWN",
+    "serving_authority": false
+  },
+  "combined_discovery_snapshot": {
+    "owner_typed_questions": 9,
+    "wechat_group_questions": 10,
+    "total_questions": 19,
+    "loader_allow": 0,
+    "loader_miss": 19,
+    "loader_deny": 0,
+    "candidate_cases": 10,
+    "no_candidate_cases": 9
+  },
+  "external_validation": {
+    "participants": 0,
+    "target": 30,
+    "resolved_or_advanced": "UNKNOWN",
+    "outcome": "UNKNOWN"
+  },
+  "claim_boundary": [
+    "The ten selected messages are real group questions, not model-generated questions.",
+    "Nine distinct speakers do not count as nine product-validation participants.",
+    "No consent, Skill use, answer judgment, or user outcome is established for the speakers.",
+    "A retrieval candidate does not establish semantic applicability and cannot authorize card loading.",
+    "No raw message, group name, speaker name, or speaker identifier is stored in the public repository."
+  ]
+}

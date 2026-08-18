@@ -4,14 +4,18 @@
 
 ## 当前快照
 
-- 证据层：`A_OWNER_DISCOVERY`。
-- 冻结问题：9 个，来源为本轮 `OWNER_TYPED`；没有与截图中的具体聊天正文或外部身份绑定。
-- 当前 8 卡 loader：`ALLOW 0 / MISS 9 / DENY 0`。
-- 冻结 BM25：5／9 出现候选，4／9 无候选；候选适用性尚未由 Owner 签字。
-- Owner 三项判断：直接可用、有启发、会继续追问，当前均为 `UNKNOWN`。
+- 证据层：`A_OWNER_DISCOVERY + A_REAL_QUESTION_DISCOVERY`。
+- Owner 集：9 个 `OWNER_TYPED` 问题，仍不追溯冒充外部用户问题。
+- 微信发现集：从 2 个本地只读导出的会话源、2,702 条消息中冻结 10 个群内原问句，来自 9 位不同发言者；姓名、成员 ID、群名和原文均不进入公开仓库。
+- 两集合计 19 题；当前 8 卡 loader：`ALLOW 0 / MISS 19 / DENY 0`。
+- 冻结 BM25：10／19 出现候选，9／19 无候选；Owner 集候选适用性已审（`NONE_CONFIRMED_APPLICABLE`），微信集候选适用性仍为 `UNKNOWN`。
+- Owner 集三项判断（2026-08-19 完成，编码 A）：直接可用 2／9，有启发 5／9，会继续追问 7／9；P7-Q03、P7-Q07 无信号。
+- P7-Q08、P7-Q09 标记 `OUT_OF_SCOPE`（超出 AI／Agent／OpenClaw 知识包）。
+- 提炼候选：`AIHD-PC-000009`（来自 P7-Q01）已生成，状态 `PENDING_G12`，生产门返回 `HOLD / CANDIDATE_AUTHORIZATION_REQUIRED`，未索引、不可触发 `ALLOW`。
+- 微信集 10 题逐题审阅：`PENDING`（等待 Owner）。
 - 外部独立用户：0／30；产品效果仍为 `UNKNOWN`。
 
-聚合机器结果与私密文件 hash 见 [`PILOT_BASELINE_RECEIPT.v1.json`](PILOT_BASELINE_RECEIPT.v1.json)。
+Owner 集聚合结果见 [`PILOT_BASELINE_RECEIPT.v1.json`](PILOT_BASELINE_RECEIPT.v1.json)（基线，不改写）与 [`PILOT_BASELINE_RECEIPT.v2.json`](PILOT_BASELINE_RECEIPT.v2.json)（Owner 审阅完成）；微信发现集聚合结果见 [`WECHAT_DISCOVERY_RECEIPT.v1.json`](WECHAT_DISCOVERY_RECEIPT.v1.json)。
 
 ## 判读边界
 
@@ -19,6 +23,7 @@
 - BM25 候选只证明词面召回，不证明语义适用，也不能触发 `ALLOW` 或读取卡片正文。
 - Owner 觉得 `MISS` 回退答案有启发，只能支持“薄入口＋外部来源／模型推理可能有价值”，不能支持 PublicCard 覆盖。
 - 群标题、成员栏和人数标签不等于题目来源、参与者同意或独立用户数。
+- 本地导出能把消息绑定到会话源和发言者，但“9 位发言者”仍不等于“9 位验证参与者”：当前没有同意、实际使用、答案判断或结果反馈。
 - 任意真实 `DENY` 都先停下排查完整性，不用百分比阈值掩盖。
 
 ## Owner 审阅
