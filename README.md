@@ -179,4 +179,4 @@ node --test
 | Phase 5 安装与发布工程 | `ENGINEERING_ACCEPTANCE_PASS / G14_AUTHORIZED` |
 | 真实社区端到端验证 | `NOT_STARTED / EXECUTOR_SMOKE_PASS_ONLY` |
 
-三张卡只覆盖各自声明的窄 scope。后续卡片仍须逐张经过内容修正、真实环境验证、隐私审查和 Owner 发布批准，不能因首批通过而自动晋级。
+四张卡只覆盖各自声明的窄 scope。后续卡片仍须逐张经过内容修正、真实环境验证、隐私审查和 Owner 发布批准，不能因现有卡片通过而自动晋级。
