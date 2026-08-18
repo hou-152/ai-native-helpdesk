@@ -210,8 +210,8 @@ node scripts/helpdesk-turn-contract.mjs \
 | v0.6.1-phase4-staging | G13A_APPROVED | G13b 前隔离 rehearsal 与正式发布／服务状态分离 |
 | v0.6.2-phase4-g13b-candidate | AWAITING_G13B | 真实 `MISS → ADOPTED` 隔离闭环完成；正式发布状态保持未改变 |
 | v0.6.3-phase4-g13b-published | PHASE5_READY | G13b 批准第四张卡；本地正式 index／loader 与真实反馈链闭合 |
-| v0.8.0-phase6-eight-card-local | STOP_BEFORE_PR | Phase 6 逐卡批准新增 4 卡；本地 8 卡 index／loader／错配／安装与全量回归通过 |
-| v0.8.1-phase6-eight-card-branch | STOP_BEFORE_PR | 8 卡提交已 push 到远端功能分支；同步当前文档，尚未创建 PR |
+| v0.8.0-phase6-eight-card-local | HISTORICAL_STOP_BEFORE_PR | Phase 6 逐卡批准新增 4 卡；该冻结时点的本地 8 卡 index／loader／错配／安装与全量回归通过 |
+| v0.8.1-phase6-eight-card-branch | HISTORICAL_STOP_BEFORE_PR | 8 卡提交已 push 到远端功能分支；该冻结时点尚未创建 PR，后续已由 v0.8.2 取代 |
 | v0.8.2-phase6-eight-card-pr | DRAFT_PR_OPEN | Draft PR #5 已创建；未 merge、tag 或 GitHub Release |
 | v0.9.0-pp-closed-candidate | PP_MECHANISM_COMPLETE | Owner 以 8 卡、198／198、可逆安装和 Draft PR 正式关门；发布与产品验证分账 |
 | G13a control receipt | COMPLETED | Owner 授权的 1 用户／1 问题受控采集已完成；公开仓库只留聚合收据 |

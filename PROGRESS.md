@@ -1,6 +1,12 @@
 # 受控阶段进度
 
-> 当前状态统一入口：[`docs/PP.md`](docs/PP.md)。本文件保留阶段证据与历史，不再承担当前完成度解释。
+> 当前状态统一入口：[`docs/PP.md`](docs/PP.md)。本文件保留阶段证据与历史，不再承担当前完成度解释。下文旧阶段中的“4 张”“本地”“未 push”与 `STOP_BEFORE_PR` 都是带日期的冻结时点，不得覆盖当前 8 卡 Draft PR 状态。
+
+## 当前：私密小样本提案待 Owner 决定（2026-08-18）
+
+- 3—5 人私密小样本只是建议，Owner 尚未批准是否进行、参与者、时间或执行方式；状态为 `PILOT_PROPOSED_AWAITING_OWNER_DECISION`。
+- 当前未授权选人、邀请、传包或收集反馈，也未把该提案设为 Draft 转 Ready 的前置条件。
+- PR 仍为 Draft；ready、merge、tag 与 GitHub Release 分别等待 Owner 明确决定。
 
 ## Owner 最终关门：PP 可发布候选成立（2026-08-18）
 
@@ -18,7 +24,7 @@
 ## 历史：Phase 6 八卡功能分支已推送（2026-08-18）
 
 - Owner 授权的 8 卡实现 commit `3ba59ad13339b94e70511b2da6db16e960bfc80d` 已快进 push 到 `codex/phase5-install-release`，远端 ref 与 8 卡 index 现场读回一致。
-- 当前状态为 `REMOTE_EIGHT_CARD_PACK_COMPLETE / STOP_BEFORE_PR`；没有创建 PR、merge `main`、tag 或 GitHub Release。
+- 该历史冻结点状态为 `REMOTE_EIGHT_CARD_PACK_COMPLETE / STOP_BEFORE_PR`；后续已经创建 Draft PR #5，并由 Owner 以 8 卡候选关门。该旧停点不代表当前状态。
 - 本节只同步当前公开文档；卡片、index、loader、测试和绑定 hash 的 Phase 6 历史收据均未改写。
 
 ## 历史：Phase 6 首批四卡本地正式投影（2026-08-18）
@@ -28,7 +34,7 @@
 - 正式 loader 对 8 卡全部 41 个 question／alias 返回正确 `ALLOW`；天气问题保持 `MISS / NO_MATCH`。
 - 8 卡观察错配回归 25／25 PASS：24 条目标用例均精确单卡，无 over-recall；1 条 MISS 无假阳性。该数据不是 blind、30 人查询集或用户效果证据。
 - release allowlist 从历史 G14 artifact 的 28 个安装文件扩为当前 32 个安装文件；历史 G14 artifact／hash 保持不变。含空格隔离路径 install／verify／查询／uninstall 通过。
-- 全量测试 198／198 PASS；0 fail／cancelled／skipped／todo。当前只完成本地提交候选；未 push、未创建 PR、未 merge、未 tag 或 Release。
+- 全量测试 198／198 PASS；0 fail／cancelled／skipped／todo。在该历史冻结点只完成本地提交候选；后续已 push 并进入 Draft PR #5，但仍未 merge、tag 或创建 GitHub Release。
 
 ## 历史：Phase 1—5 功能分支已推送（2026-08-18）
 
@@ -101,7 +107,7 @@
 - 标准问题与公开安全 alias 的正式 loader 均返回 `ALLOW`；模型权重训练近邻与无关问题保持 `MISS`。
 - 私密账本追加正式 publication／index／ALLOW 三个事件；共 10 个事件，`real_loop_complete = true`、`serving_eligible = true`。
 - 全量测试 184／184 PASS；0 fail／cancelled／skipped／todo。
-- 当前状态：`G13B_APPROVED_LOCAL_FORMAL_LOOP_COMPLETE / PHASE5_READY`；尚未 push、开 PR、merge 或触达外部社区。
+- 该历史冻结点状态：`G13B_APPROVED_LOCAL_FORMAL_LOOP_COMPLETE / PHASE5_READY`；当时尚未 push、开 PR、merge 或触达外部社区，后续已由 8 卡 Draft PR 状态取代。
 
 ## G13a 真实反馈隔离闭环（2026-08-18）
 
@@ -140,7 +146,7 @@
 - 000002／000003 的正式正文逐字段保持已批准候选投影；历史 `PENDING_G12` 收据保持不可变，仍然返回 `HOLD`。
 - 真实三卡观察回归为 15／15 PASS：需精确集合、歧义覆盖、预召回绕过和安全输出均为 100%；MISS、hard-negative 和跨域假阳性均为 0。
 - `REAL-R09` 保留一条可见宽召回：000002 目标卡命中时也召回 000001；该路径必须在 loader 前经过 applicability 裁决，不声称 exact-set 成功。
-- 当前状态只表示本地正式公共包通过；尚未 push、建立 PR、合并远端 `main` 或完成真实社区端到端验证。
+- 该历史冻结点只表示本地正式公共包通过；当时尚未 push 或建立 PR，后续已进入 8 卡 Draft PR，但仍未合并远端 `main` 或完成真实社区端到端验证。
 - G12 后置条件已完成，可以进入 Phase 4。
 
 ## Phase 3 schema B 与知识生产（2026-08-18）
