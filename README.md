@@ -1,6 +1,6 @@
 # ai-native-helpdesk v0.7.0-phase5-g14-ready
 
-> 当前状态：Owner 已通过 G13b，批准 `AIHD-PC-000004 v1.0.0` 作为新卡正式投影。当前本地正式 index 为 4 张；Phase 5 的路径解耦、Apache 2.0、可逆安装与隔离路径矩阵已通过本地工程验收。G14-A 已授权，Owner 指定执行 Agent 的 smoke run 报告全步骤符合预期并保留 `PATH_SETUP` 困惑；但合格真人 P1 仍未指定，Agent 结果不能替代社区成员身份或知情同意。当前功能分支不等于远端 `main`，社区试跑尚未完成。
+> 项目当前推进位置、完成度和发布边界以 [`docs/PP.md`](docs/PP.md) 为唯一入口。摘要：Phase 0—4 已关闭，Phase 5 处于发布待完成状态；4 张卡已进入远端功能分支，但尚未进入 `main`。
 
 ## 目标
 

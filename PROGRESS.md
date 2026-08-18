@@ -1,5 +1,7 @@
 # 受控阶段进度
 
+> 当前状态统一入口：[`docs/PP.md`](docs/PP.md)。本文件保留阶段证据与历史，不再承担当前完成度解释。
+
 ## 当前 Phase 1—5 功能分支已推送（2026-08-18）
 
 - Owner 已授权并完成 `codex/phase5-install-release` 功能分支 push；远端读回与本地提交一致。
