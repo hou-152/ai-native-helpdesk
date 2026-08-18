@@ -1,27 +1,33 @@
 # 受控阶段进度
 
-## P1 前置环境通过，交付缺失后正确停止（2026-08-18）
+## P1 参与者绑定纠错，恢复等待真人指定（2026-08-18）
+
+- Owner 澄清此前所指对象是执行 Agent；G14-A 授权对象则是 1 名可明确同意和撤回的 AI Native 社区成员。执行 Agent 可以跑命令，但不能替代社区成员的参与者身份或知情同意。
+- 原 `G14-P1-DESIGNATION-20260818-001` 保留为历史，但对 G14 人类参与者绑定无效；其后的 consent 不能作为真人同意，preflight 只保留为执行器侧预检。
+- archive 与 Runbook 仍未传递，试跑从未开始。当前状态恢复为 `G14_APPROVED_AWAITING_HUMAN_P1_DESIGNATION`；不得向执行 Agent 传包并把结果表述为社区试跑。
+
+## 历史：被纠错的 P1 前置环境与交付停点（2026-08-18）
 
 - P1 实际读回 `Darwin / arm64 / Node.js v24.15.0`，环境门 PASS。
 - P1 没有找到目标 archive 或 Runbook，未发生 hash 比对，也未启动 install／Runbook；按 fail-closed 指令正确停止。
-- 本次分类为 `DELIVERY_MISS_PRE_TRIAL`，不是产品试跑失败：缺口是 Owner 端尚未把两个文件实际交付到 P1 可见位置。
+- 本次原分类为 `DELIVERY_MISS_PRE_TRIAL`；绑定纠错后只作为执行器侧预检，不再作为社区参与者证据。
 - Owner Downloads 已生成隔离交付目录；archive 与 Runbook 分别和冻结来源 byte-identical，另有机器可读 handoff manifest。当前仍 `transferred = false`。
-- 当前状态：`OWNER_HANDOFF_READY_AWAITING_TRANSFER`。Owner 需把 archive 与 Runbook 作为两个实际附件发送给 P1，再由 P1 重跑前置校验。
+- 该历史状态 `OWNER_HANDOFF_READY_AWAITING_TRANSFER` 已被参与者绑定纠错收据取代；当前不得传包。
 
-## P1 已同意，等待 Owner 私下传包（2026-08-18）
+## 历史：被纠错的 P1 同意记录（2026-08-18）
 
 - Owner 已转述 P1 的明确同意；私密控制面只保存原始回复 SHA-256，不保存回复正文，公开面只登记 `consent = OBSERVED`。
 - P1 自报 macOS arm64／Node.js 24，当前证据级别为 `SELF_REPORTED_MATCH`；实际 OS／arch／Node 输出仍须在 P1 机器首步读回。
 - 固定 28 文件 archive 已再次通过 SHA-256 和压缩包完整性检查，允许由 Owner 私下传递给 P1。
 - 当前 `package_transferred = false`、`runtime_readback = PENDING`、`trial_started = false`；不得把自报环境或传包授权写成试跑已开始。
-- 当前状态：`CONSENT_OBSERVED_ENVIRONMENT_SELF_REPORTED_MATCH_AWAITING_OWNER_TRANSFER`。
+- 该同意不能证明真人社区成员同意，历史状态已被参与者绑定纠错收据取代。
 
-## P1 已指定，等待 Owner 转发邀请与 P1 同意（2026-08-18）
+## 历史：被纠错的 P1 指定记录（2026-08-18）
 
 - Owner 已指定唯一参与者；公开面只登记匿名 `P1`，私密控制面只保留选择标识的不可逆 SHA-256，不保存原始标识或联系方式。
 - 固定邀请由 Owner 转发；当前没有观察到已发送回执，因此 `invitation_sent = false`。
 - P1 明确回复同意并确认 macOS arm64／Node.js 24 前，`consent = NOT_OBSERVED`、`environment = NOT_OBSERVED`、`package_transferred = false`、`trial_started = false`。
-- 当前状态：`P1_DESIGNATED_AWAITING_OWNER_INVITATION_AND_CONSENT`。不得因参与者已指定而提前传包或运行试跑。
+- 该指定来自操作方对相邻消息的错误推断，不能满足 G14-A 的社区成员门；历史收据保留但已失效。
 
 ## G14-A 已授权，等待 P1 指定（2026-08-18）
 
