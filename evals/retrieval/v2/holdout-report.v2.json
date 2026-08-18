@@ -1,0 +1,2002 @@
+{
+  "schema_version": "2.0",
+  "stage": "HOLDOUT",
+  "case_count": 30,
+  "implementation_commit": "573cc1c0b16364db4a65e59221aa8f74c3b259a7",
+  "holdout_sha256": "2a021b68328a4a5a07da48aa7c7217ca2f140d351cc4efd1c28f2559ec090b80",
+  "config_sha256": "3da70dc360811ec368b72977c7249c38f8be4c2087f21402336a501a452a3a71",
+  "spec_sha256": "6e5a054fef65db1777d8b6582e86b56763bda2b4c9719b3936ab3139bafde82d",
+  "protected_hashes": {
+    "evals/retrieval/golden.v1.json": "7b37a9a301b6b570e7c87578694df5dbef90b3720e62fb6b1dbdd0531965b51c",
+    "evals/retrieval/fixture-index.v1.json": "3c00560b888b013621d54c7ee55a977e3c5b2a9bcb9464b190a06aa4aada06fe",
+    "evals/retrieval/frozen-config.json": "8e1575a2ef277cb5a328d0f6f76447eeb927e6db54122452ca7d18a4c5bab235",
+    "evals/retrieval/blind-report.json": "43a45e08970a343ead846013e40f734fc183dcdbf5f355b3050bbe9877fce47b",
+    "evals/retrieval/retrieval.mjs": "e451c4ece1b28c4a92fd718033c14bbd701ae27413cbb89b474271d4dec93fdf",
+    "evals/retrieval/run-eval.mjs": "d68176eb433d9b0392558896aecac9c1c514dac17e5dbf9befd89996f7c606c2"
+  },
+  "algorithms": {
+    "bm25_v1": {
+      "algorithm": "bm25_v1",
+      "observed_qualified": false,
+      "threshold": 0.7425539204710747,
+      "holdout_gate_passed": false,
+      "metrics": {
+        "threshold": 0.742553920471,
+        "counts": {
+          "total": 30,
+          "candidate": 15,
+          "clarify": 6,
+          "miss": 6,
+          "deny": 3,
+          "hard_negative": 5
+        },
+        "candidate_hit_at_3": 1,
+        "candidate_exact_set_rate": 0.533333333333,
+        "clarify_full_coverage_at_3": 1,
+        "clarify_exact_set_rate": 0.666666666667,
+        "miss_false_positive_count": 1,
+        "hard_negative_false_positive_count": 1,
+        "deny_bypass_rate": 1,
+        "safe_output_rate": 1,
+        "passed_count": 29,
+        "failed_case_ids": [
+          "RET-V2-B-027"
+        ],
+        "rows": [
+          {
+            "case_id": "RET-V2-B-001",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-AGENTS"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-AGENTS",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-002",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-AGENTS"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-AGENTS",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-003",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-AGENTS"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-AGENTS",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-004",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-005",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-006",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-007",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-CODEX-SANDBOX"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-SANDBOX"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-008",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-SANDBOX"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-SANDBOX",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-009",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-CODEX-SANDBOX"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-SANDBOX"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-010",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-MCP"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-MCP",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-011",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-CODEX-MCP"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-MCP"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-012",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-MCP"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE",
+              "FIX-CODEX-MCP"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-013",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-OPENCLAW-MEMORY"
+            ],
+            "selected_candidate_ids": [
+              "FIX-OPENCLAW-MEMORY",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-014",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-OPENCLAW-MEMORY"
+            ],
+            "selected_candidate_ids": [
+              "FIX-OPENCLAW-MEMORY"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-015",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-OPENCLAW-MEMORY"
+            ],
+            "selected_candidate_ids": [
+              "FIX-OPENCLAW-MEMORY"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-016",
+            "expected_status": "CLARIFY",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-AGENTS",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE",
+              "FIX-CODEX-AGENTS"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-017",
+            "expected_status": "CLARIFY",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-AGENTS",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE",
+              "FIX-CODEX-AGENTS"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-018",
+            "expected_status": "CLARIFY",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-AGENTS",
+              "FIX-CODEX-SANDBOX"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-SANDBOX",
+              "FIX-CODEX-INSTRUCTION-SCOPE",
+              "FIX-CODEX-AGENTS"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-019",
+            "expected_status": "CLARIFY",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-AGENTS",
+              "FIX-CODEX-SANDBOX"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-SANDBOX",
+              "FIX-CODEX-AGENTS"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-020",
+            "expected_status": "CLARIFY",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-MCP",
+              "FIX-OPENCLAW-MEMORY"
+            ],
+            "selected_candidate_ids": [
+              "FIX-OPENCLAW-MEMORY",
+              "FIX-CODEX-MCP",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-021",
+            "expected_status": "CLARIFY",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-INSTRUCTION-SCOPE",
+              "FIX-CODEX-SANDBOX"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE",
+              "FIX-CODEX-SANDBOX"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-022",
+            "expected_status": "MISS",
+            "predicted_status": "MISS",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": true
+          },
+          {
+            "case_id": "RET-V2-B-023",
+            "expected_status": "MISS",
+            "predicted_status": "MISS",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": true
+          },
+          {
+            "case_id": "RET-V2-B-024",
+            "expected_status": "MISS",
+            "predicted_status": "MISS",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": true
+          },
+          {
+            "case_id": "RET-V2-B-025",
+            "expected_status": "MISS",
+            "predicted_status": "MISS",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": true
+          },
+          {
+            "case_id": "RET-V2-B-026",
+            "expected_status": "MISS",
+            "predicted_status": "MISS",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-027",
+            "expected_status": "MISS",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": false,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": true
+          },
+          {
+            "case_id": "RET-V2-B-028",
+            "expected_status": "DENY",
+            "predicted_status": "DENY",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": false,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-029",
+            "expected_status": "DENY",
+            "predicted_status": "DENY",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": false,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-030",
+            "expected_status": "DENY",
+            "predicted_status": "DENY",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": false,
+            "safe_output": true,
+            "hard_negative": false
+          }
+        ]
+      }
+    },
+    "bm25_expansion": {
+      "algorithm": "bm25_expansion",
+      "observed_qualified": false,
+      "threshold": 0.7585154421145855,
+      "holdout_gate_passed": false,
+      "metrics": {
+        "threshold": 0.758515442115,
+        "counts": {
+          "total": 30,
+          "candidate": 15,
+          "clarify": 6,
+          "miss": 6,
+          "deny": 3,
+          "hard_negative": 5
+        },
+        "candidate_hit_at_3": 1,
+        "candidate_exact_set_rate": 0.533333333333,
+        "clarify_full_coverage_at_3": 1,
+        "clarify_exact_set_rate": 0.666666666667,
+        "miss_false_positive_count": 0,
+        "hard_negative_false_positive_count": 0,
+        "deny_bypass_rate": 1,
+        "safe_output_rate": 1,
+        "passed_count": 30,
+        "failed_case_ids": [],
+        "rows": [
+          {
+            "case_id": "RET-V2-B-001",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-AGENTS"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-AGENTS",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-002",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-AGENTS"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-AGENTS",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-003",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-AGENTS"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-AGENTS",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-004",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-005",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-006",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-007",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-CODEX-SANDBOX"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-SANDBOX"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-008",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-CODEX-SANDBOX"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-SANDBOX"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-009",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-CODEX-SANDBOX"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-SANDBOX"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-010",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-MCP"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE",
+              "FIX-CODEX-MCP"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-011",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-MCP"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-MCP",
+              "FIX-OPENCLAW-MEMORY"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-012",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-MCP"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE",
+              "FIX-CODEX-MCP"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-013",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-OPENCLAW-MEMORY"
+            ],
+            "selected_candidate_ids": [
+              "FIX-OPENCLAW-MEMORY",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-014",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-OPENCLAW-MEMORY"
+            ],
+            "selected_candidate_ids": [
+              "FIX-OPENCLAW-MEMORY"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-015",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-OPENCLAW-MEMORY"
+            ],
+            "selected_candidate_ids": [
+              "FIX-OPENCLAW-MEMORY"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-016",
+            "expected_status": "CLARIFY",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-AGENTS",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE",
+              "FIX-CODEX-AGENTS"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-017",
+            "expected_status": "CLARIFY",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-AGENTS",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE",
+              "FIX-CODEX-AGENTS"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-018",
+            "expected_status": "CLARIFY",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-AGENTS",
+              "FIX-CODEX-SANDBOX"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE",
+              "FIX-CODEX-SANDBOX",
+              "FIX-CODEX-AGENTS"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-019",
+            "expected_status": "CLARIFY",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-AGENTS",
+              "FIX-CODEX-SANDBOX"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-SANDBOX",
+              "FIX-CODEX-AGENTS"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-020",
+            "expected_status": "CLARIFY",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-MCP",
+              "FIX-OPENCLAW-MEMORY"
+            ],
+            "selected_candidate_ids": [
+              "FIX-OPENCLAW-MEMORY",
+              "FIX-CODEX-MCP",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-021",
+            "expected_status": "CLARIFY",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-INSTRUCTION-SCOPE",
+              "FIX-CODEX-SANDBOX"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE",
+              "FIX-CODEX-SANDBOX"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-022",
+            "expected_status": "MISS",
+            "predicted_status": "MISS",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": true
+          },
+          {
+            "case_id": "RET-V2-B-023",
+            "expected_status": "MISS",
+            "predicted_status": "MISS",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": true
+          },
+          {
+            "case_id": "RET-V2-B-024",
+            "expected_status": "MISS",
+            "predicted_status": "MISS",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": true
+          },
+          {
+            "case_id": "RET-V2-B-025",
+            "expected_status": "MISS",
+            "predicted_status": "MISS",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": true
+          },
+          {
+            "case_id": "RET-V2-B-026",
+            "expected_status": "MISS",
+            "predicted_status": "MISS",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-027",
+            "expected_status": "MISS",
+            "predicted_status": "MISS",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": true
+          },
+          {
+            "case_id": "RET-V2-B-028",
+            "expected_status": "DENY",
+            "predicted_status": "DENY",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": false,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-029",
+            "expected_status": "DENY",
+            "predicted_status": "DENY",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": false,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-030",
+            "expected_status": "DENY",
+            "predicted_status": "DENY",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": false,
+            "safe_output": true,
+            "hard_negative": false
+          }
+        ]
+      }
+    },
+    "bm25_keyword": {
+      "algorithm": "bm25_keyword",
+      "observed_qualified": false,
+      "threshold": 0.7425539204710747,
+      "holdout_gate_passed": false,
+      "metrics": {
+        "threshold": 0.742553920471,
+        "counts": {
+          "total": 30,
+          "candidate": 15,
+          "clarify": 6,
+          "miss": 6,
+          "deny": 3,
+          "hard_negative": 5
+        },
+        "candidate_hit_at_3": 1,
+        "candidate_exact_set_rate": 0.533333333333,
+        "clarify_full_coverage_at_3": 1,
+        "clarify_exact_set_rate": 0.666666666667,
+        "miss_false_positive_count": 1,
+        "hard_negative_false_positive_count": 1,
+        "deny_bypass_rate": 1,
+        "safe_output_rate": 1,
+        "passed_count": 29,
+        "failed_case_ids": [
+          "RET-V2-B-027"
+        ],
+        "rows": [
+          {
+            "case_id": "RET-V2-B-001",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-AGENTS"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-AGENTS",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-002",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-AGENTS"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-AGENTS",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-003",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-AGENTS"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-AGENTS",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-004",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-005",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-006",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-007",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-CODEX-SANDBOX"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-SANDBOX"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-008",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-SANDBOX"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-SANDBOX",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-009",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-CODEX-SANDBOX"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-SANDBOX"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-010",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-MCP"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-MCP",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-011",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-CODEX-MCP"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-MCP"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-012",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-MCP"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE",
+              "FIX-CODEX-MCP"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-013",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-OPENCLAW-MEMORY"
+            ],
+            "selected_candidate_ids": [
+              "FIX-OPENCLAW-MEMORY",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-014",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-OPENCLAW-MEMORY"
+            ],
+            "selected_candidate_ids": [
+              "FIX-OPENCLAW-MEMORY"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-015",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-OPENCLAW-MEMORY"
+            ],
+            "selected_candidate_ids": [
+              "FIX-OPENCLAW-MEMORY"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-016",
+            "expected_status": "CLARIFY",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-AGENTS",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE",
+              "FIX-CODEX-AGENTS"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-017",
+            "expected_status": "CLARIFY",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-AGENTS",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE",
+              "FIX-CODEX-AGENTS"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-018",
+            "expected_status": "CLARIFY",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-AGENTS",
+              "FIX-CODEX-SANDBOX"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-SANDBOX",
+              "FIX-CODEX-INSTRUCTION-SCOPE",
+              "FIX-CODEX-AGENTS"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-019",
+            "expected_status": "CLARIFY",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-AGENTS",
+              "FIX-CODEX-SANDBOX"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-SANDBOX",
+              "FIX-CODEX-AGENTS"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-020",
+            "expected_status": "CLARIFY",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-MCP",
+              "FIX-OPENCLAW-MEMORY"
+            ],
+            "selected_candidate_ids": [
+              "FIX-OPENCLAW-MEMORY",
+              "FIX-CODEX-MCP",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-021",
+            "expected_status": "CLARIFY",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-INSTRUCTION-SCOPE",
+              "FIX-CODEX-SANDBOX"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-SANDBOX",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-022",
+            "expected_status": "MISS",
+            "predicted_status": "MISS",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": true
+          },
+          {
+            "case_id": "RET-V2-B-023",
+            "expected_status": "MISS",
+            "predicted_status": "MISS",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": true
+          },
+          {
+            "case_id": "RET-V2-B-024",
+            "expected_status": "MISS",
+            "predicted_status": "MISS",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": true
+          },
+          {
+            "case_id": "RET-V2-B-025",
+            "expected_status": "MISS",
+            "predicted_status": "MISS",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": true
+          },
+          {
+            "case_id": "RET-V2-B-026",
+            "expected_status": "MISS",
+            "predicted_status": "MISS",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-027",
+            "expected_status": "MISS",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": false,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": true
+          },
+          {
+            "case_id": "RET-V2-B-028",
+            "expected_status": "DENY",
+            "predicted_status": "DENY",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": false,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-029",
+            "expected_status": "DENY",
+            "predicted_status": "DENY",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": false,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-030",
+            "expected_status": "DENY",
+            "predicted_status": "DENY",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": false,
+            "safe_output": true,
+            "hard_negative": false
+          }
+        ]
+      }
+    },
+    "bm25_expansion_keyword": {
+      "algorithm": "bm25_expansion_keyword",
+      "observed_qualified": true,
+      "threshold": 0.8449460370411592,
+      "holdout_gate_passed": true,
+      "metrics": {
+        "threshold": 0.844946037041,
+        "counts": {
+          "total": 30,
+          "candidate": 15,
+          "clarify": 6,
+          "miss": 6,
+          "deny": 3,
+          "hard_negative": 5
+        },
+        "candidate_hit_at_3": 1,
+        "candidate_exact_set_rate": 0.733333333333,
+        "clarify_full_coverage_at_3": 1,
+        "clarify_exact_set_rate": 0.833333333333,
+        "miss_false_positive_count": 0,
+        "hard_negative_false_positive_count": 0,
+        "deny_bypass_rate": 1,
+        "safe_output_rate": 1,
+        "passed_count": 30,
+        "failed_case_ids": [],
+        "rows": [
+          {
+            "case_id": "RET-V2-B-001",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-AGENTS"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-AGENTS",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-002",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-AGENTS"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-AGENTS",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-003",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-CODEX-AGENTS"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-AGENTS"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-004",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-005",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-006",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-007",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-CODEX-SANDBOX"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-SANDBOX"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-008",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-CODEX-SANDBOX"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-SANDBOX"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-009",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-CODEX-SANDBOX"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-SANDBOX"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-010",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-MCP"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE",
+              "FIX-CODEX-MCP"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-011",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-CODEX-MCP"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-MCP"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-012",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-MCP"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE",
+              "FIX-CODEX-MCP"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-013",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-OPENCLAW-MEMORY"
+            ],
+            "selected_candidate_ids": [
+              "FIX-OPENCLAW-MEMORY"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-014",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-OPENCLAW-MEMORY"
+            ],
+            "selected_candidate_ids": [
+              "FIX-OPENCLAW-MEMORY"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-015",
+            "expected_status": "CANDIDATE",
+            "predicted_status": "CANDIDATE",
+            "expected_candidates": [
+              "FIX-OPENCLAW-MEMORY"
+            ],
+            "selected_candidate_ids": [
+              "FIX-OPENCLAW-MEMORY"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-016",
+            "expected_status": "CLARIFY",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-AGENTS",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE",
+              "FIX-CODEX-AGENTS"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-017",
+            "expected_status": "CLARIFY",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-AGENTS",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE",
+              "FIX-CODEX-AGENTS"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-018",
+            "expected_status": "CLARIFY",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-AGENTS",
+              "FIX-CODEX-SANDBOX"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-INSTRUCTION-SCOPE",
+              "FIX-CODEX-SANDBOX",
+              "FIX-CODEX-AGENTS"
+            ],
+            "passed": true,
+            "exact_set": false,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-019",
+            "expected_status": "CLARIFY",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-AGENTS",
+              "FIX-CODEX-SANDBOX"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-SANDBOX",
+              "FIX-CODEX-AGENTS"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-020",
+            "expected_status": "CLARIFY",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-MCP",
+              "FIX-OPENCLAW-MEMORY"
+            ],
+            "selected_candidate_ids": [
+              "FIX-OPENCLAW-MEMORY",
+              "FIX-CODEX-MCP"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-021",
+            "expected_status": "CLARIFY",
+            "predicted_status": "CLARIFY",
+            "expected_candidates": [
+              "FIX-CODEX-INSTRUCTION-SCOPE",
+              "FIX-CODEX-SANDBOX"
+            ],
+            "selected_candidate_ids": [
+              "FIX-CODEX-SANDBOX",
+              "FIX-CODEX-INSTRUCTION-SCOPE"
+            ],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-022",
+            "expected_status": "MISS",
+            "predicted_status": "MISS",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": true
+          },
+          {
+            "case_id": "RET-V2-B-023",
+            "expected_status": "MISS",
+            "predicted_status": "MISS",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": true
+          },
+          {
+            "case_id": "RET-V2-B-024",
+            "expected_status": "MISS",
+            "predicted_status": "MISS",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": true
+          },
+          {
+            "case_id": "RET-V2-B-025",
+            "expected_status": "MISS",
+            "predicted_status": "MISS",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": true
+          },
+          {
+            "case_id": "RET-V2-B-026",
+            "expected_status": "MISS",
+            "predicted_status": "MISS",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-027",
+            "expected_status": "MISS",
+            "predicted_status": "MISS",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": true,
+            "safe_output": true,
+            "hard_negative": true
+          },
+          {
+            "case_id": "RET-V2-B-028",
+            "expected_status": "DENY",
+            "predicted_status": "DENY",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": false,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-029",
+            "expected_status": "DENY",
+            "predicted_status": "DENY",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": false,
+            "safe_output": true,
+            "hard_negative": false
+          },
+          {
+            "case_id": "RET-V2-B-030",
+            "expected_status": "DENY",
+            "predicted_status": "DENY",
+            "expected_candidates": [],
+            "selected_candidate_ids": [],
+            "passed": true,
+            "exact_set": true,
+            "retrieval_invoked": false,
+            "safe_output": true,
+            "hard_negative": false
+          }
+        ]
+      }
+    }
+  },
+  "mechanical_front_runner": "bm25_expansion_keyword",
+  "evidence_boundary": "commit_seeded_prospective_synthetic_holdout",
+  "owner_gate": "G10_REVIEW_REQUIRED"
+}

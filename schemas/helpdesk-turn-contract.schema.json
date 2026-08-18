@@ -1,0 +1,232 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/hou-152/ai-native-helpdesk/schemas/helpdesk-turn-contract.schema.json",
+  "title": "AI Native Helpdesk Phase 2 turn contract input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "turn_id",
+    "turn_started_at",
+    "safety_gate",
+    "privacy_gate",
+    "retrieval_status",
+    "separate_external_route_authorized",
+    "external_query_sent",
+    "context",
+    "proposed"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "turn_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{2,127}$"
+    },
+    "turn_started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "safety_gate": {
+      "enum": [
+        "PASS",
+        "ESCALATE"
+      ]
+    },
+    "privacy_gate": {
+      "enum": [
+        "PASS",
+        "QUERY_PRIVACY_DENY"
+      ]
+    },
+    "retrieval_status": {
+      "enum": [
+        "ALLOW",
+        "MISS",
+        "DENY",
+        "CANDIDATE",
+        "CLARIFY"
+      ]
+    },
+    "separate_external_route_authorized": {
+      "type": "boolean"
+    },
+    "external_query_sent": {
+      "type": "boolean"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "missing_changes_path",
+        "candidate_paths_differ",
+        "ambiguity_stage",
+        "unresolved",
+        "previous_question",
+        "question"
+      ],
+      "properties": {
+        "missing_changes_path": {
+          "type": "boolean"
+        },
+        "candidate_paths_differ": {
+          "type": "boolean"
+        },
+        "ambiguity_stage": {
+          "enum": [
+            "NONE",
+            "INITIAL_ASKED",
+            "REFRAME_ASKED"
+          ]
+        },
+        "unresolved": {
+          "type": "boolean"
+        },
+        "previous_question": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "question": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        }
+      }
+    },
+    "proposed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "destination",
+        "destination_detail",
+        "claims"
+      ],
+      "properties": {
+        "destination": {
+          "enum": [
+            "DO",
+            "VERIFY",
+            "WAIT",
+            "STOP",
+            "NO_ACTION_NEEDED",
+            "NEEDS_INPUT",
+            "UNKNOWN",
+            "ESCALATE"
+          ]
+        },
+        "destination_detail": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "claims": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "$ref": "#/$defs/claim"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "claim_id",
+        "text",
+        "risk",
+        "dynamic",
+        "versioned",
+        "definitive",
+        "source_kind",
+        "card_id",
+        "evidence"
+      ],
+      "properties": {
+        "claim_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{2,63}$"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "risk": {
+          "enum": [
+            "LOW",
+            "MEDIUM",
+            "HIGH"
+          ]
+        },
+        "dynamic": {
+          "type": "boolean"
+        },
+        "versioned": {
+          "type": "boolean"
+        },
+        "definitive": {
+          "type": "boolean"
+        },
+        "source_kind": {
+          "enum": [
+            "PUBLIC_CARD",
+            "EXTERNAL_VERIFIED",
+            "MODEL_REASONING"
+          ]
+        },
+        "card_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Z0-9][A-Z0-9._-]{2,63}$"
+        },
+        "evidence": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "source_id",
+              "url",
+              "retrieved_at",
+              "version"
+            ],
+            "properties": {
+              "source_id": {
+                "type": "string",
+                "pattern": "^[A-Z][A-Z0-9_]{2,63}$"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "pattern": "^https://"
+              },
+              "retrieved_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "version": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 120
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

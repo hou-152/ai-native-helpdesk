@@ -11,17 +11,18 @@ description: PublicCard 的确定性发布门合同。knowledge 路由只允许�
 
 ## 唯一加载路径
 
-运行：
+将当前 `SKILL.md` 所在目录视为 Skill 根目录，并从该目录运行：
 
 ```bash
-node ~/.agents/skills/ai-native-helpdesk/scripts/query-public-card.mjs \
-  --query "<用户问题>"
+node scripts/query-public-card.mjs --query "<用户问题>"
 ```
 
 需要社区本地知识包时，只能由调用者显式增加：
 
 ```bash
---community-pack "<社区知识包目录>"
+node scripts/query-public-card.mjs \
+  --query "<用户问题>" \
+  --community-pack "<社区知识包目录>"
 ```
 
 禁止自动扫描当前目录、用户目录、环境变量或个人资料。禁止用 `read_file`、shell 或其他工具直接读取卡片正文来绕过脚本。
@@ -39,6 +40,10 @@ publication = READY
 
 缺字段、大小写不同、多余空格、`UNKNOWN`、`HOLD` 或其他值都拒绝。`domain` 必须精确为 `AI_AGENT_OPENCLAW`。PublicCard 还必须通过严格字段、文件名、索引一致性、敏感模式和路径边界检查。
 
+schema B（`0.4`）要求每张卡同时提供经过审查的 `scope_hint`、`judgment_framework`、`common_mistakes`、`action_principles` 和 `verification_method`。这些字段补足判断与验证，结构存在仍不等于内容正确。
+
+index 必须绑定卡片的 `revision`、完整文件 `content_sha256` 和经审核的 `scope_hint`。revision、hash、question、aliases 或 scope_hint 任一漂移都返回 `DENY`；候选召回分数不能跳过这一步。
+
 ## 三种结果
 
 | 状态 | 含义 | knowledge 路由动作 |
@@ -54,7 +59,7 @@ publication = READY
 - 公共包位于 `knowledge/public/`，跟随 Skill 分发。
 - 社区包由运行环境显式传入，不能默认读取用户资料。
 - 同一规范化问题命中多张卡时一律 `DENY / QUERY_CONFLICT`，不设置静默覆盖顺序。
-- 当前公共索引只有 1 张试运行卡；单卡可用不等于完整知识库上线。
+- 当前远端功能分支的正式公共索引精确包含 8 张逐卡批准卡：G12／G13b 的 000001—000004，以及 Phase 6 批准的 000005—000008。远端 `main` 仍只有原试运行卡；功能分支 8 卡可用不等于 `main` 已发布、完整知识库上线或社区验收完成。
 
 ## 隐私能力边界
 
@@ -65,4 +70,5 @@ publication = READY
 - 脚本、schema 或 index 缺失：`DENY`，禁止模拟。
 - 显式社区包缺失或损坏：`DENY`，禁止悄悄忽略。
 - 动态事实：即使 `ALLOW`，仍按 knowledge 合同复核当前官方来源。
+- `PENDING_G12` 候选或人工 QA 未完成：不得复制到公共包，不得合成四门通过状态。
 - 任何拒绝结果出现正文、canary、绝对路径或凭证：视为隐私门实现失败。

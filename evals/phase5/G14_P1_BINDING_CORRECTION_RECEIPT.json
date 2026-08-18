@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "receipt_id": "G14-P1-BINDING-CORRECTION-20260818-001",
+  "occurred_at": "2026-08-18T08:00:38+08:00",
+  "authority": "OWNER",
+  "authorization_receipt_id": "G14-AUTHORIZATION-20260818-001",
+  "private_correction_receipt_sha256": "b6c4bc66a15858147ad6efa9755c434af28e74e61992e2567bc58588131b046d",
+  "finding": {
+    "previous_participant_binding_valid": false,
+    "owner_named_object_kind": "EXECUTION_AGENT",
+    "authorized_participant_kind": "AI_NATIVE_COMMUNITY_MEMBER",
+    "participant_executor_equivalence_allowed": false
+  },
+  "reclassification": {
+    "G14-P1-DESIGNATION-20260818-001": "INVALID_FOR_HUMAN_PARTICIPANT_BINDING",
+    "G14-P1-CONSENT-20260818-001": "NOT_VALID_HUMAN_PARTICIPANT_CONSENT",
+    "G14-P1-PREFLIGHT-20260818-001": "EXECUTOR_SIDE_PREFLIGHT_ONLY"
+  },
+  "current_gate": {
+    "participant_id": "P1",
+    "participant_designation": "NOT_DESIGNATED",
+    "participant_consent": "NOT_OBSERVED",
+    "executor_observed": true,
+    "artifact_transferred": false,
+    "trial_started": false
+  },
+  "privacy": {
+    "participant_identity_public": false,
+    "executor_alias_public": false,
+    "raw_owner_message_public": false
+  },
+  "history_policy": "APPEND_ONLY_NO_DELETION",
+  "status": "G14_APPROVED_AWAITING_HUMAN_P1_DESIGNATION"
+}

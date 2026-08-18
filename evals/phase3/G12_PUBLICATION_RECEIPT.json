@@ -1,0 +1,55 @@
+{
+  "schema_version": "1.0",
+  "gate": "G12",
+  "owner_decision": "APPROVED",
+  "owner_receipt": "按推荐通过 G12：批准 schema B、QA rubric 和首批 000001／000002／000003；批准 000001 v1.1.0、000002 v1.0.0、000003 v1.0.0 逐卡发布。先完成正式三卡投影与真实错配回归，通过后进入 Phase 4。",
+  "approved_at": "2026-08-18",
+  "schema_b": "APPROVED",
+  "qa_rubric": "APPROVED",
+  "batch_id": "AIHD-MVP-FIRST-BATCH",
+  "human_qa_policy": "ALL_CARDS_100_PERCENT",
+  "cards": [
+    {
+      "card_id": "AIHD-PC-000001",
+      "revision": "1.1.0",
+      "content_sha256": "ca26a3c3d41768ecc9d7e5b9a85a2fcb9e49244d1e8a089d2762fde5834cec6a",
+      "candidate_authorization": "CONFIRMED",
+      "human_qa": "PASS",
+      "editorial": "APPROVED",
+      "verification": "PASS",
+      "privacy_gate": "PASS",
+      "publication": "READY"
+    },
+    {
+      "card_id": "AIHD-PC-000002",
+      "revision": "1.0.0",
+      "content_sha256": "a0bad2ec48760eac38bb1efb48b6e5fc992dd28f16f03cfcb7fd81378a65864e",
+      "candidate_authorization": "APPROVED",
+      "human_qa": "PASS",
+      "editorial": "APPROVED",
+      "verification": "PASS",
+      "privacy_gate": "PASS",
+      "publication": "READY"
+    },
+    {
+      "card_id": "AIHD-PC-000003",
+      "revision": "1.0.0",
+      "content_sha256": "284483b32305b1e869364c8904f92336602016b2c5d9550ed3a34c29c4ef796a",
+      "candidate_authorization": "APPROVED",
+      "human_qa": "PASS",
+      "editorial": "APPROVED",
+      "verification": "PASS",
+      "privacy_gate": "PASS",
+      "publication": "READY"
+    }
+  ],
+  "next_gate": "PUBLISHED_THREE_CARD_MISMATCH_REGRESSION",
+  "not_authorized": [
+    "PUSH",
+    "PR",
+    "MERGE",
+    "FOURTH_CARD",
+    "PRIVATE_192_BULK_PROMOTION",
+    "COMMUNITY_TRIAL"
+  ]
+}

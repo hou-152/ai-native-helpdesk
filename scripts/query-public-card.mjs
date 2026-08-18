@@ -17,9 +17,10 @@ const MAX_QUERY_CHARS = 500;
 const MAX_INDEX_BYTES = 512 * 1024;
 const MAX_CARD_BYTES = 128 * 1024;
 const MAX_INDEX_ENTRIES = 1000;
-const EXPECTED_SCHEMA_SHA256 = "40779ff9c0a97d0fbb574d9d2951f002b0eeb36b6d6775a1993a4287282e31a2";
+const EXPECTED_SCHEMA_SHA256 = "4d8bbfb1526645410afad4468e9925e4d78491d40d2a7a2daa30f0ddf8ee8d2a";
 const CARD_ID_PATTERN = /^[A-Z0-9][A-Z0-9._-]{2,63}$/;
 const REVISION_PATTERN = /^\d+\.\d+\.\d+$/;
+const SHA256_PATTERN = /^[0-9a-f]{64}$/;
 const CARD_KEYS = Object.freeze([
   "schema_version",
   "card_id",
@@ -27,10 +28,15 @@ const CARD_KEYS = Object.freeze([
   "revision",
   "question",
   "aliases",
+  "scope_hint",
   "applies_to",
   "not_for",
   "answer",
+  "judgment_framework",
+  "common_mistakes",
+  "action_principles",
   "next_action",
+  "verification_method",
   "verification_steps",
   "public_sources",
   "supported_versions",
@@ -42,7 +48,15 @@ const CARD_KEYS = Object.freeze([
 ]);
 const SOURCE_KEYS = Object.freeze(["title", "url", "checked_at"]);
 const INDEX_KEYS = Object.freeze(["schema_version", "cards"]);
-const INDEX_ENTRY_KEYS = Object.freeze(["card_id", "file", "question", "aliases"]);
+const INDEX_ENTRY_KEYS = Object.freeze([
+  "card_id",
+  "file",
+  "revision",
+  "content_sha256",
+  "question",
+  "aliases",
+  "scope_hint"
+]);
 const REQUIRED_STATUS = Object.freeze({
   editorial: "APPROVED",
   verification: "PASS",
@@ -359,12 +373,13 @@ function validateSchemaContract(schema) {
   for (const [key, expectedValue] of Object.entries(REQUIRED_STATUS)) {
     if (schema.properties[key]?.const !== expectedValue) deny("SCHEMA_CONTRACT_INVALID", 65);
   }
+  if (schema.properties.schema_version?.const !== "0.4") deny("SCHEMA_CONTRACT_INVALID", 65);
   if (schema.properties.domain?.const !== "AI_AGENT_OPENCLAW") deny("SCHEMA_CONTRACT_INVALID", 65);
 }
 
-function validateCard(card, expectedId, expectedQuestion, expectedAliases) {
+function validateCard(card, expectedId, expectedQuestion, expectedAliases, expectedRevision, expectedScopeHint) {
   requireExactKeys(card, CARD_KEYS, "CARD_SCHEMA_INVALID");
-  if (card.schema_version !== "0.3") deny("CARD_SCHEMA_INVALID", 65);
+  if (card.schema_version !== "0.4") deny("CARD_SCHEMA_INVALID", 65);
   if (typeof card.card_id !== "string" || !CARD_ID_PATTERN.test(card.card_id) || card.card_id !== expectedId) {
     deny("CARD_ID_MISMATCH", 65);
   }
@@ -372,10 +387,15 @@ function validateCard(card, expectedId, expectedQuestion, expectedAliases) {
   if (typeof card.revision !== "string" || !REVISION_PATTERN.test(card.revision)) deny("CARD_SCHEMA_INVALID", 65);
   requireString(card.question, 500, "CARD_SCHEMA_INVALID");
   requireStringArray(card.aliases, { max: 20, itemMax: 500, reasonCode: "CARD_SCHEMA_INVALID" });
+  requireString(card.scope_hint, 300, "CARD_SCHEMA_INVALID");
   requireStringArray(card.applies_to, { min: 1, max: 20, itemMax: 300, reasonCode: "CARD_SCHEMA_INVALID" });
   requireStringArray(card.not_for, { max: 20, itemMax: 300, reasonCode: "CARD_SCHEMA_INVALID" });
   requireString(card.answer, 12000, "CARD_SCHEMA_INVALID");
+  requireStringArray(card.judgment_framework, { min: 1, max: 12, itemMax: 1000, reasonCode: "CARD_SCHEMA_INVALID" });
+  requireStringArray(card.common_mistakes, { min: 1, max: 12, itemMax: 1000, reasonCode: "CARD_SCHEMA_INVALID" });
+  requireStringArray(card.action_principles, { min: 1, max: 12, itemMax: 1000, reasonCode: "CARD_SCHEMA_INVALID" });
   requireString(card.next_action, 1000, "CARD_SCHEMA_INVALID");
+  requireString(card.verification_method, 2000, "CARD_SCHEMA_INVALID");
   requireStringArray(card.verification_steps, { min: 1, max: 20, itemMax: 1000, reasonCode: "CARD_SCHEMA_INVALID" });
   requireStringArray(card.supported_versions, { max: 20, itemMax: 100, reasonCode: "CARD_SCHEMA_INVALID" });
   requireDate(card.last_verified, "CARD_SCHEMA_INVALID");
@@ -425,6 +445,9 @@ function validateCard(card, expectedId, expectedQuestion, expectedAliases) {
     if (card[key] !== expectedValue) deny("CARD_GATE_DENY", 68);
   }
   if (normalizeTerm(card.question) !== normalizeTerm(expectedQuestion)) deny("CARD_INDEX_MISMATCH", 65);
+  if (card.revision !== expectedRevision || normalizeTerm(card.scope_hint) !== normalizeTerm(expectedScopeHint)) {
+    deny("CARD_INDEX_MISMATCH", 65);
+  }
   const actualAliases = card.aliases.map(normalizeTerm).sort();
   const indexAliases = expectedAliases.map(normalizeTerm).sort();
   if (actualAliases.length !== indexAliases.length || actualAliases.some((alias, index) => alias !== indexAliases[index])) {
@@ -435,7 +458,7 @@ function validateCard(card, expectedId, expectedQuestion, expectedAliases) {
 
 function validateIndex(index) {
   requireExactKeys(index, INDEX_KEYS, "INDEX_SCHEMA_INVALID");
-  if (index.schema_version !== "0.3" || !Array.isArray(index.cards) || index.cards.length > MAX_INDEX_ENTRIES) {
+  if (index.schema_version !== "0.4" || !Array.isArray(index.cards) || index.cards.length > MAX_INDEX_ENTRIES) {
     deny("INDEX_SCHEMA_INVALID", 65);
   }
   const ids = new Set();
@@ -445,8 +468,13 @@ function validateIndex(index) {
     requireExactKeys(entry, INDEX_ENTRY_KEYS, "INDEX_SCHEMA_INVALID");
     if (typeof entry.card_id !== "string" || !CARD_ID_PATTERN.test(entry.card_id)) deny("INDEX_SCHEMA_INVALID", 65);
     if (entry.file !== `cards/${entry.card_id}.json`) deny("CARD_PATH_INVALID", 66);
+    if (typeof entry.revision !== "string" || !REVISION_PATTERN.test(entry.revision)) deny("INDEX_SCHEMA_INVALID", 65);
+    if (typeof entry.content_sha256 !== "string" || !SHA256_PATTERN.test(entry.content_sha256)) {
+      deny("INDEX_SCHEMA_INVALID", 65);
+    }
     requireString(entry.question, 500, "INDEX_SCHEMA_INVALID");
     requireStringArray(entry.aliases, { max: 20, itemMax: 500, reasonCode: "INDEX_SCHEMA_INVALID" });
+    requireString(entry.scope_hint, 300, "INDEX_SCHEMA_INVALID");
     scanSensitive(entry, "INDEX_PRIVACY_DENY");
     if (ids.has(entry.card_id) || files.has(entry.file)) deny("INDEX_DUPLICATE_CARD", 67);
     ids.add(entry.card_id);
@@ -554,7 +582,9 @@ async function readMatchedCard(pack, entry) {
     cardStat
   );
   const card = parseStrictJson(cardText, "CARD_JSON_INVALID");
-  validateCard(card, entry.card_id, entry.question, entry.aliases);
+  validateCard(card, entry.card_id, entry.question, entry.aliases, entry.revision, entry.scope_hint);
+  const contentDigest = crypto.createHash("sha256").update(cardText, "utf8").digest("hex");
+  if (contentDigest !== entry.content_sha256) deny("CARD_INDEX_HASH_MISMATCH", 65);
   return Object.fromEntries(CARD_KEYS.map((key) => [key, card[key]]));
 }
 

@@ -1,0 +1,72 @@
+{
+  "schema_version": "1.0",
+  "fixture_id": "aihd-retrieval-fixture-v1",
+  "claim_boundary": "mechanism_only_except_existing_public_card",
+  "cards": [
+    {
+      "card_id": "FIX-CODEX-AGENTS",
+      "public_question": "怎样确认项目 AGENTS.md 规则已被 Codex 读取并生效？",
+      "scope_hint": "项目级 AGENTS.md 的发现、读取、触发与无副作用探针验证",
+      "retrieval_aliases": [
+        "写进 AGENTS.md 为什么没生效？",
+        "Codex 为什么不遵守已经写下的规则？",
+        "怎样验证 Codex 已读取项目规则？",
+        "怎样测试 AGENTS.md 规则有没有生效？"
+      ],
+      "fixture_origin": "current_public_card",
+      "public_card_id": "AIHD-PC-000001"
+    },
+    {
+      "card_id": "FIX-CODEX-INSTRUCTION-SCOPE",
+      "public_question": "规则应该写在全局还是项目 AGENTS.md，怎样判断指令作用域与覆盖？",
+      "scope_hint": "全局、项目、子目录指令的作用域、优先级和覆盖关系",
+      "retrieval_aliases": [
+        "AGENTS.md 应该放在哪一层目录？",
+        "全局规则和项目规则冲突时听谁的？",
+        "子目录 AGENTS.md 会覆盖上层规则吗？",
+        "怎样判断当前任务适用哪份指令文件？"
+      ],
+      "fixture_origin": "synthetic_fixture",
+      "public_card_id": null
+    },
+    {
+      "card_id": "FIX-CODEX-SANDBOX",
+      "public_question": "Codex 不能读取文件或执行命令时，怎样排查沙箱与审批权限？",
+      "scope_hint": "文件系统、命令、网络访问被沙箱或审批策略限制时的诊断",
+      "retrieval_aliases": [
+        "Codex 为什么没有权限打开这个文件？",
+        "命令被 sandbox 拒绝该怎么查？",
+        "怎样区分规则要求和沙箱硬限制？",
+        "Codex 访问网络为什么需要审批？"
+      ],
+      "fixture_origin": "synthetic_fixture",
+      "public_card_id": null
+    },
+    {
+      "card_id": "FIX-CODEX-MCP",
+      "public_question": "怎样连接并验证 Codex 的 MCP 服务？",
+      "scope_hint": "MCP 服务配置、连接、探测和当前会话可见性验证",
+      "retrieval_aliases": [
+        "Codex 怎么添加 MCP server？",
+        "MCP 配好了为什么工具列表里没有？",
+        "怎样确认 MCP 服务真的连通？",
+        "MCP doctor 通过但当前会话看不到怎么办？"
+      ],
+      "fixture_origin": "synthetic_fixture",
+      "public_card_id": null
+    },
+    {
+      "card_id": "FIX-OPENCLAW-MEMORY",
+      "public_question": "OpenClaw 为什么记不住上一轮，怎样区分项目记忆与当前会话？",
+      "scope_hint": "OpenClaw 的项目长期记忆、会话上下文、写入与读回边界",
+      "retrieval_aliases": [
+        "小龙虾为什么忘了我上次说的事？",
+        "项目 memory 和当前 session 有什么区别？",
+        "怎样验证 OpenClaw 已经写入长期记忆？",
+        "换一个会话以后记忆还在吗？"
+      ],
+      "fixture_origin": "synthetic_fixture",
+      "public_card_id": null
+    }
+  ]
+}

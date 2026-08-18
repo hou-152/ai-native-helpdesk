@@ -1,0 +1,74 @@
+{
+  "schema_version": "0.4",
+  "card_id": "AIHD-PC-000005",
+  "domain": "AI_AGENT_OPENCLAW",
+  "revision": "1.0.0",
+  "question": "OpenClaw 心跳怎样配置，才能主动检查但不空转或打扰？",
+  "aliases": [
+    "Heartbeat 怎样设置成无事静默、有事提醒？",
+    "OpenClaw 心跳为什么一直空跑？",
+    "怎样限制 Agent 只在合适时间主动提醒？",
+    "心跳没触发或触发了没消息，先查什么？"
+  ],
+  "scope_hint": "配置和排查 OpenClaw Heartbeat 的周期、投递、活跃时段、静默行为及其与 Automation 的边界。",
+  "applies_to": [
+    "希望 Agent 周期性检查一小组状态，并只在有需要时提醒",
+    "OpenClaw Gateway 已运行，需要排查心跳调度、投递或运行状态",
+    "需要限制心跳的活跃时段、上下文成本或投递目标"
+  ],
+  "not_for": [
+    "任务必须在精确时刻独立执行并保留完整运行记录；这类需求应使用 Automation",
+    "Gateway 未运行或 OpenClaw 尚未完成基础安装",
+    "问题来自操作系统的其他调度器，而不是 OpenClaw Heartbeat／Automation"
+  ],
+  "answer": "先把心跳定义为周期性主会话检查：无事保持静默，有明确事项才提醒。用 `agents.defaults.heartbeat` 或 `agents.entries.*.heartbeat` 设置 `every`、`target`、`directPolicy` 和 `activeHours`；只需轻量启动上下文时再评估 `lightContext`，需要隔离每次运行时再评估 `isolatedSession`。短检查清单应写入系统心跳任务的 monitor scratch，并通过 `openclaw cron scratch <jobId>` 管理，不要直接编辑系统生成的心跳任务。心跳的 cadence 由 Automations 调度器持有；若没有触发，先查 Gateway、`cron.enabled` 和对应 `Heartbeat (agent-id)` 任务。若已触发但没有提醒，再查 owner／channel 路由、可见性策略，以及本轮是否确实没有需报告事项。固定时刻、独立生命周期或要求逐次运行记录的工作应建 Automation，而不是塞进 Heartbeat。",
+  "judgment_framework": [
+    "触发目的：周期性环境感知或待办巡检用 Heartbeat；固定时刻、一次性或独立后台任务用 Automation。",
+    "检查形态：能写成很短的检查清单并能判断“无事”时适合 Heartbeat；每次必须完成完整动作或产出时用 Automation。",
+    "投递与打扰：显式限定接收目标、活跃时段、直接消息策略，并把正常无变化保持静默。",
+    "验收证据：分别检查期望配置、系统心跳任务、触发记录和实际投递，不能只看 Agent 输出。"
+  ],
+  "common_mistakes": [
+    "直接修改调度器生成的系统心跳任务，而不是修改 `agents.*.heartbeat` 的期望配置或 monitor scratch。",
+    "把检查清单写进配置字段，忽略当前运行时由 monitor scratch 承载清单。",
+    "关闭 `cron.enabled` 后仍期待定时心跳有另一套备用计时器。",
+    "没有活跃时段和投递边界，让正常巡检变成夜间打扰。",
+    "把模糊目标写成长提示词，导致每次心跳都消耗上下文却无法判断是否完成。",
+    "只看到 Agent 输出就声称任务可靠，未检查调度、运行历史和实际投递。"
+  ],
+  "action_principles": [
+    "一次只给一个 Agent 启用一份最小检查清单。",
+    "默认允许没有事项就不提醒，把可见通知留给异常或明确待办。",
+    "先证明一次手动唤醒和一次自然调度，再逐步增加检查项。",
+    "心跳配置、Automation 运行和业务结果分别验收。"
+  ],
+  "next_action": "选一个无敏感数据的检查项，只为一个 Agent 设置 `every`、`target` 和 `activeHours`；用 `openclaw cron list --all` 找到对应系统心跳任务，把短清单写入它的 scratch，再用 `openclaw system event --text \"heartbeat smoke check\" --mode now` 做一次手动唤醒。",
+  "verification_method": "成功必须同时看到期望配置、对应系统心跳任务、一次可追踪触发和符合策略的投递；还要用无事项样例及活跃时段外样例证明不会额外打扰。任一环节未知时保持未验证。该结果只证明指定配置和样例行为，不证明长期稳定性或内容判断正确。",
+  "verification_steps": [
+    "确认 Gateway 正在运行，且 Automations 未被禁用。",
+    "确认列表中只有预期 Agent 的系统心跳项，cadence 与配置一致。",
+    "执行一次手动唤醒，检查运行记录中出现一次对应触发。",
+    "在有事项样例中确认只产生一次预期投递；在无事项样例中确认没有多余提醒。",
+    "在活跃时段外复核没有非预期主动消息。"
+  ],
+  "public_sources": [
+    {
+      "title": "OpenClaw Heartbeat",
+      "url": "https://docs.openclaw.ai/gateway/heartbeat",
+      "checked_at": "2026-08-18"
+    },
+    {
+      "title": "OpenClaw Automations",
+      "url": "https://docs.openclaw.ai/automation/cron-jobs",
+      "checked_at": "2026-08-18"
+    }
+  ],
+  "supported_versions": [
+    "OpenClaw official documentation checked 2026-08-18"
+  ],
+  "last_verified": "2026-08-18",
+  "editorial": "APPROVED",
+  "verification": "PASS",
+  "privacy_gate": "PASS",
+  "publication": "READY"
+}

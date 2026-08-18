@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0",
+  "fixture_id": "aihd-phase3-g12-candidate-fixture-v1",
+  "claim_boundary": "candidate_projection_only_not_published_not_real_multicard_acceptance",
+  "cards": [
+    {
+      "card_id": "FIX-CODEX-AGENTS",
+      "public_question": "写进 AGENTS.md 的规则，怎样确认在 Codex 中生效？",
+      "scope_hint": "排查 Codex 是否发现、读取并触发普通 AGENTS.md 行为规则；不处理技术性权限阻断。",
+      "retrieval_aliases": [
+        "写进 AGENTS.md 为什么没生效？",
+        "Codex 为什么不遵守已经写下的规则？",
+        "怎样验证 Codex 已读取项目规则？",
+        "怎样测试 AGENTS.md 规则有没有生效？"
+      ],
+      "fixture_origin": "existing_public_card_schema_b_candidate",
+      "public_card_id": "AIHD-PC-000001"
+    },
+    {
+      "card_id": "FIX-CODEX-SANDBOX",
+      "public_question": "Codex 已读取 AGENTS.md，但命令仍被沙箱或审批阻断，应该怎么排查？",
+      "scope_hint": "排查已确认规则被读取后，命令、文件或网络访问仍被 Sandbox、Rules 或审批策略限制。",
+      "retrieval_aliases": [
+        "Codex 明明读了规则为什么还是不能执行命令？",
+        "命令被 sandbox 拒绝该怎么查？",
+        "AGENTS.md 允许了为什么还要审批？",
+        "怎样区分规则要求和沙箱硬限制？"
+      ],
+      "fixture_origin": "pending_g12_public_source_candidate",
+      "public_card_id": "AIHD-PC-000002"
+    },
+    {
+      "card_id": "FIX-OPENCLAW-GATEWAY",
+      "public_question": "OpenClaw Gateway 安装后，怎样确认服务真的运行并且 RPC 可用？",
+      "scope_hint": "验证 OpenClaw Gateway 服务状态、连接握手与 RPC 读探针；不处理安装、重启或凭证分发。",
+      "retrieval_aliases": [
+        "openclaw gateway status 怎么看？",
+        "小龙虾 gateway 装好了怎么验收？",
+        "Gateway 显示 running 但连不上怎么办？",
+        "怎样用 --require-rpc 验证 OpenClaw Gateway？"
+      ],
+      "fixture_origin": "pending_g12_public_source_candidate",
+      "public_card_id": "AIHD-PC-000003"
+    }
+  ]
+}

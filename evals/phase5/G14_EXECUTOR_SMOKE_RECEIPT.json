@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0",
+  "receipt_id": "G14-EXECUTOR-SMOKE-20260818-001",
+  "occurred_at": "2026-08-18T08:15:03+08:00",
+  "authority": "OWNER_SOURCE_BINDING",
+  "authorization_receipt_id": "G14-AUTHORIZATION-20260818-001",
+  "unbound_result_receipt_id": "G14-UNBOUND-RESULT-20260818-001",
+  "unbound_result_receipt_sha256": "0be15136f9f0811cf7140e67eb8ff500a6c1ebaedff6adc27a6c9865dd25533b",
+  "private_source_binding_receipt_sha256": "7efb573c26e92484bfc57ef54673bcade1d321a1af35a79328c17201a2cca456",
+  "source_binding": {
+    "actor_kind": "OWNER_NAMED_EXECUTION_AGENT",
+    "actor_identity_public": false,
+    "human_participant": false,
+    "human_consent_evidence": false
+  },
+  "reported_result": {
+    "environment": "MACOS_ARM64_NODE_24",
+    "artifact_sha256_match": true,
+    "install": "PASS",
+    "verify": "PASS",
+    "card_000001": "ALLOW",
+    "card_000004": "ALLOW",
+    "model_weight_nearby": "MISS",
+    "uninstall": "PASS",
+    "confusion_tag": "PATH_SETUP"
+  },
+  "classification": {
+    "executor_smoke": "PASS_WITH_PATH_SETUP_CONFUSION",
+    "community_trial": "NOT_STARTED",
+    "g14_completion_eligible": false,
+    "reason": "EXECUTION_AGENT_IS_NOT_THE_AUTHORIZED_HUMAN_PARTICIPANT"
+  },
+  "current_gate": {
+    "participant_id": "P1",
+    "human_participant_designation": "NOT_DESIGNATED",
+    "human_participant_consent": "NOT_OBSERVED"
+  },
+  "history_policy": "APPEND_ONLY_SOURCE_BINDING_OF_UNBOUND_RESULT",
+  "status": "EXECUTOR_SMOKE_PASS_WITH_PATH_SETUP_CONFUSION_AWAITING_HUMAN_P1"
+}
