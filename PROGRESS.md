@@ -1,5 +1,11 @@
 # 受控阶段进度
 
+## 收到合法最小结果，但参与者来源未绑定（2026-08-18）
+
+- Owner 转发的 JSON 精确包含 Runbook 第 6 节的 12 个字段；枚举、布尔值和 `PATH_SETUP` 困惑标签均合法。报告值为 artifact hash 匹配、install／verify／uninstall PASS、000001／000004 ALLOW、模型权重近邻 MISS。
+- 该 JSON 自报 `participant_id = P1` 和 `consent = OBSERVED`，但在此前绑定纠错后，真人 P1 仍未指定；本消息也没有绑定发送者、执行者或 artifact 传递来源。因此它最多证明一份结构合法的执行结果被观察到，不能自证真人同意或社区试跑。
+- 当前分类为 `G14_RESULT_RELAY_OBSERVED_HOLD_UNBOUND_PARTICIPANT`。G14 完成资格为 false，社区试跑保持 `NOT_VERIFIED`；若来源是执行 Agent，只能计为 executor smoke result。
+
 ## P1 参与者绑定纠错，恢复等待真人指定（2026-08-18）
 
 - Owner 澄清此前所指对象是执行 Agent；G14-A 授权对象则是 1 名可明确同意和撤回的 AI Native 社区成员。执行 Agent 可以跑命令，但不能替代社区成员的参与者身份或知情同意。
