@@ -1,15 +1,15 @@
 ---
 name: ai-native-helpdesk
 description: 面向 AI／Agent／OpenClaw 社区的薄入口 Helpdesk Skill。负责守门、判模、按需加载合同，并只通过确定性发布门读取 PublicCard。
-version: 0.9.0
-status: PP_MECHANISM_COMPLETE / MERGE_MAIN_COMPLETE / GITHUB_RELEASE_NOT_STARTED / PRODUCT_VALIDATION_POST_RELEASE
+version: 0.9.1-candidate
+status: PP_MECHANISM_COMPLETE / MERGE_MAIN_COMPLETE / GITHUB_RELEASE_V0.9.0_COMPLETE / PSYCH_LABEL_CANDIDATE_UNRELEASED / PRODUCT_VALIDATION_POST_RELEASE
 author: 减
 license: Apache-2.0
 ---
 
-# ai-native-helpdesk v0.9.0-pp-closed-candidate
+# ai-native-helpdesk v0.9.1-candidate
 
-> PP 机制已按 Owner 最终定义完成并关门：8 张逐卡批准卡已通过 PR #5 merge 到远端 `main`（`430b34b`），198／198 与可逆安装通过。tag／GitHub Release 仍待逐项授权，30 人产品验证属于发布后阶段；8 卡可用不等于完整知识库、社区验收或用户效果。
+> 这是基于已发布 `v0.9.0` 的未发布候选版本。`v0.9.0` 的 8 张卡、历史收据和发布包保持不变；本候选新增的心理层只在本分支验证，尚未进入 `main` 或 GitHub Release。
 
 运行时把本文件所在目录作为唯一 Skill 根目录；所有 contract、schema、policy、script 和 PublicCard 都相对于该目录解析，不猜测用户目录或固定全局安装路径。
 
@@ -17,7 +17,7 @@ license: Apache-2.0
 
 用于 AI／Agent／OpenClaw 相关社区的薄入口 Skill。AI Native 社区可以提供经过筛选的共同知识来源，但任何群聊原文、成员标识和内部审核材料都不得进入公开运行包。
 
-只做 6 件事：
+只做 7 件事：
 
 1. 守门：识别安全、隐私、不可逆和动态事实风险。
 2. 判模：选择 1 个主路由。
@@ -25,12 +25,16 @@ license: Apache-2.0
 4. knowledge 路由只通过确定性脚本查询已发布 PublicCard。
 5. 用 Phase 2 回合合同复验追问次数、自然语言去向和外部来源证据；用 Phase 3 生产门阻断未授权 Candidate。
 6. 在公开仓库外用 Phase 4 追加式账本记录 MISS 与反馈；没有真实有效反馈时不生成候选。
+7. 在主路由完成后，按需加载 `contracts/psych-label.md` 生成非诊断的心理层辅助标注；该标注不改变主路由、发布门或用户权限。
+
+心理层候选默认只做当回合输出。除非用户明确同意，不能保存标签、证据、反馈或安排 7 天跟踪。
 
 ## 这不是什么
 
 - 不是个人 Agent 记忆。
 - 不是群聊原文搜索器。
 - 不是全量加载的诊断框架。
+- 不是心理诊断、人格判断或治疗工具。
 - 不是已经有内容的成熟知识库。
 - 不是用测试通过代替人工发布批准的自动发布器。
 
@@ -44,12 +48,16 @@ ai-native-helpdesk/
 │   ├── thinking.md
 │   ├── action.md
 │   ├── knowledge.md
+│   ├── psych-label.md
 │   ├── public-card.md
 │   └── safety.md
 ├── schemas/public-card.schema.json
 ├── schemas/knowledge-production.schema.json
 ├── schemas/feedback-event.schema.json
+├── schemas/psych-label.schema.json
+├── schemas/psych-label-consent.schema.json
 ├── scripts/query-public-card.mjs
+├── scripts/psych-label.mjs
 ├── scripts/knowledge-production.mjs
 ├── scripts/feedback-ledger.mjs
 ├── policies/external-sources.v1.json
@@ -70,6 +78,8 @@ ai-native-helpdesk/
 | 触发安全红线 | safety | `contracts/safety.md` |
 
 混合信号可以记录多个标签，但本轮只执行 1 个主路由。
+
+心理层标注不是主路由。只有主路由已经回应当前请求、`main_route_completed=true` 且当前回合证据通过 `schemas/psych-label.schema.json` 时，才按 `contracts/psych-label.md` 追加辅助标签；无执行阻力线索使用 `NONE`，保留式自述但证据不足使用 `SUSPECTED / LOW`，不为了标注额外盘问。输入不完整或越界时 fail-closed，不输出心理标签。
 
 默认直接回答。只有能明确指出一个缺失事实会改变处理路径时才加载 good-question；通过追问门后只问 1 个区分问题。同一歧义允许重述 1 次，再不知道就保留未知。
 
@@ -182,7 +192,7 @@ node scripts/helpdesk-turn-contract.mjs \
 ## 当前状态
 
 - PP 机制：`COMPLETE / CLOSED / DECLARABLE`；证据为 8 卡、198／198、可逆安装和逐卡 Owner 批准。
-- merge：`COMPLETE`（PR #5 → `main`，`430b34b`）。tag／GitHub Release：`NOT_STARTED / PENDING_OWNER_AUTHORIZATION`，分别授权。
+- merge：`COMPLETE`（PR #5 → `main`，`430b34b`）。tag／GitHub Release：`COMPLETE`（`v0.9.0`；本候选未发布）。
 - 30 人产品验证：`POST_RELEASE / NOT_STARTED / OUTCOME_UNKNOWN`；目标至少 15／30，当前没有冻结查询集或真人实测。
 - 发布门代码和合成测试：已建立。
 - Phase 1 召回选择：Owner G10 已通过；synthetic holdout 与 G12 后真实三卡观察回归均通过，仍须在 loader 前做适用性裁决。
@@ -192,7 +202,9 @@ node scripts/helpdesk-turn-contract.mjs \
 - 两张新卡：已按 G12 指定 revision 进入功能分支正式 index。
 - Phase 4 反馈账本与回滚：机制完成；23 项定向测试通过，包含 G13b 前 staging／formal 状态隔离。
 - Phase 4 真实闭环：`G13B_APPROVED / FEATURE_BRANCH_FORMAL_LOOP_COMPLETE`；第四张卡正式 index／ALLOW 已通过。
-- Phase 6 首批知识规模化：000005—000008 已逐卡通过人工 QA 与发布决定；远端 `main` 8 卡 index、41 条 loader 检查、25／25 观察错配回归和 198／198 全量测试通过；已 merge，tag／Release 未创建。
+- Phase 6 首批知识规模化：000005—000008 已逐卡通过人工 QA 与发布决定；远端 `main` 8 卡 index、41 条 loader 检查、25／25 观察错配回归和 198／198 全量测试通过；已 merge 并发布 `v0.9.0`。本候选新增心理层尚未进入 `main`。
+- Issue 2 心理层：`CANDIDATE / SYNTHETIC_ONLY / ACCURACY_UNKNOWN / NOT_IN_MAIN / NOT_IN_RELEASE`；未获用户同意前不保存标注或安排跟踪。
+- Issue 2 心理层实现：分类器已代码化五条行为矛盾标准、主路由完成门、当前回合证据门和目的限定同意决定；脚本本身 `DECISION_ONLY`，不写文件、不安排任务。
 - 社区真实端到端验证：未完成。
 - 群聊候选、内部证据和审核材料：不属于公开仓库。
 
@@ -213,7 +225,8 @@ node scripts/helpdesk-turn-contract.mjs \
 | v0.8.0-phase6-eight-card-local | HISTORICAL_STOP_BEFORE_PR | Phase 6 逐卡批准新增 4 卡；该冻结时点的本地 8 卡 index／loader／错配／安装与全量回归通过 |
 | v0.8.1-phase6-eight-card-branch | HISTORICAL_STOP_BEFORE_PR | 8 卡提交已 push 到远端功能分支；该冻结时点尚未创建 PR，后续已由 v0.8.2 取代 |
 | v0.8.2-phase6-eight-card-pr | HISTORICAL_DRAFT_PR_OPEN | Draft PR #5 已创建；该冻结点未 merge，后续已 merge `main` |
-| v0.9.0 | PP_MECHANISM_COMPLETE + MERGE_MAIN_COMPLETE | Owner 以 8 卡、198／198、可逆安装关门；PR #5 已 merge `main`（`430b34b`）；发布与产品验证分账 |
+| v0.9.0 | PP_MECHANISM_COMPLETE + MERGE_MAIN_COMPLETE + GITHUB_RELEASE_COMPLETE | Owner 以 8 卡、198／198、可逆安装关门；PR #5 已 merge `main`（`430b34b`）并发布 `v0.9.0`；本候选不改写历史发布 |
+| v0.9.1-candidate | PSYCH_LABEL_CANDIDATE_UNRELEASED | Issue 2 非诊断辅助层；仅合成验证，未进入 `main`、安装白名单或 GitHub Release |
 | G13a control receipt | COMPLETED | Owner 授权的 1 用户／1 问题受控采集已完成；公开仓库只留聚合收据 |
 
 后续 PublicCard 仍须逐张独立完成内容修正、真实验证、隐私审查和 Owner 发布批准；首张卡通过不能让其他候选自动晋级。

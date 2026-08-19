@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/hou-152/ai-native-helpdesk/schemas/psych-label.schema.json",
+  "title": "AI Native psych-label candidate input and consent receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["main_route_completed"],
+  "properties": {
+    "main_route_completed": { "const": true },
+    "safety_red_flag": { "type": "boolean" },
+    "evidence": { "$ref": "#/$defs/currentTurnEvidence" }
+  },
+  "$defs": {
+    "opaqueReference": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$"
+    },
+    "currentTurnEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "reference"],
+      "properties": {
+        "source": { "const": "USER_CURRENT_TURN" },
+        "reference": { "$ref": "#/$defs/opaqueReference" },
+        "explicit_admission": { "type": "boolean" },
+        "hedged_self_attribution": { "type": "boolean" },
+        "other_behavior_signal": { "type": "boolean" },
+        "other_behavior_kind": { "const": "EXECUTION_RESISTANCE" },
+        "behavioral_contradiction": { "$ref": "#/$defs/behavioralContradiction" }
+      }
+    },
+    "behavioralContradiction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "criterion",
+        "same_goal",
+        "same_time_range",
+        "goal_ref",
+        "time_range_ref",
+        "reasonable_constraint",
+        "facts"
+      ],
+      "properties": {
+        "criterion": {
+          "enum": [
+            "TIME_CONTRADICTION",
+            "CONSUMPTION_CONTRADICTION",
+            "ACTION_CONTRADICTION",
+            "DIRECTION_CONTRADICTION",
+            "LEARNING_CONTRADICTION"
+          ]
+        },
+        "same_goal": { "type": "boolean" },
+        "same_time_range": { "type": "boolean" },
+        "goal_ref": { "$ref": "#/$defs/opaqueReference" },
+        "time_range_ref": { "$ref": "#/$defs/opaqueReference" },
+        "reasonable_constraint": { "type": "boolean" },
+        "facts": { "type": "object" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "criterion": { "const": "TIME_CONTRADICTION" } } },
+          "then": { "properties": { "facts": { "$ref": "#/$defs/timeFacts" } } }
+        },
+        {
+          "if": { "properties": { "criterion": { "const": "CONSUMPTION_CONTRADICTION" } } },
+          "then": { "properties": { "facts": { "$ref": "#/$defs/consumptionFacts" } } }
+        },
+        {
+          "if": { "properties": { "criterion": { "const": "ACTION_CONTRADICTION" } } },
+          "then": { "properties": { "facts": { "$ref": "#/$defs/actionFacts" } } }
+        },
+        {
+          "if": { "properties": { "criterion": { "const": "DIRECTION_CONTRADICTION" } } },
+          "then": { "properties": { "facts": { "$ref": "#/$defs/directionFacts" } } }
+        },
+        {
+          "if": { "properties": { "criterion": { "const": "LEARNING_CONTRADICTION" } } },
+          "then": { "properties": { "facts": { "$ref": "#/$defs/learningFacts" } } }
+        }
+      ]
+    },
+    "timeFacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claims_no_time", "entertainment_minutes_per_day"],
+      "properties": {
+        "claims_no_time": { "const": true },
+        "entertainment_minutes_per_day": { "type": "number", "exclusiveMinimum": 60 }
+      }
+    },
+    "consumptionFacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claims_learning_goal", "courses_bought", "completion_rate_percent"],
+      "properties": {
+        "claims_learning_goal": { "const": true },
+        "courses_bought": { "type": "integer", "exclusiveMinimum": 3 },
+        "completion_rate_percent": { "const": 0 }
+      }
+    },
+    "actionFacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claims_want_change", "days_since_related_action"],
+      "properties": {
+        "claims_want_change": { "const": true },
+        "days_since_related_action": { "type": "integer", "exclusiveMinimum": 7 }
+      }
+    },
+    "directionFacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claims_stable_direction", "direction_durations_days"],
+      "properties": {
+        "claims_stable_direction": { "const": true },
+        "direction_durations_days": {
+          "type": "array",
+          "minItems": 4,
+          "items": { "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 14 }
+        }
+      }
+    },
+    "learningFacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claims_learning", "activity_counts"],
+      "properties": {
+        "claims_learning": { "const": true },
+        "activity_counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["questions", "practice", "outputs"],
+          "properties": {
+            "questions": { "type": "integer", "minimum": 0, "maximum": 0 },
+            "practice": { "type": "integer", "minimum": 0, "maximum": 0 },
+            "outputs": { "type": "integer", "minimum": 0, "maximum": 0 }
+          }
+        }
+      }
+    }
+  }
+}
