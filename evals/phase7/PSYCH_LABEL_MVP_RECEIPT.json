@@ -42,7 +42,7 @@
   },
   "boundary": {
     "main_unchanged": true,
-    "pushed": false,
+    "pushed": true,
     "pull_request_created": false,
     "merged": false,
     "public_card_changed": false,
