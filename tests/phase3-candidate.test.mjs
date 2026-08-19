@@ -50,7 +50,7 @@ test("Phase 3 first batch is exactly three cards with full human QA pending", ()
 });
 
 test("formal public index contains all three G12-approved cards", () => {
-  const index = readJson("knowledge/public/index.json");
+  const index = readJson("knowledge/archive/index.json");
   const g12Ids = new Set(manifest.cards.map((card) => card.card_id));
   assert.deepEqual(index.cards.filter((card) => g12Ids.has(card.card_id)).map((card) => card.card_id), [
     "AIHD-PC-000001",

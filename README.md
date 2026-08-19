@@ -1,12 +1,12 @@
-# ai-native-helpdesk v0.9.0
+# ai-native-helpdesk v0.10.0
 
-> 项目当前推进位置、完成度和发布边界以 [`docs/PP.md`](docs/PP.md) 为唯一入口。摘要：PP 机制已按 Owner 最终定义完成并关门；8 卡、198／198、可逆安装已通过 [PR #5](https://github.com/hou-152/ai-native-helpdesk/pull/5) merge 到远端 `main`（merge commit `430b34b`）。tag／GitHub Release 与 30 人产品验证分别记账，产品效果尚未证明。
+> knowledge 路由已从 PublicCard 切换到候选池 BM25 检索：8 张 PublicCard 已下线归档（`knowledge/archive/`，保留历史不删除），检索目标改为 `ai-native-knowledge-base` 的 2,153 条对话摘录候选池。摘录为 `CANDIDATE_ONLY / UNVERIFIED`，输出必须标注边界；MISS 时明确 `UNKNOWN` + 最小下一步。
 
 ## 目标
 
-为 AI／Agent／OpenClaw 相关社区提供一个薄入口 Helpdesk：先守门和路由，再按需加载合同；知识问答只能读取已经通过编辑、验证、隐私和发布四道门的 PublicCard。
+为 AI／Agent／OpenClaw 相关社区提供一个薄入口 Helpdesk：先守门和路由，再按需加载合同；知识问答通过 BM25 检索候选池对话摘录，返回相关上下文并标注边界（相关对话摘录，不是已验证答案）。
 
-AI Native 社区可以作为共同知识的高质量来源，但私密群聊、成员信息、原话和内部审核材料不进入本仓库。未来其他社区可以显式挂载自己的本地知识包，不与公共包混写。
+候选池来源：`ai-native-knowledge-base` 仓库的 `data/candidates.jsonl`（发送者 ID 已脱敏）。私密群聊、成员信息、原话和内部审核材料不进入本仓库。
 
 ## 运行结构
 
@@ -23,7 +23,8 @@ ai-native-helpdesk/
 ├── schemas/public-card.schema.json
 ├── schemas/knowledge-production.schema.json
 ├── schemas/feedback-event.schema.json
-├── scripts/query-public-card.mjs
+├── scripts/query-candidates.mjs
+├── scripts/query-public-card.mjs（已归档，仅历史）
 ├── scripts/knowledge-production.mjs
 ├── scripts/feedback-ledger.mjs
 ├── governance/internal-card-qa-rubric.v1.json
@@ -31,7 +32,7 @@ ai-native-helpdesk/
 ├── schemas/helpdesk-turn-contract.schema.json
 ├── schemas/external-source-policy.schema.json
 ├── scripts/helpdesk-turn-contract.mjs
-├── knowledge/public/index.json
+├── knowledge/archive/（8 张 PublicCard 已下线归档）
 └── tests/
 ```
 

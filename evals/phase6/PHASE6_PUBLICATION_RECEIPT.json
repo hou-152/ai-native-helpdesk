@@ -104,7 +104,7 @@
     "todo": 0
   },
   "release_allowlist": {
-    "manifest_sha256": "0209e4d7891f81c9ca297492e4a00a6c40361f833430c2a0c157f2e689c913a4",
+    "manifest_sha256": "9bda2a5349cb4d2a35506ff38e077abe2e64db1b011c5cf359edef8dee227e6b",
     "listed_files": 31,
     "installed_files_including_manifest": 32,
     "historical_g14_28_file_artifact_unchanged": true

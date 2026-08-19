@@ -12,7 +12,7 @@ const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const PHASE6_DIR = path.dirname(SCRIPT_PATH);
 const REPO_ROOT = path.resolve(PHASE6_DIR, "../..");
 const DEFAULT_DATASET = path.join(PHASE6_DIR, "published-eight-card-regression.v1.json");
-const DEFAULT_INDEX = path.join(REPO_ROOT, "knowledge/public/index.json");
+const DEFAULT_INDEX = path.join(REPO_ROOT, "knowledge/archive/index.json");
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));

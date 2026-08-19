@@ -151,7 +151,7 @@ test("verify fails closed after installed card byte drift", (t) => {
   const fixture = tempCase(t);
   const { target, state } = installFresh(fixture, "tamper target");
   const installedInstaller = path.join(target, "scripts", "manage-install.mjs");
-  fs.appendFileSync(path.join(target, "knowledge", "public", "cards", "AIHD-PC-000004.json"), "\n");
+  fs.appendFileSync(path.join(target, "knowledge", "archive", "cards", "AIHD-PC-000004.json"), "\n");
 
   const result = run(installedInstaller, ["verify", "--target", target, "--state", state], fixture.unrelated);
   assert.equal(result.status, 65);

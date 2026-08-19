@@ -10,7 +10,7 @@ import { fileURLToPath } from "node:url";
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(SCRIPT_PATH), "..");
-const DEFAULT_COMMON_PACK = path.join(REPO_ROOT, "knowledge", "public");
+const DEFAULT_COMMON_PACK = path.join(REPO_ROOT, "knowledge", "archive");
 const SCHEMA_PATH = path.join(REPO_ROOT, "schemas", "public-card.schema.json");
 
 const MAX_QUERY_CHARS = 500;

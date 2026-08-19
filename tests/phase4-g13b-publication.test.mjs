@@ -20,8 +20,8 @@ function sha256(text) {
 }
 
 const receipt = readJson("evals/phase4/G13B_PUBLICATION_RECEIPT.json");
-const index = readJson("knowledge/public/index.json");
-const cardText = readText("knowledge/public/cards/AIHD-PC-000004.json");
+const index = readJson("knowledge/archive/index.json");
+const cardText = readText("knowledge/archive/cards/AIHD-PC-000004.json");
 const card = JSON.parse(cardText);
 
 test("G13b receipt binds the exact approved new-card revision and formal loop", () => {
@@ -46,7 +46,7 @@ test("current index preserves AIHD-PC-000004 while the G13b four-card receipt st
   assert.equal(entry.scope_hint, card.scope_hint);
   assert.equal(receipt.formal_index.card_count, 4);
   assert.equal(receipt.formal_index.sha256, "792301b0219db84d80e6eefae8e10fd7323a53f61fbdb4437ef24215b11c6b31");
-  assert.notEqual(receipt.formal_index.sha256, sha256(readText("knowledge/public/index.json")));
+  assert.notEqual(receipt.formal_index.sha256, sha256(readText("knowledge/archive/index.json")));
 });
 
 test("the formal card retains all four exact publication gates", () => {

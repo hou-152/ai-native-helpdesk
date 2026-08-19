@@ -22,7 +22,7 @@ function sha256(text) {
   return crypto.createHash("sha256").update(text, "utf8").digest("hex");
 }
 
-const index = readJson("knowledge/public/index.json");
+const index = readJson("knowledge/archive/index.json");
 const receipt = readJson("evals/phase3/G12_PUBLICATION_RECEIPT.json");
 const fixture = readJson("evals/phase3/published-retrieval-fixture.v1.json");
 const dataset = readJson("evals/phase3/published-three-card-regression.v1.json");
@@ -54,7 +54,7 @@ test("public index preserves the three G12-approved card revisions and hashes", 
   const g12Entries = index.cards.filter((entry) => approvedIds.has(entry.card_id));
   assert.deepEqual(g12Entries.map((entry) => entry.card_id), receipt.cards.map((card) => card.card_id));
   for (const entry of g12Entries) {
-    const text = readText(`knowledge/public/${entry.file}`);
+    const text = readText(`knowledge/archive/${entry.file}`);
     const card = JSON.parse(text);
     const approved = receipt.cards.find((item) => item.card_id === card.card_id);
     assert.equal(card.revision, entry.revision);
@@ -66,7 +66,7 @@ test("public index preserves the three G12-approved card revisions and hashes", 
 
 for (const cardId of ["AIHD-PC-000002", "AIHD-PC-000003"]) {
   test(`${cardId} published content preserves the G12-approved candidate fields`, () => {
-    const card = readJson(`knowledge/public/cards/${cardId}.json`);
+    const card = readJson(`knowledge/archive/cards/${cardId}.json`);
     const publicFields = Object.fromEntries(Object.entries(card).filter(([key]) =>
       !["editorial", "verification", "privacy_gate", "publication"].includes(key)
     ));
@@ -77,7 +77,7 @@ for (const cardId of ["AIHD-PC-000002", "AIHD-PC-000003"]) {
 test("published retrieval fixture is an exact safe projection of the three actual cards", () => {
   assert.equal(fixture.cards.length, 3);
   for (const item of fixture.cards) {
-    const card = readJson(`knowledge/public/cards/${item.public_card_id}.json`);
+    const card = readJson(`knowledge/archive/cards/${item.public_card_id}.json`);
     assert.equal(item.fixture_origin, "published_public_card");
     assert.equal(item.public_question, card.question);
     assert.equal(item.scope_hint, card.scope_hint);

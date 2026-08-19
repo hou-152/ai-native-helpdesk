@@ -1,28 +1,28 @@
 ---
 name: ai-native-helpdesk
-description: 面向 AI／Agent／OpenClaw 社区的薄入口 Helpdesk Skill。负责守门、判模、按需加载合同，并只通过确定性发布门读取 PublicCard。
-version: 0.9.0
-status: PP_MECHANISM_COMPLETE / MERGE_MAIN_COMPLETE / GITHUB_RELEASE_NOT_STARTED / PRODUCT_VALIDATION_POST_RELEASE
+description: 面向 AI／Agent／OpenClaw 社区的薄入口 Helpdesk Skill。负责守门、判模、按需加载合同，并通过 BM25 检索候选池对话摘录提供相关上下文。
+version: 0.10.0
+status: KNOWLEDGE_ROUTE_SWITCHED_TO_CANDIDATE_POOL / PUBLIC_CARDS_ARCHIVED
 author: 减
 license: Apache-2.0
 ---
 
-# ai-native-helpdesk v0.9.0-pp-closed-candidate
+# ai-native-helpdesk v0.10.0-knowledge-pool
 
-> PP 机制已按 Owner 最终定义完成并关门：8 张逐卡批准卡已通过 PR #5 merge 到远端 `main`（`430b34b`），198／198 与可逆安装通过。tag／GitHub Release 仍待逐项授权，30 人产品验证属于发布后阶段；8 卡可用不等于完整知识库、社区验收或用户效果。
+> knowledge 路由已从 PublicCard 切换到候选池 BM25 检索：8 张 PublicCard 已下线归档（保留历史，不物理删除），检索目标改为 `ai-native-knowledge-base` 的 2,153 条对话摘录候选池。摘录是 `CANDIDATE_ONLY / UNVERIFIED`，输出必须标注边界；MISS 时明确 `UNKNOWN` + 最小下一步。
 
-运行时把本文件所在目录作为唯一 Skill 根目录；所有 contract、schema、policy、script 和 PublicCard 都相对于该目录解析，不猜测用户目录或固定全局安装路径。
+运行时把本文件所在目录作为唯一 Skill 根目录；所有 contract、schema、policy、script 和候选池路径都相对于该目录解析，不猜测用户目录或固定全局安装路径。
 
 ## 这是什么
 
-用于 AI／Agent／OpenClaw 相关社区的薄入口 Skill。AI Native 社区可以提供经过筛选的共同知识来源，但任何群聊原文、成员标识和内部审核材料都不得进入公开运行包。
+用于 AI／Agent／OpenClaw 相关社区的薄入口 Skill。AI Native 社区可以提供经过筛选的共同知识来源，但任何群聊原文、成员标识和内部审核材料都不得进入公开运行包（候选池已脱敏发送者 ID）。
 
 只做 6 件事：
 
 1. 守门：识别安全、隐私、不可逆和动态事实风险。
 2. 判模：选择 1 个主路由。
 3. 按需加载对应 contract。
-4. knowledge 路由只通过确定性脚本查询已发布 PublicCard。
+4. knowledge 路由通过 BM25 检索候选池对话摘录，返回相关上下文并标注边界。
 5. 用 Phase 2 回合合同复验追问次数、自然语言去向和外部来源证据；用 Phase 3 生产门阻断未授权 Candidate。
 6. 在公开仓库外用 Phase 4 追加式账本记录 MISS 与反馈；没有真实有效反馈时不生成候选。
 
@@ -49,14 +49,15 @@ ai-native-helpdesk/
 ├── schemas/public-card.schema.json
 ├── schemas/knowledge-production.schema.json
 ├── schemas/feedback-event.schema.json
-├── scripts/query-public-card.mjs
+├── scripts/query-candidates.mjs
+├── scripts/query-public-card.mjs（已归档，仅历史）
 ├── scripts/knowledge-production.mjs
 ├── scripts/feedback-ledger.mjs
 ├── policies/external-sources.v1.json
 ├── schemas/helpdesk-turn-contract.schema.json
 ├── schemas/external-source-policy.schema.json
 ├── scripts/helpdesk-turn-contract.mjs
-└── knowledge/public/index.json
+└── knowledge/archive/（8 张 PublicCard 已下线归档）
 ```
 
 ## 主路由
@@ -95,28 +96,25 @@ ai-native-helpdesk/
 
 入口只负责路由和一句理由；被加载的 contract 负责完整回答与一个最小下一步。
 
-## PublicCard 发布门
+## 候选池检索（knowledge 路由）
 
-knowledge 路由必须先读取 `contracts/public-card.md`，再调用 `scripts/query-public-card.mjs`。禁止直接 `read_file` 任何知识卡正文。
+knowledge 路由先调用 `scripts/query-candidates.mjs` 检索候选池对话摘录：
 
-只有四门精确通过才可能返回正文：
-
-```text
-editorial = APPROVED
-verification = PASS
-privacy_gate = PASS
-publication = READY
+```bash
+node scripts/query-candidates.mjs --query "<用户问题>" [--candidates <candidates.jsonl>] [--top-k 3]
 ```
 
-- `ALLOW`：使用脚本返回的安全字段；动态事实仍需当前核验。
-- `MISS`：可以进入获准外部回退或低风险、非动态模型推理，不假装命中。
-- `DENY`：说明知识卡分支暂不可用，不读取、不模拟、不自动回退成被拒卡答案。
+候选池来源：`ai-native-knowledge-base` 仓库的 `data/candidates.jsonl`（2,153 条对话摘录，发送者已脱敏）。通过 `AIHD_CANDIDATES_PATH` 环境变量或 `--candidates` 参数指定。
 
-公共包随 Skill 分发；社区本地包必须由调用者显式给出路径。同一问题命中多卡时拒绝，不设置静默覆盖顺序。
+- `HIT`：返回相关摘录，**必须**标注边界“这是相关对话摘录，不是已验证答案”，给来源引用和一个最小下一步。
+- `MISS`：明确 `UNKNOWN`，给最小核验或升级动作，不编造命中；可进入获准外部回退。
+- `DENY`：说明知识检索分支暂不可用，不读取、不模拟、不自动回退。
 
-Phase 1 已由 Owner G10 选择 `bm25_expansion_keyword@0.8449460370411592 / top_k=3` 作为候选召回方案，并通过 synthetic holdout、G12 后三卡观察回归与 Phase 6 的 8 卡观察回归。它仍不能从分数直接触发 `ALLOW` 或正文读取；宽召回必须先经过适用性裁决。Phase 6 的 25 条用例不是 blind 或真人覆盖证据。
+## PublicCard 发布门（已归档，仅历史）
 
-PublicCard schema B 为 `0.4`，新增安全 `scope_hint`、判断框架、常见错误、行动原则和验证方法。index 同时绑定 revision、完整文件 hash 和 scope_hint；任一漂移均 `DENY`。G12 已批准前三张卡，G13b 已批准 000004 v1.0.0，Phase 6 已逐卡批准 000005—000008 v1.0.0；功能分支正式 index 精确绑定 8 张卡。
+8 张 PublicCard 已于 2026-08-20 下线归档到 `knowledge/archive/`。原发布门机制（四门 `editorial/verification/privacy_gate/publication`）保留为历史代码，不再作为 knowledge 路由的查询目标。
+
+历史：8 卡对 19 个真实问题正式 loader 为 `ALLOW 0 / MISS 19`，AB 测试显示裸模型核心判断与人工批准卡重合约 80-90%——卡片形式覆盖不了开放需求，因此切换为候选池检索。
 
 ## Phase 3 生产门
 
@@ -170,8 +168,8 @@ node scripts/helpdesk-turn-contract.mjs \
 | 场景 | 动作 |
 |---|---|
 | Contract 缺失 | 明确不可用，不模拟 |
-| PublicCard 门返回 `DENY` | 不读正文，不模拟卡片 |
-| PublicCard 门返回 `MISS` | 按外部回退合同继续，不伪装成命中 |
+| PublicCard 门返回 `DENY` | 历史代码（已归档），不读正文，不模拟卡片 |
+| PublicCard 门返回 `MISS` | 历史代码（已归档），当前路由已切换为候选池检索 |
 | 多个主路由 | 本轮只执行 1 个 |
 | 信息不足但不改变路径 | 直接回答，不例行追问 |
 | 信息不足且改变路径 | good-question 只问 1 个 |

@@ -33,7 +33,7 @@ function queryPublicPack(query) {
 }
 
 const receipt = readJson("evals/phase6/PHASE6_PUBLICATION_RECEIPT.json");
-const index = readJson("knowledge/public/index.json");
+const index = readJson("knowledge/archive/index.json");
 const dataset = readJson("evals/phase6/published-eight-card-regression.v1.json");
 const frozenReport = readJson("evals/phase6/published-eight-card-report.v1.json");
 
@@ -69,10 +69,10 @@ test("formal public index binds exactly eight approved card revisions and bytes"
     "AIHD-PC-000007",
     "AIHD-PC-000008"
   ]);
-  assert.equal(sha256(readText("knowledge/public/index.json")), receipt.formal_index.sha256);
+  assert.equal(sha256(readText("knowledge/archive/index.json")), receipt.formal_index.sha256);
   for (const approved of receipt.cards) {
     const entry = index.cards.find((item) => item.card_id === approved.card_id);
-    const text = readText(`knowledge/public/${entry.file}`);
+    const text = readText(`knowledge/archive/${entry.file}`);
     const card = JSON.parse(text);
     assert.equal(card.revision, approved.revision);
     assert.equal(entry.content_sha256, approved.public_content_sha256);
@@ -114,9 +114,9 @@ test("published eight-card observed regression passes all 25 cases without over-
 
 test("release allowlist carries all eight cards while historical G14 evidence stays historical", () => {
   const manifest = readJson("release-files.v1.json");
-  const cardFiles = manifest.files.filter((item) => item.startsWith("knowledge/public/cards/"));
+  const cardFiles = manifest.files.filter((item) => item.startsWith("knowledge/archive/cards/"));
   assert.equal(manifest.files.length, 31);
-  assert.deepEqual(cardFiles, index.cards.map((entry) => `knowledge/public/${entry.file}`));
+  assert.deepEqual(cardFiles, index.cards.map((entry) => `knowledge/archive/${entry.file}`));
   assert.equal(sha256(readText("release-files.v1.json")), receipt.release_allowlist.manifest_sha256);
   assert.equal(receipt.release_allowlist.historical_g14_28_file_artifact_unchanged, true);
 });
