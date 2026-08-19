@@ -138,7 +138,7 @@ knowledge 路由必须按下面顺序执行，详细规则见 `contracts/knowled
 ## 当前状态
 
 - 当前运行包的 active PublicCard 数量为 `0`；旧卡、索引、loader、Phase 1–4 代码和运行测试不进入 release manifest。
-- 退役文件保留在当前 worktree 本机被忽略的日期化 `.trash` 回收目录，便于 30 天内审计和恢复；该目录不进入 Git，也不随安装包分发。
+- 退役文件保留在执行控制面的日期化 `.trash` 回收目录，便于 30 天内审计和恢复；该目录不进入 Git，也不随安装包分发。
 - v0.9.0 的 8 卡当前发布面、tag 和 GitHub Release 已撤销；Git 历史未重写。
 - 本版本只证明新合同和安装边界；社区端到端与用户问题解决效果仍为 `UNKNOWN`。
 
