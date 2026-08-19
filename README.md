@@ -1,6 +1,8 @@
-# ai-native-helpdesk v0.10.0
+# ai-native-helpdesk v1.0.0-private-source
 
-面向 AI／Agent／OpenClaw 社区的薄入口 Helpdesk：**先守门和路由，再按需加载合同；知识问答通过 BM25 检索候选池对话摘录，返回相关上下文并标注边界。**
+这是一个未发布的减法实现：Helpdesk 不再随包分发标准答案，而是先守门、判模、按需加载合同；knowledge 路由调用用户显式授权的私域知识库，定位相关对话后回读原始内容和必要上下文。
+
+旧 8 卡公开面已撤销：当前源树和 release manifest 不再包含 PublicCard、公共 index 或卡片 loader；`v0.9.0` tag 与 GitHub Release 已删除。本次撤销不重写 Git 历史，旧提交仍可追溯。
 
 ## 双仓库架构
 
@@ -8,78 +10,81 @@
 
 | 仓库 | 角色 | 内容 |
 |------|------|------|
-| **[ai-native-helpdesk](https://github.com/hou-152/ai-native-helpdesk)**（本仓库） | 入口 / 路由 / 合同 | 守门、判模、按需加载合同；knowledge 路由通过 BM25 检索候选池 |
-| **[ai-native-knowledge-base](https://github.com/hou-152/ai-native-knowledge-base)** | 数据源 | 候选池（2,153 条对话摘录）、脱敏聊天语料（6,032 条）、管道脚本、方法文档 |
+| **[ai-native-helpdesk](https://github.com/hou-152/ai-native-helpdesk)**（本仓库） | 入口 / 路由 / 合同 | 守门、判模、按需加载合同；knowledge 路由调用 `$dbs-knowledge` 定位私域原始对话 |
+| **[ai-native-knowledge-base](https://github.com/hou-152/ai-native-knowledge-base)** | 公开数据面 | 脱敏聊天语料（6,032 条）、候选池（2,153 条对话摘录）、管道脚本、知识原子化方法文档 |
 
-```text
-用户问题
-  → helpdesk 守门（安全/隐私/不可逆/动态事实）
-  → 路由判模（good-question / thinking / action / knowledge / safety）
-  → knowledge 路由 → BM25 检索 knowledge-base 候选池
-  → HIT：相关对话摘录 + 边界标注（非已验证答案）+ 来源引用
-  → MISS：UNKNOWN + 最小下一步，不编造命中
-```
-
-## knowledge 路由（当前主线）
-
-knowledge 路由调用 `scripts/query-candidates.mjs` 检索候选池：
-
-```bash
-node scripts/query-candidates.mjs --query "<用户问题>" \
-  --candidates <ai-native-knowledge-base>/data/candidates.jsonl \
-  --top-k 3
-```
-
-- **`HIT`**：返回相关摘录，**必须**标注边界“这是相关对话摘录，不是已验证答案”，给来源引用和一个最小下一步。
-- **`MISS`**：明确 `UNKNOWN`，给最小核验或升级动作，不编造命中；可进入获准外部回退。
-- **`DENY`**：说明知识检索分支暂不可用，不读取、不模拟、不自动回退。
-
-候选池数据（发送者 ID 已脱敏）与管道脚本都在 `ai-native-knowledge-base` 仓库，通过 `AIHD_CANDIDATES_PATH` 环境变量或 `--candidates` 参数指定。
+`ai-native-knowledge-base` 是本项目公开的数据参考面：发送者 ID 已脱敏，可供群成员检索历史对话、查看知识原子化方法与管道。helpdesk 的 knowledge 路由在私域侧使用 `$dbs-knowledge` 定位原始对话；公开数据面提供可分享、可审计的脱敏版本。
 
 ## 运行结构
 
 ```text
-ai-native-helpdesk/
-├── SKILL.md
-├── contracts/
-│   ├── good-question.md
-│   ├── thinking.md
-│   ├── action.md
-│   ├── knowledge.md
-│   ├── public-card.md（已归档，仅历史）
-│   └── safety.md
-├── schemas/
-├── scripts/
-│   ├── query-candidates.mjs      ← 当前 knowledge 检索入口
-│   ├── query-public-card.mjs     ← 已归档，仅历史
-│   ├── knowledge-production.mjs
-│   ├── feedback-ledger.mjs
-│   └── helpdesk-turn-contract.mjs
-├── policies/external-sources.v1.json
-├── governance/
-├── knowledge/archive/            ← 8 张 PublicCard 已下线归档（保留历史不删除）
-└── tests/
+用户问题
+→ 安全／隐私／不可逆／动态事实守门
+→ 选择 1 个主路由
+→ 按需加载 1 个 contract
+→ knowledge：调用 $dbs-knowledge
+→ 先读 SOURCE_OF_TRUTH.md
+→ 按知识库导航定位派生文件
+→ 回读导航指定的原始文件＋必要上下文
+→ 回答＋1 个最小下一步
 ```
 
-## 合同
+当前 release manifest 只包含：
 
-入口只负责路由和一句理由；被加载的 contract 负责完整回答与一个最小下一步。合同不存在或读取失败时 fail-closed：明确告知模块暂不可用，不模拟、不跨模块。
+```text
+ai-native-helpdesk/
+├── LICENSE
+├── README.md
+├── SKILL.md
+├── contracts/
+│   ├── action.md
+│   ├── good-question.md
+│   ├── knowledge.md
+│   ├── safety.md
+│   └── thinking.md
+├── docs/INSTALL.md
+└── scripts/manage-install.mjs
+```
 
-- `good-question`：问题模糊、缺失语境会改变路径时，只问 1 个区分问题。
-- `thinking`：有假设／逻辑／原因要分析。
-- `action`：知道该做但做不动。
-- `knowledge`：查询 AI／Agent／OpenClaw 事实（走候选池 BM25 检索）。
-- `safety`：安全红线。
+active PublicCard、公共索引、卡片 loader、Phase 1–4 运行代码和测试均为 `0`。退役文件仅保留在执行控制面的日期化 `.trash` 回收目录中，用于 30 天内恢复，不进入 Git 或安装包。
 
-## 守门
+## 依赖
 
-每次触发依次检查：安全红线 → 隐私红线 → 不可逆行动 → 动态事实 → 个人信息保存。优先级：安全 > 隐私 > 不可逆 > 动态事实 > 个人信息。
+- Node.js 20 或更高版本，用于安装、验证、卸载和回滚。
+- 宿主可发现的 `$dbs-knowledge`。它是外部 Agent Skill 合同，不是 CLI，也不随本仓库复制。
+- 当前实现验证的上游锚点为 `dontbesilent2025/dbskill@7e770e54aaaa8f43cac344b536d3adce095ead8f`（tag `v2.18.24`）；该锚点只用于依赖复核，不代表上游提供固定 API 或状态枚举。
+- 调用者显式提供的私域知识库根目录和读取权限。
+- 知识库根目录内可读的 `SOURCE_OF_TRUTH.md`，以及导航绑定的原始来源、派生定位文件和完整性收据。
 
-## 外部回退与来源合同
+依赖或知识源不可用时，knowledge 路由返回 `SOURCE_UNAVAILABLE`；不得猜本机路径、模拟调用或用模型记忆冒充知识库。
 
-- `MISS` 可以进入独立外部回退；`DENY` 不自动回退；隐私拒绝后不外发原查询。
-- 外部证据必须通过版本化 allowlist、Owner、风险、时效、检索时间和失效检查。
-- 组合答案逐 claim 保存 `CANDIDATE_EXCERPT / EXTERNAL_VERIFIED / MODEL_REASONING`；高风险或动态事实不得由纯模型推理给出确定性结论。
+## knowledge 结果
+
+| 内部结果 | 含义 |
+|---|---|
+| `HIT` | 派生文件定位后，已按同一来源标识回读原始消息与必要上下文 |
+| `MISS` | 当前知识源没有可复核候选 |
+| `SOURCE_UNAVAILABLE` | Skill、路径、权限或导航不可用 |
+| `HOLD` | hash、原始记录、附件、线程或冲突门未通过 |
+| `VERIFY` | 动态或高风险事实需要当前权威来源核验 |
+| `ESCALATE` | 需要专业资格或更高权限 |
+| `STOP` | 安全或不可逆门未通过 |
+| `UNKNOWN` | 当前证据不足 |
+
+`MISS` 不会统一变成“试试就知道了”。只有风险低、可逆、可观察，并且不涉及隐私、凭证、安全、动态事实或生产不可逆操作时，才给一个写明成功信号、停止条件和恢复方法的最小实验。
+
+## 隐私与来源边界
+
+- 公开包不内置私域绝对路径、私域 hash、消息／成员标识或原始正文。
+- 公开数据面（`ai-native-knowledge-base`）只含脱敏语料：发送者已映射为 `USER_NNN`，邮箱／手机号／路径／凭证等 7 类敏感模式 0 残留。
+- 派生定位命中只证明找到候选位置，不证明原话正确或问题已经解决。
+- 回答区分原始事实、跨消息归纳、模型推测和未知。
+- 默认不输出成员身份、消息／线程标识、群名、凭证或大段逐字原文；引用必须脱敏并缩到必要片段。
+- 动态事实必须在同一回合核验当前官方或权威来源；历史聊天不能替代。
+
+## 安装
+
+安装、验证、覆盖旧版本、卸载和回滚见 [docs/INSTALL.md](docs/INSTALL.md)。安装器使用显式 source、target 和 state，verify 会拒绝文件集合漂移和字节漂移。
 
 ## 验证
 
@@ -87,30 +92,24 @@ ai-native-helpdesk/
 node --test
 ```
 
-当前 **206/206 PASS**（原 198 项 + 候选池检索 8 项）。测试覆盖守门、schema、路径安全、敏感内容、回合合同、反馈账本、安装生命周期和候选池 BM25 检索（含中文单字切分误判防护）。
+测试使用运行时生成的脱敏临时语料，不包含真实社区消息、成员信息、消息标识或私域路径。覆盖：
 
-## 历史：PublicCard 归档说明
+- `HIT → raw/context`；
+- `MISS`；
+- `SOURCE_UNAVAILABLE`；
+- source hash drift；
+- 定位命中但原始记录缺失；
+- 隐私、动态事实、不可逆动作和低风险最小实验边界；
+- 清洁安装、旧 8 卡覆盖、精确文件集 verify、回滚和软链拒绝。
 
-8 张 PublicCard 已于 2026-08-20 下线归档到 `knowledge/archive/`（保留历史不删除）。原因：对 19 个真实问题正式 loader 为 `ALLOW 0 / MISS 19`，AB 测试显示裸模型核心判断与人工批准卡重合约 80-90%——卡片形式覆盖不了开放需求，因此切换为候选池 BM25 检索。原发布门机制保留为历史代码。
+机器测试只证明合同与安装边界，不证明私域内容正确、用户接受、已经发布或产生效果。
 
 ## LICENSE
 
-代码、contracts、schema 和文档按 Apache License 2.0 提供，见 [`LICENSE`](LICENSE)。私密群聊、证据、未公开候选、安装 state 和本机日志不属于公开 release 包。
+本版本保留的代码、contracts 和文档按 Apache License 2.0 提供，见 [LICENSE](LICENSE)。`$dbs-knowledge` 是未打包的外部依赖，适用其上游许可证；本仓库没有复制其正文。
 
-## 隐私与能力边界
+## 历史边界
 
-- Git 仓库不接收群聊导出、候选报告、证据、`.work`、memory、凭证或本机日志。
-- 候选池已脱敏发送者 ID；检索命中 ≠ 答案正确，摘录是 `CANDIDATE / UNVERIFIED`。
-- 程序能做结构和敏感模式检查，但不能证明普通文本从未逐字取自私域语料；语义脱敏仍由人工负责。
-- 测试通过只证明机器行为，不证明答案正确、用户接受或产生效果。
-
-## 当前完成度
-
-| 项目 | 状态 |
-|---|---|
-| 双仓库架构 | ✅ helpdesk（入口）+ knowledge-base（数据）已链接 |
-| knowledge 路由 | ✅ 候选池 BM25 检索，206/206 测试 |
-| 脱敏语料公开 | ✅ 6,032 条（knowledge-base data/chat-corpus-sanitized.jsonl） |
-| 标签/知识包 | 🛑 FROZEN（关键词分类合理率 40-50%，验证不通过） |
-| 8 张 PublicCard | 🛑 ARCHIVED（knowledge/archive/，下线不删除） |
-| 30 人产品验证 | ⛔ POST_RELEASE / NOT_STARTED / OUTCOME_UNKNOWN |
+- `v0.9.0`：已撤销；tag、GitHub Release 和当前树中的 8 卡发布面已删除，Git 历史未重写。
+- `v1.0.0-private-source`：当前未发布实现，active PublicCard 为 0，产品效果仍为 `UNKNOWN`。
+- 知识包／标签方向：已冻结（2026-08-20 验证：关键词分类合理率 40-50%，未达 80% 阈值；不上 LLM 方案 B，等真实使用痛点再重启）。
