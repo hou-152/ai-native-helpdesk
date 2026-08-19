@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import crypto from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -10,6 +11,28 @@ import { install } from "../scripts/manage-install.mjs";
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SOURCE_INSTALLER = path.join(REPO_ROOT, "scripts", "manage-install.mjs");
+const EXPECTED_RELEASE_FILES = Object.freeze([
+  "LICENSE",
+  "README.md",
+  "SKILL.md",
+  "contracts/action.md",
+  "contracts/good-question.md",
+  "contracts/knowledge.md",
+  "contracts/safety.md",
+  "contracts/thinking.md",
+  "docs/INSTALL.md",
+  "scripts/manage-install.mjs"
+]);
+const RETIRED_PATH_PATTERNS = Object.freeze([
+  /(?:^|\/)knowledge\/public(?:\/|$)/,
+  /(?:^|\/)query-public-card\.mjs$/,
+  /(?:^|\/)public-card\.md$/,
+  /(?:^|\/)public-card\.schema\.json$/,
+  /(?:^|\/)feedback-ledger\.mjs$/,
+  /(?:^|\/)knowledge-production\.mjs$/,
+  /(?:^|\/)helpdesk-turn-contract\.mjs$/,
+  /(?:^|\/)retrieval(?:\/|[-.])/
+]);
 
 function run(script, args, cwd) {
   return spawnSync(process.execPath, [script, ...args], { cwd, encoding: "utf8" });
@@ -21,11 +44,48 @@ function parseOutput(result) {
 }
 
 function tempCase(t) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "aihd phase5 "));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "aihd private source "));
   const unrelated = path.join(root, "unrelated cwd");
   fs.mkdirSync(unrelated);
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   return { root, unrelated };
+}
+
+function walkFiles(root, current = root, output = []) {
+  for (const name of fs.readdirSync(current).sort()) {
+    const absolutePath = path.join(current, name);
+    const stat = fs.lstatSync(absolutePath);
+    assert.equal(stat.isSymbolicLink(), false);
+    if (stat.isDirectory()) walkFiles(root, absolutePath, output);
+    else if (stat.isFile()) output.push(path.relative(root, absolutePath).split(path.sep).join("/"));
+  }
+  return output;
+}
+
+function walkActiveSource(root, current = root, output = []) {
+  for (const name of fs.readdirSync(current).sort()) {
+    if (current === root && new Set([".git", ".trash"]).has(name)) continue;
+    const absolutePath = path.join(current, name);
+    const stat = fs.lstatSync(absolutePath);
+    assert.equal(stat.isSymbolicLink(), false);
+    if (stat.isDirectory()) walkActiveSource(root, absolutePath, output);
+    else if (stat.isFile()) output.push(path.relative(root, absolutePath).split(path.sep).join("/"));
+  }
+  return output;
+}
+
+function sha256(file) {
+  return crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex");
+}
+
+function snapshotTree(root) {
+  return Object.fromEntries(walkFiles(root).map((relativePath) => [
+    relativePath,
+    {
+      bytes: fs.statSync(path.join(root, relativePath)).size,
+      sha256: sha256(path.join(root, relativePath))
+    }
+  ]));
 }
 
 function installFresh({ root, unrelated }, name = "installed skill") {
@@ -42,39 +102,44 @@ function installFresh({ root, unrelated }, name = "installed skill") {
   return { target, state };
 }
 
-test("fresh spaced-path install verifies from unrelated cwd and serves the expanded approved pack", (t) => {
+function createLegacyEightCardTarget(target) {
+  fs.mkdirSync(path.join(target, "knowledge", "public", "cards"), { recursive: true });
+  fs.mkdirSync(path.join(target, "scripts"), { recursive: true });
+  fs.mkdirSync(path.join(target, "contracts"), { recursive: true });
+  for (let index = 1; index <= 8; index += 1) {
+    const cardId = `AIHD-PC-${String(index).padStart(6, "0")}`;
+    fs.writeFileSync(
+      path.join(target, "knowledge", "public", "cards", `${cardId}.json`),
+      `{"card_id":"${cardId}","legacy":true}\n`
+    );
+  }
+  fs.writeFileSync(path.join(target, "knowledge", "public", "index.json"), "{\"cards\":8}\n");
+  fs.writeFileSync(path.join(target, "scripts", "query-public-card.mjs"), "legacy loader\n");
+  fs.writeFileSync(path.join(target, "contracts", "public-card.md"), "legacy contract\n");
+}
+
+test("fresh spaced-path install verifies a thin package with zero active card-stack files", (t) => {
   const fixture = tempCase(t);
   const { target, state } = installFresh(fixture);
   const installedInstaller = path.join(target, "scripts", "manage-install.mjs");
-  const installedLoader = path.join(target, "scripts", "query-public-card.mjs");
 
   const verified = run(installedInstaller, ["verify", "--target", target, "--state", state], fixture.unrelated);
   assert.equal(verified.status, 0, verified.stdout);
   assert.equal(parseOutput(verified).status, "VERIFIED");
 
-  for (const [query, cardId] of [
-    ["写进 AGENTS.md 的规则，怎样确认在 Codex 中生效？", "AIHD-PC-000001"],
-    ["怎样让 OpenClaw Agent 形成受控自迭代闭环？", "AIHD-PC-000004"],
-    ["OpenClaw 心跳怎样配置，才能主动检查但不空转或打扰？", "AIHD-PC-000005"],
-    ["Compaction 之后怎样读回目标、硬约束和下一步？", "AIHD-PC-000008"]
-  ]) {
-    const result = run(installedLoader, ["--query", query], fixture.unrelated);
-    assert.equal(result.status, 0, result.stdout);
-    const output = parseOutput(result);
-    assert.equal(output.status, "ALLOW");
-    assert.equal(output.card.card_id, cardId);
+  const manifest = JSON.parse(fs.readFileSync(path.join(target, "release-files.v1.json"), "utf8"));
+  assert.deepEqual(manifest.files, EXPECTED_RELEASE_FILES);
+  const installedFiles = walkFiles(target);
+  assert.deepEqual(installedFiles, ["release-files.v1.json", ...EXPECTED_RELEASE_FILES].sort());
+  for (const relativePath of installedFiles) {
+    assert.equal(RETIRED_PATH_PATTERNS.some((pattern) => pattern.test(relativePath)), false, relativePath);
   }
 
-  const nearby = run(installedLoader, ["--query", "怎样训练 OpenClaw 的模型权重？"], fixture.unrelated);
-  assert.equal(nearby.status, 0, nearby.stdout);
-  assert.deepEqual(parseOutput(nearby), { status: "MISS", reason_code: "NO_MATCH" });
-
-  const manifest = JSON.parse(fs.readFileSync(path.join(target, "release-files.v1.json"), "utf8"));
-  const installedNames = fs.readdirSync(target).sort();
-  assert.equal(installedNames.includes("evals"), false);
-  assert.equal(installedNames.includes("tests"), false);
-  assert.equal(installedNames.includes("evidence"), false);
-  assert.equal(manifest.files.some((item) => item.startsWith("evals/") || item.startsWith("tests/")), false);
+  const skill = fs.readFileSync(path.join(target, "SKILL.md"), "utf8");
+  const knowledge = fs.readFileSync(path.join(target, "contracts", "knowledge.md"), "utf8");
+  assert.match(skill, /\$dbs-knowledge/);
+  assert.match(knowledge, /SOURCE_UNAVAILABLE/);
+  assert.match(knowledge, /SOURCE_OF_TRUTH\.md/);
 
   const uninstalled = run(installedInstaller, ["uninstall", "--target", target, "--state", state], fixture.unrelated);
   assert.equal(uninstalled.status, 0, uninstalled.stdout);
@@ -85,13 +150,13 @@ test("fresh spaced-path install verifies from unrelated cwd and serves the expan
   assert.equal(JSON.parse(fs.readFileSync(state, "utf8")).status, "UNINSTALLED");
 });
 
-test("install over a pre-existing target creates a backup and rollback restores it byte-identically", (t) => {
+test("install over a legacy eight-card target removes the active stack and rollback restores it byte-identically", (t) => {
   const fixture = tempCase(t);
-  const target = path.join(fixture.root, "pre-existing target");
-  const state = path.join(fixture.root, "rollback state.json");
-  const sentinel = Buffer.from("previous target bytes\n", "utf8");
-  fs.mkdirSync(target);
-  fs.writeFileSync(path.join(target, "sentinel.txt"), sentinel);
+  const target = path.join(fixture.root, "legacy eight-card target");
+  const state = path.join(fixture.root, "migration state.json");
+  createLegacyEightCardTarget(target);
+  const legacySnapshot = snapshotTree(target);
+  assert.equal(Object.keys(legacySnapshot).filter((item) => item.includes("/cards/")).length, 8);
 
   const installed = run(SOURCE_INSTALLER, [
     "install",
@@ -100,19 +165,22 @@ test("install over a pre-existing target creates a backup and rollback restores 
     "--state", state
   ], fixture.unrelated);
   assert.equal(installed.status, 0, installed.stdout);
+
   const installState = JSON.parse(fs.readFileSync(state, "utf8"));
   assert.equal(installState.previous_target.existed, true);
-  assert.equal(fs.statSync(installState.previous_target.backup).isDirectory(), true);
+  assert.deepEqual(snapshotTree(installState.previous_target.backup), legacySnapshot);
+  assert.equal(fs.existsSync(path.join(target, "knowledge", "public")), false);
+  assert.equal(fs.existsSync(path.join(target, "scripts", "query-public-card.mjs")), false);
+  assert.equal(fs.existsSync(path.join(target, "contracts", "public-card.md")), false);
 
   const installedInstaller = path.join(target, "scripts", "manage-install.mjs");
+  const verified = run(installedInstaller, ["verify", "--target", target, "--state", state], fixture.unrelated);
+  assert.equal(verified.status, 0, verified.stdout);
+
   const rolledBack = run(installedInstaller, ["rollback", "--target", target, "--state", state], fixture.unrelated);
   assert.equal(rolledBack.status, 0, rolledBack.stdout);
-  const output = parseOutput(rolledBack);
-  assert.equal(output.status, "ROLLED_BACK");
-  assert.equal(output.previous_target_restored, true);
-  assert.deepEqual(fs.readFileSync(path.join(target, "sentinel.txt")), sentinel);
-  assert.equal(fs.statSync(output.recoverable_copy).isDirectory(), true);
-  assert.equal(JSON.parse(fs.readFileSync(state, "utf8")).status, "ROLLED_BACK");
+  assert.equal(parseOutput(rolledBack).status, "ROLLED_BACK");
+  assert.deepEqual(snapshotTree(target), legacySnapshot);
 });
 
 test("failure after backing up a pre-existing target restores the old target", (t) => {
@@ -147,34 +215,57 @@ test("failure after backing up a pre-existing target restores the old target", (
   );
 });
 
-test("verify fails closed after installed card byte drift", (t) => {
+test("verify fails closed after an installed contract drifts", (t) => {
   const fixture = tempCase(t);
   const { target, state } = installFresh(fixture, "tamper target");
   const installedInstaller = path.join(target, "scripts", "manage-install.mjs");
-  fs.appendFileSync(path.join(target, "knowledge", "public", "cards", "AIHD-PC-000004.json"), "\n");
+  fs.appendFileSync(path.join(target, "contracts", "knowledge.md"), "\n");
 
   const result = run(installedInstaller, ["verify", "--target", target, "--state", state], fixture.unrelated);
   assert.equal(result.status, 65);
   assert.deepEqual(parseOutput(result), { status: "FAIL_CLOSED", reason_code: "INSTALL_BYTE_DRIFT" });
 });
 
-test("release manifest is sorted and excludes private or development-only paths", () => {
+test("verify rejects a reintroduced legacy loader as file-set drift", (t) => {
+  const fixture = tempCase(t);
+  const { target, state } = installFresh(fixture, "legacy drift target");
+  const installedInstaller = path.join(target, "scripts", "manage-install.mjs");
+  fs.writeFileSync(path.join(target, "scripts", "query-public-card.mjs"), "reintroduced\n");
+
+  const result = run(installedInstaller, ["verify", "--target", target, "--state", state], fixture.unrelated);
+  assert.equal(result.status, 65);
+  assert.deepEqual(parseOutput(result), { status: "FAIL_CLOSED", reason_code: "INSTALL_FILE_SET_DRIFT" });
+});
+
+test("release manifest is sorted and excludes private, development, and retired runtime paths", () => {
   const manifest = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, "release-files.v1.json"), "utf8"));
+  assert.deepEqual(manifest.files, EXPECTED_RELEASE_FILES);
   assert.deepEqual(manifest.files, [...manifest.files].sort());
   for (const item of manifest.files) {
-    assert.equal(/^(?:\.git|\.internal|evals|evidence|memory|node_modules|tests)(?:\/|$)/.test(item), false);
+    assert.equal(/^(?:\.git|\.internal|\.trash|evals|evidence|memory|node_modules|tests)(?:\/|$)/.test(item), false);
     assert.equal(/(?:^|\/)(?:\.env(?:\.|$)|[^/]+\.(?:log|sqlite|jsonl|ndjson))$/.test(item), false);
+    assert.equal(RETIRED_PATH_PATTERNS.some((pattern) => pattern.test(item)), false, item);
+  }
+  assert.equal(manifest.files.filter((item) => item.startsWith("knowledge/public/")).length, 0);
+});
+
+test("active source tree contains no retired runtime files outside local trash", () => {
+  const activeFiles = walkActiveSource(REPO_ROOT);
+  for (const relativePath of activeFiles) {
+    assert.equal(RETIRED_PATH_PATTERNS.some((pattern) => pattern.test(relativePath)), false, relativePath);
   }
 });
 
-test("release declares Apache-2.0 and runtime instructions contain no fixed user skill path", () => {
+test("release preserves Apache-2.0 while treating dbs-knowledge as an unbundled dependency", () => {
   const skill = fs.readFileSync(path.join(REPO_ROOT, "SKILL.md"), "utf8");
   const license = fs.readFileSync(path.join(REPO_ROOT, "LICENSE"), "utf8");
   assert.match(skill, /^license: Apache-2\.0$/m);
+  assert.match(skill, /外部 Agent Skill 合同/);
+  assert.match(skill, /不随本包复制/);
   assert.match(license, /Apache License\s+Version 2\.0, January 2004/);
   assert.match(license, /END OF TERMS AND CONDITIONS/);
 
-  for (const relativePath of ["SKILL.md", "README.md", "contracts/knowledge.md", "contracts/public-card.md", "docs/INSTALL.md"]) {
+  for (const relativePath of EXPECTED_RELEASE_FILES.filter((item) => item.endsWith(".md"))) {
     const text = fs.readFileSync(path.join(REPO_ROOT, relativePath), "utf8");
     assert.equal(text.includes("~/.agents/skills"), false, relativePath);
     assert.equal(text.includes("/Users/"), false, relativePath);
