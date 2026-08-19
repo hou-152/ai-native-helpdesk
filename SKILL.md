@@ -11,13 +11,15 @@ license: Apache-2.0
 
 > PP 机制已按 Owner 最终定义完成并关门：8 张逐卡批准卡已通过 PR #5 merge 到远端 `main`（`430b34b`），198／198 与可逆安装通过；`v0.9.0` tag 与 GitHub Release 已发布。30 人产品验证仍是独立的发布后阶段；8 卡可用与 Release 存在都不等于完整知识库、社区验收或用户效果。
 
+> Issue 2 的心理层标注目前只是本候选分支上的非诊断辅助层；真实准确率仍为 `UNKNOWN`，不代表 `v0.9.0` `main` 已发布该能力。
+
 运行时把本文件所在目录作为唯一 Skill 根目录；所有 contract、schema、policy、script 和 PublicCard 都相对于该目录解析，不猜测用户目录或固定全局安装路径。
 
 ## 这是什么
 
 用于 AI／Agent／OpenClaw 相关社区的薄入口 Skill。AI Native 社区可以提供经过筛选的共同知识来源，但任何群聊原文、成员标识和内部审核材料都不得进入公开运行包。
 
-只做 6 件事：
+只做 7 件事：
 
 1. 守门：识别安全、隐私、不可逆和动态事实风险。
 2. 判模：选择 1 个主路由。
@@ -25,6 +27,7 @@ license: Apache-2.0
 4. knowledge 路由只通过确定性脚本查询已发布 PublicCard。
 5. 用 Phase 2 回合合同复验追问次数、自然语言去向和外部来源证据；用 Phase 3 生产门阻断未授权 Candidate。
 6. 在公开仓库外用 Phase 4 追加式账本记录 MISS 与反馈；没有真实有效反馈时不生成候选。
+7. 在主路由完成后，按需加载 `contracts/psych-label.md` 生成非诊断的心理层辅助标注；该标注不改变主路由、发布门或用户权限。
 
 ## 范围边界
 
@@ -35,6 +38,7 @@ license: Apache-2.0
 - 不是个人 Agent 记忆。
 - 不是群聊原文搜索器。
 - 不是全量加载的诊断框架。
+- 不是心理诊断、人格判断或治疗工具。
 - 不是已经有内容的成熟知识库。
 - 不是用测试通过代替人工发布批准的自动发布器。
 
@@ -48,6 +52,7 @@ ai-native-helpdesk/
 │   ├── thinking.md
 │   ├── action.md
 │   ├── knowledge.md
+│   ├── psych-label.md
 │   ├── public-card.md
 │   └── safety.md
 ├── schemas/public-card.schema.json
@@ -74,6 +79,8 @@ ai-native-helpdesk/
 | 触发安全红线 | safety | `contracts/safety.md` |
 
 混合信号可以记录多个标签，但本轮只执行 1 个主路由。
+
+心理层标注不是主路由。只有主路由已经回应当前请求、且当前回合存在明确证据时，才按 `contracts/psych-label.md` 追加一个辅助标签；证据不足时使用 `NONE`，不为了标注额外盘问。
 
 默认直接回答。只有能明确指出一个缺失事实会改变处理路径时才加载 good-question；通过追问门后只问 1 个区分问题。同一歧义允许重述 1 次，再不知道就保留未知。
 

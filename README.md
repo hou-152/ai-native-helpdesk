@@ -20,6 +20,7 @@ ai-native-helpdesk/
 │   ├── thinking.md
 │   ├── action.md
 │   ├── knowledge.md
+│   ├── psych-label.md
 │   ├── public-card.md
 │   └── safety.md
 ├── schemas/public-card.schema.json
@@ -73,6 +74,10 @@ node scripts/query-public-card.mjs \
 ```
 
 脚本不会自动扫描当前目录、用户目录、环境变量或个人资料。当前远端 `main` 的正式公共索引包含 8 张逐卡批准卡；精确命中且通过全部门时才返回 `ALLOW`，其他问题仍返回 `MISS`。
+
+## 心理层辅助标注（Issue 2 MVP）
+
+`contracts/psych-label.md` 提供一个主路由之后才可使用的轻量辅助层，支持 `USER_ADMITS`、`BEHAVIORAL_CONTRADICTION`、`SUSPECTED` 和 `NONE`，每次带 `HIGH`／`MEDIUM`／`LOW` 置信度。它不是心理诊断，也不改变主路由、PublicCard 发布门、用户权限或反馈候选资格；原始证据和 7 天跟踪记录必须留在公开仓库外的受控位置。真实准确率仍为 `UNKNOWN`，需要在私密小样本中收集用户确认后再评估。
 
 安装、验证、卸载与回滚使用显式目标路径和可读回 state；完整步骤见 [`docs/INSTALL.md`](docs/INSTALL.md)。运行时只从 `SKILL.md` 所在目录解析资源，不依赖固定的用户目录。
 
@@ -154,7 +159,7 @@ node scripts/helpdesk-turn-contract.mjs \
 node --test
 ```
 
-测试使用纯虚构临时卡片、公开来源卡片和结构化回合，不包含真实社区数据。覆盖四道门、严格 schema、revision／hash 漂移、重复键、敏感内容、路径穿越、软链越界、跨包冲突、拒绝内容不泄露，Phase 2 合同、Phase 3 双生产路径与正式三卡错配、Phase 4 反馈等级／追加式 hash 链／状态回滚，以及 Phase 6 正式 8 卡 loader、错配回归和安装包完整性。
+测试使用纯虚构临时卡片、公开来源卡片和结构化回合，不包含真实社区数据。覆盖四道门、严格 schema、revision／hash 漂移、重复键、敏感内容、路径穿越、软链越界、跨包冲突、拒绝内容不泄露，Phase 2 合同、Phase 3 双生产路径与正式三卡错配、Phase 4 反馈等级／追加式 hash 链／状态回滚、Phase 6 正式 8 卡 loader／错配回归／安装包完整性，以及 Issue 2 心理层辅助合同的标签、证据、反馈和非诊断边界。
 
 ## 隐私与能力边界
 

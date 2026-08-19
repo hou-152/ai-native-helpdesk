@@ -17,6 +17,8 @@
 
 Owner 集聚合结果见 [`PILOT_BASELINE_RECEIPT.v1.json`](PILOT_BASELINE_RECEIPT.v1.json)（基线，不改写）与 [`PILOT_BASELINE_RECEIPT.v2.json`](PILOT_BASELINE_RECEIPT.v2.json)（Owner 审阅完成）；微信发现集聚合结果见 [`WECHAT_DISCOVERY_RECEIPT.v1.json`](WECHAT_DISCOVERY_RECEIPT.v1.json)。
 
+Issue 2 心理层辅助合同的候选实现收据见 [`PSYCH_LABEL_MVP_RECEIPT.json`](PSYCH_LABEL_MVP_RECEIPT.json)。该收据只绑定入口、合同、静态边界测试和当前候选安装白名单；真实标注准确率、用户反馈与 7 天跟踪仍为 `UNKNOWN`／`NOT_STARTED`。
+
 ## 判读边界
 
 - `MISS` 只表示没有规范化精确命中 question／alias，不表示外部回答无用。

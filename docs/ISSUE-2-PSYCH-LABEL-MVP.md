@@ -153,3 +153,14 @@ BEHAVIORAL_CONTRADICTION (置信度: HIGH)
 - 本 MVP 是 ai-native 生态的设计文档，不直接改变 PublicCard 发布门。
 - 不替代 `dbs-action` / `dbs-diagnosis` 的既有流程。
 - 不把心理层标注作为正式诊断结论，只作为辅助信号。
+
+---
+
+## 8. 当前实现状态（候选分支）
+
+- `SKILL.md` 已把心理层标注接为主路由完成后的可选辅助层。
+- `contracts/psych-label.md` 已承载四种标签、五类行为信号、置信度、输出格式、反馈与停点；未新增重型 schema 或自动评分脚本。
+- `release-files.v1.json` 已把该合同纳入候选安装白名单，避免安装后的入口引用缺失。
+- 已增加静态边界测试，并保留 Phase 6 历史发布收据不变。
+- 当前只证明候选 Skill 的结构与安装完整性；真实标注准确率、用户确认、7 天跟踪和产品效果仍为 `UNKNOWN`／`NOT_STARTED`。
+- 本候选分支尚未 push、开 PR 或 merge 到 `main`；公开收据见 [`evals/phase7/PSYCH_LABEL_MVP_RECEIPT.json`](../evals/phase7/PSYCH_LABEL_MVP_RECEIPT.json)。

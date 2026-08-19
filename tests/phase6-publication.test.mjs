@@ -115,10 +115,23 @@ test("published eight-card observed regression passes all 25 cases without over-
 test("release allowlist carries all eight cards while historical G14 evidence stays historical", () => {
   const manifest = readJson("release-files.v1.json");
   const cardFiles = manifest.files.filter((item) => item.startsWith("knowledge/public/cards/"));
-  assert.equal(manifest.files.length, 31);
   assert.deepEqual(cardFiles, index.cards.map((entry) => `knowledge/public/${entry.file}`));
-  assert.equal(sha256(readText("release-files.v1.json")), receipt.release_allowlist.manifest_sha256);
+  assert.equal(receipt.release_allowlist.listed_files, 31);
+  assert.equal(receipt.release_allowlist.installed_files_including_manifest, 32);
   assert.equal(receipt.release_allowlist.historical_g14_28_file_artifact_unchanged, true);
+});
+
+test("current release candidate allowlist includes the Issue 2 auxiliary contract", () => {
+  const manifest = readJson("release-files.v1.json");
+  const receipt = readJson("evals/phase7/PSYCH_LABEL_MVP_RECEIPT.json");
+  assert.equal(manifest.files.length, 32);
+  assert.equal(manifest.files.includes("contracts/psych-label.md"), true);
+  assert.equal(sha256(readText("release-files.v1.json")), receipt.release_allowlist.manifest_sha256);
+  assert.equal(receipt.release_allowlist.listed_files, 32);
+  assert.equal(receipt.release_allowlist.installed_files_including_manifest, 33);
+  assert.equal(receipt.boundary.pushed, false);
+  assert.equal(receipt.boundary.pull_request_created, false);
+  assert.equal(receipt.implementation.accuracy, "UNKNOWN");
 });
 
 test("Phase 6 publication stops before push, PR, merge, tag, or release", () => {

@@ -47,6 +47,7 @@ test("fresh spaced-path install verifies from unrelated cwd and serves the expan
   const { target, state } = installFresh(fixture);
   const installedInstaller = path.join(target, "scripts", "manage-install.mjs");
   const installedLoader = path.join(target, "scripts", "query-public-card.mjs");
+  assert.equal(fs.existsSync(path.join(target, "contracts", "psych-label.md")), true);
 
   const verified = run(installedInstaller, ["verify", "--target", target, "--state", state], fixture.unrelated);
   assert.equal(verified.status, 0, verified.stdout);

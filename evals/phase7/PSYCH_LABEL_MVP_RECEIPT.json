@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0",
+  "phase": "7",
+  "receipt_id": "AIHD-P7-PSYCH-LABEL-MVP-V1",
+  "evaluated_at": "2026-08-20T00:36:56+08:00",
+  "evidence_layer": "AUXILIARY_CONTRACT_READY",
+  "implementation": {
+    "branch": "docs/post-merge-sync",
+    "entry_file": "SKILL.md",
+    "entry_sha256": "d01e94e6be4d4b44bd0cb94b8b935fe991e8290c1947174b7ae99abd4ec52797",
+    "contract_file": "contracts/psych-label.md",
+    "contract_sha256": "fe8e357064a13df67ecacf0a995e9b62af1238a9e334ea27f5574f6cb051ceca",
+    "static_boundary_test": "tests/psych-label-contract.test.mjs",
+    "runtime_automation": false,
+    "accuracy": "UNKNOWN",
+    "real_case_feedback": "NOT_STARTED"
+  },
+  "release_allowlist": {
+    "manifest_file": "release-files.v1.json",
+    "manifest_sha256": "9c5fc97c98abad1b167519e9306402ba4da40db2927f9ed36698b6359c634f43",
+    "listed_files": 32,
+    "installed_files_including_manifest": 33,
+    "psych_contract_included": true
+  },
+  "boundary": {
+    "main_unchanged": true,
+    "pushed": false,
+    "pull_request_created": false,
+    "merged": false,
+    "public_card_changed": false,
+    "feedback_ledger_changed": false,
+    "private_raw_evidence_added": false
+  },
+  "claim_boundary": [
+    "This receipt proves only that the non-diagnostic auxiliary contract is present in the candidate Skill and release allowlist.",
+    "The psych-label layer does not authorize a PublicCard, KnowledgeCandidate, route change, user permission, or safety decision.",
+    "No real-case accuracy, user acceptance, seven-day follow-up, or product effect is established.",
+    "The historical Phase 6 manifest receipt remains unchanged and is not retroactively rewritten."
+  ]
+}
