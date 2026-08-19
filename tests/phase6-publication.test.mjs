@@ -129,7 +129,7 @@ test("current release candidate allowlist includes the Issue 2 auxiliary contrac
   assert.equal(sha256(readText("release-files.v1.json")), receipt.release_allowlist.manifest_sha256);
   assert.equal(receipt.release_allowlist.listed_files, 32);
   assert.equal(receipt.release_allowlist.installed_files_including_manifest, 33);
-  assert.equal(receipt.boundary.pushed, false);
+  assert.equal(receipt.boundary.pushed, true);
   assert.equal(receipt.boundary.pull_request_created, false);
   assert.equal(receipt.implementation.accuracy, "UNKNOWN");
 });
