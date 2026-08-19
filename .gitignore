@@ -19,5 +19,6 @@ evidence/
 *.tmp
 *.bak
 .DS_Store
+.trash/
 node_modules/
 coverage/
