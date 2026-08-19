@@ -43,7 +43,7 @@
   "boundary": {
     "main_unchanged": true,
     "pushed": true,
-    "pull_request_created": false,
+    "pull_request_created": true,
     "merged": false,
     "public_card_changed": false,
     "feedback_ledger_changed": false,
