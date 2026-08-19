@@ -1,12 +1,14 @@
-# ai-native-helpdesk v0.9.0
+# ai-native-helpdesk v0.9.1-candidate
 
-> 项目当前推进位置、完成度和发布边界以 [`docs/PP.md`](docs/PP.md) 为唯一入口。摘要：PP 机制已按 Owner 最终定义完成并关门；8 卡、198／198、可逆安装已通过 [PR #5](https://github.com/hou-152/ai-native-helpdesk/pull/5) merge 到远端 `main`（merge commit `430b34b`）。tag／GitHub Release 与 30 人产品验证分别记账，产品效果尚未证明。
+> 这是基于已发布 `v0.9.0` 的未发布候选版本；历史 8 卡发布包与收据保持不变。本候选只新增 Issue 2 的非诊断心理层辅助合同，尚未进入 `main` 或 GitHub Release。
 
 ## 目标
 
 为 AI／Agent／OpenClaw 相关社区提供一个薄入口 Helpdesk：先守门和路由，再按需加载合同；知识问答只能读取已经通过编辑、验证、隐私和发布四道门的 PublicCard。
 
 AI Native 社区可以作为共同知识的高质量来源，但私密群聊、成员信息、原话和内部审核材料不进入本仓库。未来其他社区可以显式挂载自己的本地知识包，不与公共包混写。
+
+心理层辅助标注只在主路由完成后按需加载。它不是诊断工具；没有明确执行阻力线索时使用 `NONE`，保留式自述但证据不足时使用 `SUSPECTED / LOW`。默认只输出当回合结果，只有用户明确同意后才可在公开仓库外保存最小化反馈或安排 7 天跟踪。
 
 ## 运行结构
 
@@ -18,12 +20,14 @@ ai-native-helpdesk/
 │   ├── thinking.md
 │   ├── action.md
 │   ├── knowledge.md
+│   ├── psych-label.md
 │   ├── public-card.md
 │   └── safety.md
 ├── schemas/public-card.schema.json
 ├── schemas/knowledge-production.schema.json
 ├── schemas/feedback-event.schema.json
 ├── scripts/query-public-card.mjs
+├── scripts/psych-label.mjs
 ├── scripts/knowledge-production.mjs
 ├── scripts/feedback-ledger.mjs
 ├── governance/internal-card-qa-rubric.v1.json
@@ -70,7 +74,7 @@ node scripts/query-public-card.mjs \
   --community-pack "/path/to/community-pack"
 ```
 
-脚本不会自动扫描当前目录、用户目录、环境变量或个人资料。当前功能分支的正式公共索引包含 8 张逐卡批准卡；精确命中且通过全部门时才返回 `ALLOW`，其他问题仍返回 `MISS`。
+脚本不会自动扫描当前目录、用户目录、环境变量或个人资料。已发布 `main` 的正式公共索引包含 8 张逐卡批准卡；本候选不改变公共卡片集合。精确命中且通过全部门时才返回 `ALLOW`，其他问题仍返回 `MISS`。
 
 安装、验证、卸载与回滚使用显式目标路径和可读回 state；完整步骤见 [`docs/INSTALL.md`](docs/INSTALL.md)。运行时只从 `SKILL.md` 所在目录解析资源，不依赖固定的用户目录。
 
@@ -152,7 +156,7 @@ node scripts/helpdesk-turn-contract.mjs \
 node --test
 ```
 
-测试使用纯虚构临时卡片、公开来源卡片和结构化回合，不包含真实社区数据。覆盖四道门、严格 schema、revision／hash 漂移、重复键、敏感内容、路径穿越、软链越界、跨包冲突、拒绝内容不泄露，Phase 2 合同、Phase 3 双生产路径与正式三卡错配、Phase 4 反馈等级／追加式 hash 链／状态回滚，以及 Phase 6 正式 8 卡 loader、错配回归和安装包完整性。
+测试使用纯虚构临时卡片、公开来源卡片和结构化回合，不包含真实社区数据。覆盖四道门、严格 schema、revision／hash 漂移、重复键、敏感内容、路径穿越、软链越界、跨包冲突、拒绝内容不泄露，Phase 2 合同、Phase 3 双生产路径与正式三卡错配、Phase 4 反馈等级／追加式 hash 链／状态回滚、Phase 6 正式 8 卡 loader／错配回归／安装包完整性，以及 Issue 2 心理层的合成行为边界和同意门。
 
 ## 隐私与能力边界
 
