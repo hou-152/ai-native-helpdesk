@@ -162,5 +162,6 @@ BEHAVIORAL_CONTRADICTION (置信度: HIGH)
 - `contracts/psych-label.md` 已承载四种标签、五类行为信号、置信度、输出格式、反馈与停点；未新增重型 schema 或自动评分脚本。
 - `release-files.v1.json` 已把该合同纳入候选安装白名单，避免安装后的入口引用缺失。
 - 已增加静态边界测试，并保留 Phase 6 历史发布收据不变。
+- 6 个合成案例的首次双 Agent 试跑有 1 个边界分歧（保留措辞“可能有点拖延”）；已将其明确收敛为 `SUSPECTED / LOW`，并完成 1 次复测。跨评估者的完整一致性仍未建立。
 - 当前只证明候选 Skill 的结构与安装完整性；真实标注准确率、用户确认、7 天跟踪和产品效果仍为 `UNKNOWN`／`NOT_STARTED`。
 - 本候选分支尚未 push、开 PR 或 merge 到 `main`；公开收据见 [`evals/phase7/PSYCH_LABEL_MVP_RECEIPT.json`](../evals/phase7/PSYCH_LABEL_MVP_RECEIPT.json)。

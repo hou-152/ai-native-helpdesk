@@ -29,7 +29,15 @@ test("psych-label contract keeps all five behavior checks bounded to context", (
     assert.match(CONTRACT, new RegExp(criterion));
   }
   assert.match(CONTRACT, /同一目标和时间范围/);
+  assert.match(CONTRACT, /同一个具体交付物、决定或可观察结果/);
+  assert.match(CONTRACT, /相邻主题下购买多门课程，不足以证明/);
   assert.match(CONTRACT, /不是脱离语境的诊断规则/);
+});
+
+test("hedged self-attribution routes to SUSPECTED without becoming an admission", () => {
+  assert.match(CONTRACT, /这只允许进入 `SUSPECTED`/);
+  assert.match(CONTRACT, /“可能／好像／有点”等保留表达不属于本类/);
+  assert.match(CONTRACT, /先由 `action` 回应当前执行阻力/);
 });
 
 test("psych-label contract preserves non-diagnostic and fail-closed boundaries", () => {

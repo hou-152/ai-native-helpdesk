@@ -2,18 +2,36 @@
   "schema_version": "1.0",
   "phase": "7",
   "receipt_id": "AIHD-P7-PSYCH-LABEL-MVP-V1",
-  "evaluated_at": "2026-08-20T00:36:56+08:00",
+  "evaluated_at": "2026-08-20T01:04:02+08:00",
   "evidence_layer": "AUXILIARY_CONTRACT_READY",
   "implementation": {
     "branch": "docs/post-merge-sync",
     "entry_file": "SKILL.md",
     "entry_sha256": "d01e94e6be4d4b44bd0cb94b8b935fe991e8290c1947174b7ae99abd4ec52797",
     "contract_file": "contracts/psych-label.md",
-    "contract_sha256": "fe8e357064a13df67ecacf0a995e9b62af1238a9e334ea27f5574f6cb051ceca",
+    "contract_sha256": "be31420077688f5006067c523f60f3085448b760dcb40cd898d7e2d43f400ef3",
     "static_boundary_test": "tests/psych-label-contract.test.mjs",
     "runtime_automation": false,
     "accuracy": "UNKNOWN",
     "real_case_feedback": "NOT_STARTED"
+  },
+  "synthetic_semantic_trial": {
+    "case_count": 6,
+    "evaluator_count": 2,
+    "initial_agreement_count": 5,
+    "initial_disagreement": {
+      "case": "C",
+      "input_class": "hedged_self_attribution_without_behavior_evidence",
+      "observed_outputs": ["SUSPECTED/LOW", "NONE/LOW"]
+    },
+    "contract_revision": "clarified hedged self-attribution as SUSPECTED and required explicit same-goal binding for behavioral contradiction",
+    "post_revision_recheck": {
+      "case": "C",
+      "observed_output": "SUSPECTED/LOW",
+      "independent_rechecks_completed": 1,
+      "full_inter_evaluator_agreement": "NOT_ESTABLISHED"
+    },
+    "synthetic_only": true
   },
   "release_allowlist": {
     "manifest_file": "release-files.v1.json",
