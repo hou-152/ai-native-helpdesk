@@ -87,6 +87,21 @@ test("schemas close the classifier and consent surfaces", () => {
   assert.equal(CONSENT_SCHEMA.properties.follow_up_days.const, 7);
 });
 
+test("schema encodes all five contradiction thresholds", () => {
+  const defs = LABEL_SCHEMA.$defs;
+  assert.equal(defs.timeFacts.properties.entertainment_minutes_per_day.exclusiveMinimum, 60);
+  assert.equal(defs.consumptionFacts.properties.courses_bought.exclusiveMinimum, 3);
+  assert.equal(defs.actionFacts.properties.days_since_related_action.exclusiveMinimum, 7);
+  assert.deepEqual(
+    defs.directionFacts.properties.direction_durations_days.items,
+    { type: "number", exclusiveMinimum: 0, exclusiveMaximum: 14 }
+  );
+  for (const field of ["questions", "practice", "outputs"]) {
+    assert.equal(defs.learningFacts.properties.activity_counts.properties[field].minimum, 0);
+    assert.equal(defs.learningFacts.properties.activity_counts.properties[field].maximum, 0);
+  }
+});
+
 test("psych-label contract declares labels, confidence, and five code-bound checks", () => {
   for (const label of Object.values(LABELS)) assert.match(CONTRACT, new RegExp(`\\b${label}\\b`));
   for (const confidence of Object.values(CONFIDENCES)) {

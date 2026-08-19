@@ -87,7 +87,7 @@
       "required": ["claims_no_time", "entertainment_minutes_per_day"],
       "properties": {
         "claims_no_time": { "const": true },
-        "entertainment_minutes_per_day": { "type": "number", "minimum": 0 }
+        "entertainment_minutes_per_day": { "type": "number", "exclusiveMinimum": 60 }
       }
     },
     "consumptionFacts": {
@@ -96,7 +96,7 @@
       "required": ["claims_learning_goal", "courses_bought", "completion_rate_percent"],
       "properties": {
         "claims_learning_goal": { "const": true },
-        "courses_bought": { "type": "integer", "minimum": 0 },
+        "courses_bought": { "type": "integer", "exclusiveMinimum": 3 },
         "completion_rate_percent": { "const": 0 }
       }
     },
@@ -106,7 +106,7 @@
       "required": ["claims_want_change", "days_since_related_action"],
       "properties": {
         "claims_want_change": { "const": true },
-        "days_since_related_action": { "type": "integer", "minimum": 0 }
+        "days_since_related_action": { "type": "integer", "exclusiveMinimum": 7 }
       }
     },
     "directionFacts": {
@@ -133,9 +133,9 @@
           "additionalProperties": false,
           "required": ["questions", "practice", "outputs"],
           "properties": {
-            "questions": { "type": "integer", "minimum": 0 },
-            "practice": { "type": "integer", "minimum": 0 },
-            "outputs": { "type": "integer", "minimum": 0 }
+            "questions": { "type": "integer", "minimum": 0, "maximum": 0 },
+            "practice": { "type": "integer", "minimum": 0, "maximum": 0 },
+            "outputs": { "type": "integer", "minimum": 0, "maximum": 0 }
           }
         }
       }

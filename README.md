@@ -169,7 +169,7 @@ node --test
 
 ## 当前完成度
 
-任何进度汇报必须同时声明：`PP_MECHANISM = COMPLETE`、`MERGE_MAIN = COMPLETE`、`GITHUB_RELEASE = NOT_STARTED`、`PRODUCT_VALIDATION_30 = POST_RELEASE_NOT_STARTED / UNKNOWN`。
+任何进度汇报必须同时声明：`PP_MECHANISM = COMPLETE`、`MERGE_MAIN = COMPLETE`、`GITHUB_RELEASE_V0.9.0_COMPLETE`、`PSYCH_LABEL_CANDIDATE_UNRELEASED`、`PRODUCT_VALIDATION_30 = POST_RELEASE_NOT_STARTED / UNKNOWN`。
 
 | 项目 | 状态 |
 |---|---|
@@ -188,7 +188,8 @@ node --test
 | Phase 5 安装与发布工程 | `COMPLETE_CANDIDATE_READY` |
 | Phase 6 首批知识规模化 | `4 NEW CARDS APPROVED / EIGHT_CARD_PACK / MERGED_TO_MAIN` |
 | merge | `COMPLETE (PR #5 → main 430b34b)` |
-| tag／GitHub Release | `NOT_STARTED / PENDING_OWNER_AUTHORIZATION` |
+| tag／GitHub Release | `COMPLETE (v0.9.0) / PSYCH_LABEL_CANDIDATE_UNRELEASED` |
+| Issue 2 psych-label MVP | `PR #7 OPEN / DRAFT / CANDIDATE / NOT_IN_RELEASE_MANIFEST` |
 | 30 人产品验证 | `POST_RELEASE / NOT_STARTED / OUTCOME_UNKNOWN` |
 
 八张卡只覆盖各自声明的窄 scope。后续卡片仍须逐张经过内容修正、真实环境验证、隐私审查和 Owner 发布批准，不能因现有卡片通过而自动晋级。8 卡已通过 PR #5 merge 到 `main`；30 人产品覆盖仍属发布后验证，尚未开始。
