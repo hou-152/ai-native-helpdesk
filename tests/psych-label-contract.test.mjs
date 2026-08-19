@@ -67,9 +67,12 @@ test("Skill entry exposes the fail-closed psych-label candidate boundary", () =>
   assert.match(SKILL, /schemas\/psych-label\.schema\.json/);
   assert.match(SKILL, /main_route_completed=true/);
   assert.match(SKILL, /输入不完整或越界时 fail-closed/);
+  assert.match(SKILL, /PSYCH_LABEL_CANDIDATE_UNRELEASED/);
   assert.match(SKILL, /明确同意/);
   assert.equal(RELEASE_MANIFEST.files.includes("contracts/psych-label.md"), false);
   assert.equal(RELEASE_MANIFEST.files.includes("schemas/psych-label.schema.json"), false);
+  assert.equal(RELEASE_MANIFEST.files.includes("schemas/psych-label-consent.schema.json"), false);
+  assert.equal(RELEASE_MANIFEST.files.includes("scripts/psych-label.mjs"), false);
   assert.match(SKILL, /尚未进入 `main` 或 GitHub Release/);
 });
 
@@ -103,6 +106,18 @@ test("safety takes precedence over every auxiliary gate", () => {
     confidence: null,
     reason_code: "SAFETY_RED_FLAG"
   });
+});
+
+test("invalid safety flag types fail closed instead of becoming NONE", () => {
+  assert.deepEqual(
+    classifyPsychLabel({ main_route_completed: true, safety_red_flag: "yes" }),
+    {
+      route: ROUTES.FAIL_CLOSED,
+      label: null,
+      confidence: null,
+      reason_code: "INVALID_SAFETY_FLAG_TYPE"
+    }
+  );
 });
 
 test("missing or incomplete main route fails closed", () => {
@@ -232,6 +247,20 @@ test("arbitrary criterion_met input and incomplete bindings cannot create a cont
   assert.equal(reasonableConstraint.label, LABELS.NONE);
 });
 
+test("zero-day direction entries do not satisfy the direction contradiction", () => {
+  const result = classifyPsychLabel({
+    main_route_completed: true,
+    evidence: currentTurnEvidence({
+      behavioral_contradiction: contradiction(CONTRADICTION_CRITERIA.DIRECTION_CONTRADICTION, {
+        claims_stable_direction: true,
+        direction_durations_days: [0, 1, 2, 3]
+      })
+    })
+  });
+  assert.equal(result.route, ROUTES.FAIL_CLOSED);
+  assert.equal(result.reason_code, "INVALID_CURRENT_TURN_EVIDENCE");
+});
+
 test("user-visible output follows the contract and does not add a suggestion to NONE", () => {
   const result = classifyPsychLabel({
     main_route_completed: true,
@@ -295,6 +324,15 @@ test("purpose-scoped consent is required and has no side effects", () => {
   assert.equal(bothScopes.persist, true);
   assert.equal(bothScopes.schedule_follow_up, true);
   assert.equal(bothScopes.follow_up_reason_code, "SEVEN_DAY_SCOPE_GRANTED");
+
+  const millisecondsWithinTolerance = persistenceDecision({
+    consent: consent([CONSENT_SCOPES.SEVEN_DAY_FOLLOW_UP]),
+    follow_up_at: "2026-08-27T00:00:00.000Z",
+    follow_up_days: 7,
+    now: "2026-08-20T00:00:00.123Z"
+  });
+  assert.equal(millisecondsWithinTolerance.persist, false);
+  assert.equal(millisecondsWithinTolerance.schedule_follow_up, true);
 });
 
 test("expired or revoked consent stops future work and asks the controlled system to revoke follow-up", () => {

@@ -104,7 +104,7 @@ function validFacts(criterion, facts) {
         Array.isArray(facts.direction_durations_days) &&
         facts.direction_durations_days.length > 3 &&
         facts.direction_durations_days.every(
-          (days) => isFiniteNonNegativeNumber(days) && days < 14
+          (days) => isFiniteNonNegativeNumber(days) && days > 0 && days < 14
         )
       );
     case CONTRADICTION_CRITERIA.LEARNING_CONTRADICTION:
@@ -209,6 +209,10 @@ function validEvidenceEnvelope(evidence) {
 
 function classifyPsychLabel(input = {}) {
   if (!isObject(input)) return failClosed("INPUT_OBJECT_REQUIRED");
+
+  if (input.safety_red_flag !== undefined && typeof input.safety_red_flag !== "boolean") {
+    return failClosed("INVALID_SAFETY_FLAG_TYPE");
+  }
 
   if (input.safety_red_flag === true) {
     return { route: ROUTES.SAFETY, label: null, confidence: null, reason_code: "SAFETY_RED_FLAG" };
@@ -344,7 +348,7 @@ function persistenceDecision(request = {}) {
   const followUpWindowValid =
     followUpDateValid &&
     request.follow_up_days === 7 &&
-    Date.parse(followUpAt) - nowMs === 7 * DAY_MS &&
+    Math.abs(Date.parse(followUpAt) - nowMs - 7 * DAY_MS) <= 5 * 60 * 1000 &&
     Date.parse(followUpAt) <= Date.parse(request.consent.expires_at);
   const scheduleFollowUp =
     active &&

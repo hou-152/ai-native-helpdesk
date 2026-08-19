@@ -118,7 +118,7 @@
         "direction_durations_days": {
           "type": "array",
           "minItems": 4,
-          "items": { "type": "number", "minimum": 0, "exclusiveMaximum": 14 }
+          "items": { "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 14 }
         }
       }
     },

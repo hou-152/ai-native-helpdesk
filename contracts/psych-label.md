@@ -16,6 +16,7 @@ description: 在主路由完成后，对当前用户明确提供的执行阻力�
 分类器输入必须满足以下条件：
 
 - `main_route_completed` 必须为 `true`；缺失或为其他值时返回 `FAIL_CLOSED / MAIN_ROUTE_NOT_COMPLETED`，不输出心理标签；
+- `safety_red_flag` 若存在必须是布尔值；其他类型返回 `FAIL_CLOSED / INVALID_SAFETY_FLAG_TYPE`，不能静默当作无红线；
 - `evidence.source` 必须为 `USER_CURRENT_TURN`，`evidence.reference` 只能是不可逆、无路径的 opaque reference；缺失、越界或未知字段时返回 `FAIL_CLOSED`；
 - `safety_red_flag` 优先于其他门；为 `true` 时直接转 `safety`，不执行心理标注；
 - `scripts/psych-label.mjs` 只做无副作用的决策和格式化，不写文件、不安排任务；实际 writer／scheduler 若未来接入，必须重新验证同意收据并独立 fail-closed。
@@ -60,7 +61,7 @@ description: 在主路由完成后，对当前用户明确提供的执行阻力�
 | `TIME_CONTRADICTION` | `claims_no_time=true` 且同一期间每天娱乐／刷手机 `entertainment_minutes_per_day > 60`； |
 | `CONSUMPTION_CONTRADICTION` | `claims_learning_goal=true`、`courses_bought > 3` 且 `completion_rate_percent = 0`； |
 | `ACTION_CONTRADICTION` | `claims_want_change=true` 且 `days_since_related_action > 7`； |
-| `DIRECTION_CONTRADICTION` | `claims_stable_direction=true`，方向持续天数数组长度 `> 3`，且每个 `< 14` 天； |
+| `DIRECTION_CONTRADICTION` | `claims_stable_direction=true`，方向持续天数数组长度 `> 3`，且每个 `> 0` 且 `< 14` 天； |
 | `LEARNING_CONTRADICTION` | `claims_learning=true`，同一时间范围内 `questions=0`、`practice=0`、`outputs=0`。 |
 
 单独看到一个数字、一次失败或第三方转述，都不足以触发该标签。代码不接受任意 `criterion_met` 布尔值，也不把模型猜测当作事实。
@@ -99,7 +100,7 @@ description: 在主路由完成后，对当前用户明确提供的执行阻力�
 只有用户明确、单独、目的限定、带有效期且可撤回的同意收据，才允许授权以下两个彼此独立的范围：
 
 - `FEEDBACK_PERSISTENCE`：在公开仓库外的受控位置保存最小化反馈；
-- `SEVEN_DAY_FOLLOW_UP`：仅在 `follow_up_at` 恰为 7 天窗口、且仍在同意有效期内时安排跟踪。
+- `SEVEN_DAY_FOLLOW_UP`：仅在 `follow_up_at` 落在 7 天窗口（允许 ± 5 分钟容忍范围）、且仍在同意有效期内时安排跟踪。
 
 同意收据至少包含：`decision=GRANTED`、不可逆 `receipt_ref`、`granted_at`、`expires_at`、`revoked_at` 和逐项 `scopes`。`persistenceDecision` 只返回授权决定，`side_effects=DECISION_ONLY`；本候选没有 writer／scheduler，不会因测试或函数调用产生持久化副作用。
 

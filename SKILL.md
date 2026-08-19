@@ -2,7 +2,7 @@
 name: ai-native-helpdesk
 description: 面向 AI／Agent／OpenClaw 社区的薄入口 Helpdesk Skill。负责守门、判模、按需加载合同，并只通过确定性发布门读取 PublicCard。
 version: 0.9.1-candidate
-status: PP_MECHANISM_COMPLETE / MERGE_MAIN_COMPLETE / GITHUB_RELEASE_COMPLETE / PSYCH_LABEL_CANDIDATE / PRODUCT_VALIDATION_POST_RELEASE
+status: PP_MECHANISM_COMPLETE / MERGE_MAIN_COMPLETE / GITHUB_RELEASE_V0.9.0_COMPLETE / PSYCH_LABEL_CANDIDATE_UNRELEASED / PRODUCT_VALIDATION_POST_RELEASE
 author: 减
 license: Apache-2.0
 ---
@@ -203,7 +203,7 @@ node scripts/helpdesk-turn-contract.mjs \
 - Phase 4 反馈账本与回滚：机制完成；23 项定向测试通过，包含 G13b 前 staging／formal 状态隔离。
 - Phase 4 真实闭环：`G13B_APPROVED / FEATURE_BRANCH_FORMAL_LOOP_COMPLETE`；第四张卡正式 index／ALLOW 已通过。
 - Phase 6 首批知识规模化：000005—000008 已逐卡通过人工 QA 与发布决定；远端 `main` 8 卡 index、41 条 loader 检查、25／25 观察错配回归和 198／198 全量测试通过；已 merge 并发布 `v0.9.0`。本候选新增心理层尚未进入 `main`。
-- Issue 2 心理层：`CANDIDATE / SYNTHETIC_ONLY / ACCURACY_UNKNOWN / NOT_IN_MAIN`；未获用户同意前不保存标注或安排跟踪。
+- Issue 2 心理层：`CANDIDATE / SYNTHETIC_ONLY / ACCURACY_UNKNOWN / NOT_IN_MAIN / NOT_IN_RELEASE`；未获用户同意前不保存标注或安排跟踪。
 - Issue 2 心理层实现：分类器已代码化五条行为矛盾标准、主路由完成门、当前回合证据门和目的限定同意决定；脚本本身 `DECISION_ONLY`，不写文件、不安排任务。
 - 社区真实端到端验证：未完成。
 - 群聊候选、内部证据和审核材料：不属于公开仓库。
@@ -226,7 +226,7 @@ node scripts/helpdesk-turn-contract.mjs \
 | v0.8.1-phase6-eight-card-branch | HISTORICAL_STOP_BEFORE_PR | 8 卡提交已 push 到远端功能分支；该冻结时点尚未创建 PR，后续已由 v0.8.2 取代 |
 | v0.8.2-phase6-eight-card-pr | HISTORICAL_DRAFT_PR_OPEN | Draft PR #5 已创建；该冻结点未 merge，后续已 merge `main` |
 | v0.9.0 | PP_MECHANISM_COMPLETE + MERGE_MAIN_COMPLETE + GITHUB_RELEASE_COMPLETE | Owner 以 8 卡、198／198、可逆安装关门；PR #5 已 merge `main`（`430b34b`）并发布 `v0.9.0`；本候选不改写历史发布 |
-| v0.9.1-candidate | PSYCH_LABEL_CANDIDATE | Issue 2 非诊断辅助层；仅合成验证，未进入 `main` 或 GitHub Release |
+| v0.9.1-candidate | PSYCH_LABEL_CANDIDATE_UNRELEASED | Issue 2 非诊断辅助层；仅合成验证，未进入 `main`、安装白名单或 GitHub Release |
 | G13a control receipt | COMPLETED | Owner 授权的 1 用户／1 问题受控采集已完成；公开仓库只留聚合收据 |
 
 后续 PublicCard 仍须逐张独立完成内容修正、真实验证、隐私审查和 Owner 发布批准；首张卡通过不能让其他候选自动晋级。
