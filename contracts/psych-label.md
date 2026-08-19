@@ -11,6 +11,17 @@ description: 在主路由完成后，对当前用户明确提供的执行阻力�
 
 心理层标注是**主路由完成后的可选附加层**。先回应用户当前请求，再决定是否需要标注；不能为了标注而延迟回答、强迫行动或重复追问。
 
+## 输入门与 fail-closed
+
+分类器输入必须满足以下条件：
+
+- `main_route_completed` 必须为 `true`；缺失或为其他值时返回 `FAIL_CLOSED / MAIN_ROUTE_NOT_COMPLETED`，不输出心理标签；
+- `evidence.source` 必须为 `USER_CURRENT_TURN`，`evidence.reference` 只能是不可逆、无路径的 opaque reference；缺失、越界或未知字段时返回 `FAIL_CLOSED`；
+- `safety_red_flag` 优先于其他门；为 `true` 时直接转 `safety`，不执行心理标注；
+- `scripts/psych-label.mjs` 只做无副作用的决策和格式化，不写文件、不安排任务；实际 writer／scheduler 若未来接入，必须重新验证同意收据并独立 fail-closed。
+
+输入结构见 [`schemas/psych-label.schema.json`](../schemas/psych-label.schema.json)。同意结构见 [`schemas/psych-label-consent.schema.json`](../schemas/psych-label-consent.schema.json)。
+
 ## 何时加载
 
 仅在主路由已经完成，且当前回合至少有一种可回读信号时加载：
@@ -32,27 +43,27 @@ description: 在主路由完成后，对当前用户明确提供的执行阻力�
 | 标签 | 使用条件 |
 |---|---|
 | `USER_ADMITS` | 用户原话无保留地直接承认心理卡点，例如“我知道该做但就是不做”“我是在逃避”“我就是拖延”。“可能／好像／有点”等保留表达不属于本类。 |
-| `BEHAVIORAL_CONTRADICTION` | 同一目标、同一时间范围内，用户自述与具体行为满足至少一条明确标准，并且没有已知的合理背景可以解释该不一致。 |
-| `SUSPECTED` | 有保留式自述或其他语言／行为线索，但证据不足以达到前两类；不能写成确定性结论。 |
-| `NONE` | 没有执行阻力线索或证据不足以支持任何标注。`NONE` 不猜测，也不为了完整而硬标。 |
+| `BEHAVIORAL_CONTRADICTION` | 同一目标、同一时间范围内，用户自述与具体行为满足一个已代码化的标准，并且没有已知的合理背景可以解释该不一致。 |
+| `SUSPECTED` | 有保留式自述或经当前回合证据支持的行为线索，但证据不足以达到前两类；不能写成确定性结论。 |
+| `NONE` | 主路由已完成，但当前没有足够的执行阻力证据。`NONE` 不猜测，也不为了完整而硬标。 |
 
 如果直接承认和行为矛盾同时出现，主标签使用 `BEHAVIORAL_CONTRADICTION`，但当前回合的证据中仍可保留直接承认；不得借优先级删除重要事实。
 
 ## 行为矛盾标准
 
-下面的阈值需要同一目标和时间范围支撑，不是脱离语境的诊断规则。单独看到一个数字时，保持 `SUSPECTED` 或 `NONE`。
+下面的阈值需要同一目标和时间范围支撑，不是脱离语境的诊断规则。每条输入都必须带 `criterion`、`goal_ref`、`time_range_ref`、`same_goal`、`same_time_range` 和 `reasonable_constraint=false`；任何字段缺失或结构不合法都不能晋级。
 
-“同一目标”必须由用户明确绑定到同一个具体交付物、决定或可观察结果；只是在相邻主题下购买多门课程，不足以证明它们服务于同一目标。
+至少满足一条，并且证据来自当前用户回合，才可使用 `BEHAVIORAL_CONTRADICTION`：
 
-至少满足一条，并且证据可追溯，才可使用 `BEHAVIORAL_CONTRADICTION`：
-
-| 标准 | 最小证据 |
+| `criterion` | 代码化最小证据 |
 |---|---|
-| 时间矛盾 | 用户声称没时间，但在同一期间明确报告每天娱乐／刷手机超过 1 小时。 |
-| 消费矛盾 | 用户声称要完成同一学习目标，但明确报告购买超过 3 个课程／资料且完成率为 0%。 |
-| 行动矛盾 | 用户声称想改变同一问题，但明确报告超过 7 天没有任何相关行动。 |
-| 方向矛盾 | 用户声称在寻找稳定方向，但明确报告在同一期间更换超过 3 个方向，且每个持续少于 2 周。 |
-| 学习矛盾 | 用户声称正在学习某主题，但在明确时间范围内没有提问、实践或输出的任何记录。 |
+| `TIME_CONTRADICTION` | `claims_no_time=true` 且同一期间每天娱乐／刷手机 `entertainment_minutes_per_day > 60`； |
+| `CONSUMPTION_CONTRADICTION` | `claims_learning_goal=true`、`courses_bought > 3` 且 `completion_rate_percent = 0`； |
+| `ACTION_CONTRADICTION` | `claims_want_change=true` 且 `days_since_related_action > 7`； |
+| `DIRECTION_CONTRADICTION` | `claims_stable_direction=true`，方向持续天数数组长度 `> 3`，且每个 `< 14` 天； |
+| `LEARNING_CONTRADICTION` | `claims_learning=true`，同一时间范围内 `questions=0`、`practice=0`、`outputs=0`。 |
+
+单独看到一个数字、一次失败或第三方转述，都不足以触发该标签。代码不接受任意 `criterion_met` 布尔值，也不把模型猜测当作事实。
 
 如果用户补充了工作、照护、健康、权限、资源或其他合理约束，重新评估；不能把现实约束归因为意愿问题。
 
@@ -60,8 +71,8 @@ description: 在主路由完成后，对当前用户明确提供的执行阻力�
 
 每个标签都带一个置信度：
 
-- `HIGH`：用户原话或可核对行为直接对应标准，时间／目标关系清楚，替代解释很少。
-- `MEDIUM`：证据较明确，但仍有合理解释空间。
+- `HIGH`：用户原话或可核对行为直接对应标准，时间／目标关系清楚，替代解释很少；
+- `MEDIUM`：证据较明确，但仍有合理解释空间；
 - `LOW`：只有线索，通常与 `SUSPECTED` 或 `NONE` 一起使用。
 
 `NONE` 使用 `LOW`，表示“没有足够证据”，不表示对不存在心理问题有高把握。
@@ -71,11 +82,11 @@ description: 在主路由完成后，对当前用户明确提供的执行阻力�
 ```text
 ## 心理层标注
 {USER_ADMITS / BEHAVIORAL_CONTRADICTION / SUSPECTED / NONE} (置信度: {HIGH/MEDIUM/LOW})
-- 证据：{当前回合用户原话、具体行为与时间范围；没有证据时写“当前没有足够证据”}
-- 建议：{仅在非 NONE 时给出一个最小下一步或转介；不得强迫行动}
+- 证据：{当前回合可回读证据；没有证据时写“当前没有足够证据”}
+- 建议：{仅在非 NONE 时给出一个最小下一步或转介}
 ```
 
-非 `NONE` 的末尾可追加一次：
+`FAIL_CLOSED` 或 `SAFETY` 不输出心理标签。非 `NONE` 的末尾可追加一次：
 
 > 这个判断准不准？如果不对，告诉我哪里不对。
 
@@ -85,10 +96,18 @@ description: 在主路由完成后，对当前用户明确提供的执行阻力�
 
 默认只完成当回合输出：不保存原话、证据引用、标签、反馈，不安排 7 天跟踪。
 
-只有用户明确、单独、可撤回地同意后，才允许在公开仓库外的受控位置保存最小化记录或安排跟踪。用户拒绝、没有回答或撤回时：
+只有用户明确、单独、目的限定、带有效期且可撤回的同意收据，才允许授权以下两个彼此独立的范围：
+
+- `FEEDBACK_PERSISTENCE`：在公开仓库外的受控位置保存最小化反馈；
+- `SEVEN_DAY_FOLLOW_UP`：仅在 `follow_up_at` 恰为 7 天窗口、且仍在同意有效期内时安排跟踪。
+
+同意收据至少包含：`decision=GRANTED`、不可逆 `receipt_ref`、`granted_at`、`expires_at`、`revoked_at` 和逐项 `scopes`。`persistenceDecision` 只返回授权决定，`side_effects=DECISION_ONLY`；本候选没有 writer／scheduler，不会因测试或函数调用产生持久化副作用。
+
+用户拒绝、没有回答、收据无效、已过期或撤回时：
 
 - 不写入新的敏感记录；
 - 不设置或继续新的 `follow_up_at`；
+- 对已有跟踪返回 `revoke_existing_follow_up=true`，由受控系统执行停止／清理；
 - 不因未同意而争辩、追问或降低服务质量。
 
 获得明确同意后，记录仍不得保存原始群聊、成员身份、完整回答或不必要的敏感原文；最小字段包括：
@@ -96,7 +115,7 @@ description: 在主路由完成后，对当前用户明确提供的执行阻力�
 - `label_id`、`labeled_at`、主标签、置信度；
 - 脱敏后的证据引用或不可逆 hash；
 - 用户反馈：确认、否认或未反馈；
-- 经同意的 `follow_up_at` 与后续行动信号。
+- 经独立 `SEVEN_DAY_FOLLOW_UP` 同意的 `follow_up_at` 与后续行动信号。
 
 准确率只按有明确反馈的样本计算：
 
@@ -108,8 +127,9 @@ description: 在主路由完成后，对当前用户明确提供的执行阻力�
 
 ## 停点与不做什么
 
-- 不把标签写入 PublicCard、`KnowledgeCandidate`、发布收据或正式检索索引。
-- 不用标签决定 `ALLOW`、`MISS`、`DENY`、用户权限、是否必须行动或是否需要长期跟踪。
-- 不把 `SUSPECTED` 改写成“你有某种心理问题”。
-- 不读取或公开私域原文来证明标签；证据不足时返回 `NONE`／`UNKNOWN`。
-- 同一信号最多提一次；用户否认后不反复争辩或追问。
+- 不把标签写入 PublicCard、`KnowledgeCandidate`、发布收据或正式检索索引；
+- 不用标签决定 `ALLOW`、`MISS`、`DENY`、用户权限、是否必须行动或是否需要长期跟踪；
+- 不把 `SUSPECTED` 改写成“你有某种心理问题”；
+- 不读取或公开私域原文来证明标签；证据不足时返回 `NONE`／`UNKNOWN`；
+- 同一信号最多提一次；用户否认后不反复争辩或追问；
+- 合成测试只能证明机制边界，不能宣称真实准确率、用户接受或产品效果。

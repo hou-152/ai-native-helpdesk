@@ -26,6 +26,8 @@ ai-native-helpdesk/
 ├── schemas/public-card.schema.json
 ├── schemas/knowledge-production.schema.json
 ├── schemas/feedback-event.schema.json
+├── schemas/psych-label.schema.json
+├── schemas/psych-label-consent.schema.json
 ├── scripts/query-public-card.mjs
 ├── scripts/psych-label.mjs
 ├── scripts/knowledge-production.mjs
@@ -156,7 +158,7 @@ node scripts/helpdesk-turn-contract.mjs \
 node --test
 ```
 
-测试使用纯虚构临时卡片、公开来源卡片和结构化回合，不包含真实社区数据。覆盖四道门、严格 schema、revision／hash 漂移、重复键、敏感内容、路径穿越、软链越界、跨包冲突、拒绝内容不泄露，Phase 2 合同、Phase 3 双生产路径与正式三卡错配、Phase 4 反馈等级／追加式 hash 链／状态回滚、Phase 6 正式 8 卡 loader／错配回归／安装包完整性，以及 Issue 2 心理层的合成行为边界和同意门。
+测试使用纯虚构临时卡片、公开来源卡片和结构化回合，不包含真实社区数据。覆盖四道门、严格 schema、revision／hash 漂移、重复键、敏感内容、路径穿越、软链越界、跨包冲突、拒绝内容不泄露，Phase 2 合同、Phase 3 双生产路径与正式三卡错配、Phase 4 反馈等级／追加式 hash 链／状态回滚、Phase 6 正式 8 卡 loader／错配回归／安装包完整性，以及 Issue 2 心理层的主路由门、当前回合证据、五条代码化标准、用户可见输出和目的限定同意决定。真实准确率和产品效果仍需独立验证。
 
 ## 隐私与能力边界
 

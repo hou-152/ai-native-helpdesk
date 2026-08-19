@@ -54,6 +54,8 @@ ai-native-helpdesk/
 ├── schemas/public-card.schema.json
 ├── schemas/knowledge-production.schema.json
 ├── schemas/feedback-event.schema.json
+├── schemas/psych-label.schema.json
+├── schemas/psych-label-consent.schema.json
 ├── scripts/query-public-card.mjs
 ├── scripts/psych-label.mjs
 ├── scripts/knowledge-production.mjs
@@ -77,7 +79,7 @@ ai-native-helpdesk/
 
 混合信号可以记录多个标签，但本轮只执行 1 个主路由。
 
-心理层标注不是主路由。只有主路由已经回应当前请求、且当前回合存在明确执行阻力证据时，才按 `contracts/psych-label.md` 追加辅助标签；无执行阻力线索使用 `NONE`，保留式自述但证据不足使用 `SUSPECTED / LOW`，不为了标注额外盘问。
+心理层标注不是主路由。只有主路由已经回应当前请求、`main_route_completed=true` 且当前回合证据通过 `schemas/psych-label.schema.json` 时，才按 `contracts/psych-label.md` 追加辅助标签；无执行阻力线索使用 `NONE`，保留式自述但证据不足使用 `SUSPECTED / LOW`，不为了标注额外盘问。输入不完整或越界时 fail-closed，不输出心理标签。
 
 默认直接回答。只有能明确指出一个缺失事实会改变处理路径时才加载 good-question；通过追问门后只问 1 个区分问题。同一歧义允许重述 1 次，再不知道就保留未知。
 
@@ -202,6 +204,7 @@ node scripts/helpdesk-turn-contract.mjs \
 - Phase 4 真实闭环：`G13B_APPROVED / FEATURE_BRANCH_FORMAL_LOOP_COMPLETE`；第四张卡正式 index／ALLOW 已通过。
 - Phase 6 首批知识规模化：000005—000008 已逐卡通过人工 QA 与发布决定；远端 `main` 8 卡 index、41 条 loader 检查、25／25 观察错配回归和 198／198 全量测试通过；已 merge 并发布 `v0.9.0`。本候选新增心理层尚未进入 `main`。
 - Issue 2 心理层：`CANDIDATE / SYNTHETIC_ONLY / ACCURACY_UNKNOWN / NOT_IN_MAIN`；未获用户同意前不保存标注或安排跟踪。
+- Issue 2 心理层实现：分类器已代码化五条行为矛盾标准、主路由完成门、当前回合证据门和目的限定同意决定；脚本本身 `DECISION_ONLY`，不写文件、不安排任务。
 - 社区真实端到端验证：未完成。
 - 群聊候选、内部证据和审核材料：不属于公开仓库。
 
