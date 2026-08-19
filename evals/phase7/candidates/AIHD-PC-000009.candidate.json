@@ -1,6 +1,6 @@
 {
   "candidate_schema_version": "1.0",
-  "candidate_status": "PENDING_G12",
+  "candidate_status": "OWNER_APPROVED_TO_FORMALIZE",
   "source_lane": "ORDINARY_AUTHORIZED_CANDIDATE",
   "origin": {
     "phase7_question_id": "P7-Q01",
@@ -16,7 +16,7 @@
     "schema_version": "1.0",
     "record_id": "AIHD-PC-000009",
     "source_lane": "ORDINARY_AUTHORIZED_CANDIDATE",
-    "candidate_authorization": "PENDING_G12",
+    "candidate_authorization": "APPROVED",
     "feedback_level": "NOT_APPLICABLE",
     "answer_candidate_status": "NOT_APPLICABLE",
     "human_distillation": "NOT_APPLICABLE",
@@ -30,7 +30,7 @@
     "verification": "HOLD",
     "privacy_gate": "HOLD",
     "publication": "HOLD",
-    "owner_publication_decision": "PENDING_G12"
+    "owner_publication_decision": "APPROVED"
   },
   "proposed_public_fields": {
     "schema_version": "0.4",

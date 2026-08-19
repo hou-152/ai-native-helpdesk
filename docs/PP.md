@@ -30,7 +30,7 @@ Phase 6 首批内容扩充不回写原 Phase 0—5 的分母：000005—000008 v
 | ① PP 机制完成 | `COMPLETE / CLOSED / DECLARABLE` | 无；任何汇报可以宣告 PP 完成 |
 | ② merge | `COMPLETE (PR #5 → main 430b34b)` | 无；已合并 |
 | ②′ tag／GitHub Release | `COMPLETE (v0.9.0)` | 已发布并由 GitHub API 读回 |
-| ③ 30 人产品验证 | `A_LAYER_OWNER_REVIEW_COMPLETE / EXTERNAL_0_OF_30 / OUTCOME_UNKNOWN` | Owner 集 9 题审阅完成（直接可用 2／9、有启发 5／9、会继续追问 7／9）；微信发现集 10 题待审；候选 AIHD-PC-000009 `PENDING_G12`；外部问题来源、用户结果与 15／30 门仍待验证 |
+| ③ 30 人产品验证 | `A_LAYER_OWNER_REVIEW_COMPLETE / EXTERNAL_0_OF_30 / OUTCOME_UNKNOWN` | Owner 集 9 题审阅完成（直接可用 2／9、有启发 5／9、会继续追问 7／9）；微信发现集 10 题第三方审阅完成（A 档 6／B 档 3／C 档 1）；候选 AIHD-PC-000009 `OWNER_APPROVED_TO_FORMALIZE`（未索引）；方向见 Issue 草案；外部用户结果与 15／30 门仍待验证 |
 
 旧 `5／6（83.3%）` 仅为本次 Owner 最终关门之前的 `HISTORICAL_PRE_CLOSURE` 口径，不得再用于当前 PP 完成度。
 

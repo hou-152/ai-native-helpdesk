@@ -11,8 +11,8 @@
 - 冻结 BM25：10／19 出现候选，9／19 无候选；Owner 集候选适用性已审（`NONE_CONFIRMED_APPLICABLE`），微信集候选适用性仍为 `UNKNOWN`。
 - Owner 集三项判断（2026-08-19 完成，编码 A）：直接可用 2／9，有启发 5／9，会继续追问 7／9；P7-Q03、P7-Q07 无信号。
 - P7-Q08、P7-Q09 标记 `OUT_OF_SCOPE`（超出 AI／Agent／OpenClaw 知识包）。
-- 提炼候选：`AIHD-PC-000009`（来自 P7-Q01）已生成，状态 `PENDING_G12`，生产门返回 `HOLD / CANDIDATE_AUTHORIZATION_REQUIRED`，未索引、不可触发 `ALLOW`。
-- 微信集 10 题逐题审阅：`PENDING`（等待 Owner）。
+- 提炼候选：`AIHD-PC-000009`（来自 P7-Q01）已生成；Owner 已指示“进 000009”，当前按 `OWNER_APPROVED_TO_FORMALIZE` 记账，正式 QA／四门／索引仍未完成，不可触发 `ALLOW`。
+- 微信集 10 题第三方审阅：`COMPLETE`（2026-08-19，A 档 6 题、B 档 3 题、C 档 1 题；私密详细审阅留在公开仓库外）。
 - 外部独立用户：0／30；产品效果仍为 `UNKNOWN`。
 
 Owner 集聚合结果见 [`PILOT_BASELINE_RECEIPT.v1.json`](PILOT_BASELINE_RECEIPT.v1.json)（基线，不改写）与 [`PILOT_BASELINE_RECEIPT.v2.json`](PILOT_BASELINE_RECEIPT.v2.json)（Owner 审阅完成）；微信发现集聚合结果见 [`WECHAT_DISCOVERY_RECEIPT.v1.json`](WECHAT_DISCOVERY_RECEIPT.v1.json)。
@@ -35,9 +35,9 @@ Owner 集（9 题）逐题审阅已在私密副本中完成（2026-08-19，编�
 3. 回答是否有启发：5／9；
 4. 如果自己是提问者，是否会继续追问：7／9。
 
-微信发现集（10 题）的逐题审阅等待 Owner；未完成前其判断保持 `UNKNOWN`。
+微信发现集（10 题）已由第三方完成首轮审阅（2026-08-19），结论为 A 档 6 题、B 档 3 题、C 档 1 题；详细私密审阅文件不进入公开仓库。该审阅只用于 Owner 决策，不替代 Owner 或外部用户判断。
 
-公开仓库只接收聚合计数和私密审阅文件 hash。没有 Owner 回执时，上述结果保持 `UNKNOWN`。
+公开仓库只接收聚合计数和私密审阅文件 hash。没有 Owner 回执时，外部验证结果保持 `UNKNOWN`。
 
 ## 复验
 
