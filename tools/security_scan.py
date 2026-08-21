@@ -67,6 +67,7 @@ FORBIDDEN_PATTERNS: Dict[str, Pattern[str]] = {
 
 AST_SCAN_SCRIPT = r"""
 const fs = require("node:fs");
+const crypto = require("node:crypto");
 const acorn = require("internal/deps/acorn/acorn/dist/acorn");
 
 const source = fs.readFileSync(0, "utf8");
@@ -77,6 +78,11 @@ const forbiddenRuntimeObjects = new Map([
   ["Reflect", "reflective property access"],
 ]);
 const approvedPrimitiveReaders = new Set(["readBoolean", "readEnum"]);
+const approvedPrimitiveReaderHashes = new Set([
+  "0d6f3e35f0f07410fb69c7405495b2b4417c512485751384c55d7d27a67720ad",
+  "2da440a504c6a13664ff2067a9acbda2a19bdb7920dec6d8af042a42d648fb56",
+  "5d4a32d75eb30ec0f1e8277747a647ddecafd834ba8cead0eb17ad8471d570a5",
+]);
 const approvedComputedConsumers = new Set(["text", "values.has"]);
 const forbiddenCalls = new Map([
   ["exec", "process execution"],
@@ -212,6 +218,11 @@ walk(ast, null, (node) => {
     node.type === "FunctionDeclaration"
     && node.id
     && approvedPrimitiveReaders.has(node.id.name)
+    && approvedPrimitiveReaderHashes.has(
+      crypto.createHash("sha256")
+        .update(source.slice(node.start, node.end))
+        .digest("hex")
+    )
   ) {
     walk(node.body, node, (candidate) => {
       if (candidate.type === "ReturnStatement") {
@@ -537,6 +548,14 @@ walk(ast, null, (node, parent) => {
     && staticString(node.key) === null
   ) {
     addFinding(node, "computed destructuring key");
+  }
+
+  if (
+    node.type === "ThrowStatement"
+    && node.argument
+    && containsComputedValue(node.argument)
+  ) {
+    addFinding(node, "computed value throw");
   }
 
   if (node.type === "CallExpression" || node.type === "NewExpression") {
@@ -902,6 +921,24 @@ save(\"output.txt\", \"unsafe\");
             'const { [key]: run } = first;\n'
             'run("return process[\'e\' + \'nv\'].HOME")();\n',
             "computed destructuring key",
+        ),
+        "spoofed-primitive-reader": (
+            'const key = process.argv.at(2);\n'
+            'function readBoolean(object, property) { return object[property]; }\n'
+            'const first = readBoolean({}, key);\n'
+            'const run = readBoolean(first, key);\n'
+            'run("return process[\'e\' + \'nv\'].HOME")();\n',
+            "computed value return",
+        ),
+        "exception-flow-constructor-chain": (
+            'const key = process.argv.at(2);\n'
+            'const obj = {};\n'
+            'let first;\n'
+            'let run;\n'
+            'try { throw obj[key]; } catch (error) { first = error; }\n'
+            'try { throw first[key]; } catch (error) { run = error; }\n'
+            'run("return process[\'e\' + \'nv\'].HOME")();\n',
+            "computed value throw",
         ),
         "process-property-reexport": (
             'export { env } from "node:process";\n',
