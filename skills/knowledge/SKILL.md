@@ -3,12 +3,11 @@ name: aihd-knowledge
 description: 当用户查询 AI／Agent／OpenClaw 的具体事实或历史处理经验时使用；默认检索公开知识库（ai-native-knowledge-base）候选池，需要补全上下文时才回读私域原始对话。
 ---
 
+# skills/knowledge（子 skill）
+
 ## 核心哲学
 
 **不赌用户记得对、信得对。** 用户可能记错、可能信了过时的说法、可能把推测当事实。本子 skill 接管"验证与溯源"这件事：检索公开知识库、区分原始事实／归纳／推测／未知，证据不足时保留 `UNKNOWN`，不编造。
-
-
-# skills/knowledge（子 skill）
 
 ## 何时加载
 

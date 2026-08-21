@@ -3,12 +3,11 @@ name: aihd-safety
 description: 当用户触红线时使用。入口 SKILL.md 守门命中红线时按需 read_file 本文件。
 ---
 
+# skills/safety（子 skill）
+
 ## 核心哲学
 
 **不赌用户意识到风险。** 用户身处危机或危险动作时，往往意识不到自己需要帮助、或低估了不可逆后果。本子 skill 接管"守底线"这件事：红线强制触发，不由用户判断严重性，只做承接、转介、暂停确认，不诊断、不归因。
-
-
-# skills/safety（子 skill）
 
 ## 何时加载
 
