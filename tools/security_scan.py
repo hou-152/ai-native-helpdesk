@@ -26,6 +26,26 @@ SCRIPTS = (
     "skills/safety/scripts/gate-decision.mjs",
     "skills/thinking/scripts/analysis-state.mjs",
 )
+EXPECTED_SCRIPT_SHA256 = {
+    "skills/action/scripts/next-step.mjs": (
+        "a1911a937273e5bfe43aadd74e60e61537352456c596690ff16168380980435e"
+    ),
+    "skills/diagnosis/scripts/classify-state.mjs": (
+        "17f7a6b0f761f86623bcd470b9f2b9a31c0ea0ac0e90e52caa6030b34ade782f"
+    ),
+    "skills/good-question/scripts/clarify-gate.mjs": (
+        "ea20375410a2eb3acdd6ecd75a3ccc2326fed6e936b216ad55a9501eac3668d1"
+    ),
+    "skills/knowledge/scripts/bm25-search.mjs": (
+        "f8c3f9f3f1c538fb0a2835db1fe8f15651638bd0e3c4de48d0404d9afa319e2c"
+    ),
+    "skills/safety/scripts/gate-decision.mjs": (
+        "efae08f768337229e069220c37b13fd5bf9cb2179735bdb3694f2978b640692f"
+    ),
+    "skills/thinking/scripts/analysis-state.mjs": (
+        "d3717deece23b6bc21189ecc9b6e162809a17d1c1db709e3204c386b0e2f295d"
+    ),
+}
 ALLOWED_NODE_IMPORTS = {"node:path", "node:process", "node:url"}
 ALLOWED_PROCESS_PROPERTIES = {"argv", "exitCode", "stderr", "stdout"}
 FORBIDDEN_PATTERNS: Dict[str, Pattern[str]] = {
@@ -242,6 +262,20 @@ function propertyName(member) {
   return staticString(member.property);
 }
 
+function isFreshConstructorCapable(node) {
+  return [
+    "ArrayExpression",
+    "ArrowFunctionExpression",
+    "CallExpression",
+    "ClassExpression",
+    "FunctionExpression",
+    "Literal",
+    "NewExpression",
+    "ObjectExpression",
+    "TemplateLiteral",
+  ].includes(node?.type) && !(node.type === "Literal" && node.value === null);
+}
+
 function containsComputedValue(node) {
   let found = false;
   walk(node, null, (candidate) => {
@@ -271,6 +305,10 @@ while (aliasesChanged) {
     if (node.type === "VariableDeclarator") {
       names = bindingNames(node.id);
       value = node.init;
+    }
+    if (node.type === "AssignmentPattern") {
+      names = bindingNames(node.left);
+      value = node.right;
     }
     if (
       node.type === "AssignmentExpression"
@@ -410,6 +448,9 @@ walk(ast, null, (node, parent) => {
     ) {
       addFinding(node, "computed member chain");
     }
+    if (node.computed && name === null && isFreshConstructorCapable(node.object)) {
+      addFinding(node, "computed constructor-capable access");
+    }
     if (isGlobalObject(node.object) && !name) {
       addFinding(node, "computed global access");
     }
@@ -518,7 +559,14 @@ def scan_ast(relative_path: str, source: str) -> None:
         )
 
 
-def scan_source(relative_path: str, source: str) -> None:
+def scan_source(
+    relative_path: str,
+    source: str,
+    *,
+    enforce_approved_bytes: bool = True,
+) -> None:
+    if enforce_approved_bytes:
+        validate_script_digest(relative_path, source.encode("utf-8"))
     scan_ast(relative_path, source)
     for label, pattern in FORBIDDEN_PATTERNS.items():
         match = pattern.search(source)
@@ -607,7 +655,7 @@ save(\"output.txt\", \"unsafe\");
             'const objectConstructor = ({})[key];\n'
             'const functionConstructor = objectConstructor[key];\n'
             'functionConstructor("return process[\'e\' + \'nv\'].SECRET")();\n',
-            "computed call target",
+            "computed constructor-capable access",
         ),
         "destructured-computed-constructor-chain": (
             'let key = process.argv[2];\n'
@@ -620,7 +668,23 @@ save(\"output.txt\", \"unsafe\");
             'const [objectConstructor] = [({})[key]];\n'
             'const { run } = { run: objectConstructor[key] };\n'
             'run("return 1")();\n',
-            "computed call target",
+            "computed constructor-capable access",
+        ),
+        "defaulted-destructured-constructor-chain": (
+            'let key = process.argv[2];\n'
+            'const [first = ({})[key]] = [];\n'
+            'const [run = first[key]] = [];\n'
+            'run("return process[\'e\' + \'nv\'].HOME")();\n',
+            "computed constructor-capable access",
+        ),
+        "shadowed-computed-constructor-chain": (
+            'let key = process.argv[2];\n'
+            'const first = ({})[key];\n'
+            '{ const first = 0; }\n'
+            'const run = first[key];\n'
+            '{ const run = 0; }\n'
+            'run("return process[\'e\' + \'nv\'].HOME")();\n',
+            "computed constructor-capable access",
         ),
         "process-property-reexport": (
             'export { env } from "node:process";\n',
@@ -637,20 +701,53 @@ save(\"output.txt\", \"unsafe\");
     }
     for name, (source, expected) in fixtures.items():
         try:
-            scan_source(f"regression/{name}.mjs", source)
+            scan_source(
+                f"regression/{name}.mjs",
+                source,
+                enforce_approved_bytes=False,
+            )
         except ScanError as error:
             if expected not in str(error):
                 raise ScanError(f"{name} regression failed unexpectedly: {error}") from error
             continue
         raise ScanError(f"{name} regression bypassed the security gate")
 
+    try:
+        scan_source(
+            SCRIPTS[0],
+            'const key = process.argv[2]; ({})[key][key]("return 1")();\n',
+        )
+    except ScanError as error:
+        if "unapproved runtime bytes" not in str(error):
+            raise ScanError(f"approved-bytes regression failed: {error}") from error
+    else:
+        raise ScanError("approved-bytes regression bypassed the security gate")
+
+
+def validate_script_digest(relative_path: str, payload: bytes) -> str:
+    digest = hashlib.sha256(payload).hexdigest()
+    expected = EXPECTED_SCRIPT_SHA256.get(relative_path)
+    if expected is None:
+        raise ScanError(f"{relative_path}: missing approved sha256")
+    if digest != expected:
+        raise ScanError(
+            f"{relative_path}: unapproved runtime bytes: "
+            f"expected sha256={expected}, actual sha256={digest}"
+        )
+    return digest
+
 
 def scan_script(relative_path: str) -> str:
     path = REPO_ROOT / relative_path
     if not path.is_file():
         raise ScanError(f"{relative_path}: missing")
-    source = path.read_text(encoding="utf-8")
-    scan_source(relative_path, source)
+    payload = path.read_bytes()
+    digest = validate_script_digest(relative_path, payload)
+    try:
+        source = payload.decode("utf-8")
+    except UnicodeDecodeError as error:
+        raise ScanError(f"{relative_path}: runtime is not UTF-8") from error
+    scan_source(relative_path, source, enforce_approved_bytes=False)
 
     checked = subprocess.run(
         ["node", "--check", str(path)],
@@ -663,7 +760,6 @@ def scan_script(relative_path: str) -> str:
     if checked.returncode != 0:
         raise ScanError(f"{relative_path}: node --check failed: {checked.stderr.strip()}")
 
-    digest = hashlib.sha256(path.read_bytes()).hexdigest()
     return f"PASS {relative_path} sha256={digest}"
 
 
