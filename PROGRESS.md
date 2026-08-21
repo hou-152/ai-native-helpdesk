@@ -5,7 +5,9 @@
 - T1 结论：`skills@1.5.23` 遇到有效的仓库根 `SKILL.md` 时，默认立即停止发现；只有 `--full-depth` 才继续扫描 `skills/`。源码见 [skills.ts](https://github.com/vercel-labs/skills/blob/435076e78988e1e6ec40d00b0b1d76bdbbc5419a/src/skills.ts#L230-L304)。因此没有通用 `SKILLS.md` 清单可替代目录迁移。
 - 修复：主入口迁至 `skills/ai-native-helpdesk/SKILL.md`；6 个现有子 skill 保持原内容与同级布局。发布 manifest、npm 包白名单、可逆安装器测试和文档均同步到 `skills/<name>/SKILL.md`。
 - 验证：在本地分支运行 `npx --yes skills@1.5.23 add /Users/housibo/Projects/ai-native-helpdesk --list`，输出 `Found 7 skills`；隔离项目内以 `--copy --skill '*' --agent openclaw --agent codex` 安装后，OpenClaw 与 Codex 各列出完整 7 项，主 skill 目录只含 `SKILL.md`。
-- 边界：未 npm 发布、未 push；GitHub 仓库路径的最终 `skills add ... --list` 读回须在远端包含本提交后执行。`--host auto` 未实现，因为 CLI 已提供自动检测与 `--agent`。
+- 远端闭环：实现提交 `11753de49506bca0dd30df9fdfb6749bb172ebc6` 已从 `a5d1cd9` 快进推送到公开 `main`；`git ls-remote` 与 GitHub commit API 均读回同一 SHA。
+- 远端验证：`skills@1.5.23` 直接克隆 `https://github.com/hou-152/ai-native-helpdesk.git`；运行 `npx --yes skills add hou-152/ai-native-helpdesk --list` 返回 `Found 7 skills`，名称与本地 7 项完全一致。
+- 边界：未 npm 发布、未开 PR；远端发现成功不等于宿主真实对话或产品效果。`--host auto` 未实现，因为 CLI 已提供自动检测与 `--agent`。
 
 ## 2026-08-22：修复 npm 发布包缺失 skills/ 目录
 
