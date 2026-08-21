@@ -148,10 +148,18 @@ function importedName(specifier) {
   return specifier.imported.value;
 }
 
+function isGlobalObject(node) {
+  if (node?.type === "Identifier") {
+    return ["global", "globalThis"].includes(node.name);
+  }
+  return node?.type === "MemberExpression"
+    && isGlobalObject(node.object)
+    && ["global", "globalThis"].includes(propertyName(node));
+}
+
 function isGlobalProcessMember(node) {
   return node?.type === "MemberExpression"
-    && node.object?.type === "Identifier"
-    && node.object.name === "globalThis"
+    && isGlobalObject(node.object)
     && propertyName(node) === "process";
 }
 
@@ -209,6 +217,19 @@ walk(ast, null, (node, parent) => {
     if (label) addFinding(node, label, name);
   }
 
+  if (node.type === "MemberExpression") {
+    const name = propertyName(node);
+    const isDirectCallee = (
+      parent?.type === "CallExpression" || parent?.type === "NewExpression"
+    ) && parent.callee === node;
+    if (name && forbiddenCalls.has(name) && !isDirectCallee) {
+      addFinding(node, "indirect forbidden call target", name);
+    }
+    if (isGlobalObject(node.object) && !name) {
+      addFinding(node, "computed global access");
+    }
+  }
+
   if (node.type === "MemberExpression" && isProcessObject(node.object)) {
     const name = propertyName(node);
     if (!name || !allowedProcessProperties.has(name)) {
@@ -227,9 +248,35 @@ walk(ast, null, (node, parent) => {
     addFinding(node, "indirect process access", node.name);
   }
 
+  if (node.type === "Identifier" && forbiddenCalls.has(node.name)) {
+    const isPropertyName = (
+      parent?.type === "MemberExpression"
+      && parent.property === node
+      && !parent.computed
+    );
+    const isObjectKey = (
+      parent?.type === "Property"
+      && parent.key === node
+      && !parent.computed
+      && !parent.shorthand
+    );
+    const isDirectCallee = (
+      parent?.type === "CallExpression" || parent?.type === "NewExpression"
+    ) && parent.callee === node;
+    if (!isPropertyName && !isObjectKey && !isDirectCallee) {
+      addFinding(node, "indirect forbidden call target", node.name);
+    }
+  }
+
   if (isGlobalProcessMember(node)) {
     if (parent?.type === "MemberExpression" && parent.object === node) return;
-    addFinding(node, "indirect process access", "globalThis.process");
+    addFinding(node, "indirect process access", "global process");
+  }
+
+  if (isGlobalObject(node)) {
+    if (parent?.type === "MemberExpression" && parent.object === node) return;
+    const name = node.type === "MemberExpression" ? propertyName(node) : node.name;
+    addFinding(node, "indirect global access", name);
   }
 });
 
@@ -313,6 +360,31 @@ save(\"output.txt\", \"unsafe\");
         "process-object-alias": (
             "const proc = process;\nconsole.log(proc.argv);\n",
             "indirect process access: process",
+        ),
+        "forbidden-call-alias": (
+            'const request = fetch;\nawait request("https://example.com");\n',
+            "indirect forbidden call target: fetch",
+        ),
+        "forbidden-call-sequence": (
+            'await (0, fetch)("https://example.com");\n',
+            "indirect forbidden call target: fetch",
+        ),
+        "global-process-computed-property": (
+            'global.process["env"].SECRET;\n',
+            "environment access: env",
+        ),
+        "global-computed-process-property": (
+            'global["pro" + "cess"]["e" + "nv"].SECRET;\n',
+            "environment access: env",
+        ),
+        "forbidden-call-destructuring": (
+            "const { fetch: request } = globalThis;\n"
+            'await request("https://example.com");\n',
+            "indirect global access: globalThis",
+        ),
+        "dynamic-global-property": (
+            'const name = "fetch";\nawait globalThis[name]("https://example.com");\n',
+            "computed global access",
         ),
     }
     for name, (source, expected) in fixtures.items():

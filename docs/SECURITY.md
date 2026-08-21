@@ -12,7 +12,7 @@ python3 tools/security_scan.py
 
 - 6 个运行脚本全部存在，并通过 `node --check`；
 - 用 Node.js 内置解析器按 AST 读取 import，允许项仅为 `node:path`、`node:process` 和 `node:url`；注释、换行不能绕过 allowlist；
-- 禁止网络模块和网络客户端；
+- 禁止网络模块和网络客户端；禁用调用目标不能通过变量别名、sequence、成员引用或 global 对象逃逸；
 - 禁止子进程、动态代码执行、环境变量读取和文件写入；`process` 只允许直接访问 `argv`、`stdout`、`stderr`、`exitCode`，禁止别名逃逸和计算属性；
 - 每个通过项输出 SHA-256，便于把结果绑定到精确字节。
 
