@@ -52,6 +52,7 @@ const acorn = require("internal/deps/acorn/acorn/dist/acorn");
 const source = fs.readFileSync(0, "utf8");
 const allowedImports = new Set(JSON.parse(process.argv[1]));
 const allowedProcessProperties = new Set(JSON.parse(process.argv[2]));
+const forbiddenStaticStrings = new Set(["constructor"]);
 const forbiddenCalls = new Map([
   ["exec", "process execution"],
   ["execFile", "process execution"],
@@ -225,9 +226,19 @@ walk(ast, null, (node, parent) => {
     if (name && forbiddenCalls.has(name) && !isDirectCallee) {
       addFinding(node, "indirect forbidden call target", name);
     }
+    if (name && forbiddenStaticStrings.has(name)) {
+      addFinding(node, "dynamic code execution", name);
+    }
     if (isGlobalObject(node.object) && !name) {
       addFinding(node, "computed global access");
     }
+  }
+
+  if (
+    ["BinaryExpression", "Literal", "TemplateLiteral"].includes(node.type)
+    && forbiddenStaticStrings.has(staticString(node))
+  ) {
+    addFinding(node, "dynamic code execution", staticString(node));
   }
 
   if (node.type === "MemberExpression" && isProcessObject(node.object)) {
@@ -385,6 +396,14 @@ save(\"output.txt\", \"unsafe\");
         "dynamic-global-property": (
             'const name = "fetch";\nawait globalThis[name]("https://example.com");\n',
             "computed global access",
+        ),
+        "constructor-chain": (
+            '({}).constructor.constructor("return process[\'e\' + \'nv\'].SECRET")();\n',
+            "dynamic code execution: constructor",
+        ),
+        "computed-constructor-chain": (
+            'const key = "con" + "structor";\n({})[key][key]("return 1")();\n',
+            "dynamic code execution: constructor",
         ),
     }
     for name, (source, expected) in fixtures.items():
