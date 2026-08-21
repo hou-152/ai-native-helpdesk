@@ -18,6 +18,12 @@ description: 当缺失语境会改变答案、适用边界、风险或下一步�
 
 只是让用户画像更完整、表达更漂亮、回答更个性化，不足以触发追问。已有信息足够时，直接进入对应子 skill 回答。
 
+## 工具链
+
+- **必备**：无外部工具、API 或外部 skill。只使用当前回合中已获准处理的信息。
+- **可选**：Node.js 20+ 可运行同目录 [`scripts/clarify-gate.mjs`](scripts/clarify-gate.mjs) 的判定表。用法为 `node scripts/clarify-gate.mjs --input '<JSON>'`；`missing_fact` 和 `changes_path` 为布尔输入，其余可选输入为 `safety_or_privacy`、`ambiguity_stage`、`user_response`、`question_count` 与 `new_experience`。`{}` 也是正常输入；输出为单一 JSON，包含 `decision`、`validation_signal` 与 `persistence_candidate`，不生成问题也不写入任何候选池。
+- **降级**：Node 或脚本不可用时，人工按下方“追问门”和“状态”逐项判定；无法确认时保留 `UNKNOWN`，不以脚本缺失为由继续追问或猜测。
+
 ## 第一件事：分类用户的话（每次必做）
 
 追问前，先判断用户刚才说的是哪一类，这决定缺的是什么：
@@ -81,6 +87,17 @@ description: 当缺失语境会改变答案、适用边界、风险或下一步�
 仍未验证的假设：{用户的解释中未证实的部分}
 最可能改变结论的关键变量：{一句话}
 ```
+
+## 输出模板
+
+在既有的分类说明、一个区分问题（如需要）和自然语言去向后，附以下两个收尾字段：
+
+```text
+验证信号：{CONFIRMED / EXCLUDED / UNKNOWN；说明本轮追问门是否因可观察信息收敛，用户陈述本身不等于外部事实已验证}
+落库候选：{YES / NO；仅当出现新的高价值区分变量、重复歧义或失败模式时标记，不能静默写入任何库}
+```
+
+`YES` 只是候选标记，不授予落库、发布或复用授权。
 
 ## 状态
 

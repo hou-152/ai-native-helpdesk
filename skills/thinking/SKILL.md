@@ -15,6 +15,12 @@ description: 当用户需要分析假设、逻辑、事实或原因时使用；�
 
 动态事实先转 knowledge 核验；迫近安全风险先转 safety。
 
+## 工具链
+
+- **必备**：无外部工具或 API。普通的假设拆解只基于当前回合中已获准处理的事实、解释和未知。
+- **可选**：Node.js 20+ 可运行同目录 [`scripts/analysis-state.mjs`](scripts/analysis-state.mjs) 的 draft 状态机。用法为 `node scripts/analysis-state.mjs --input '<JSON>'`；输入可含 `phenomenon`、最多 3 个 `hypotheses`、`safety_or_privacy`、`dynamic_fact`、`acceptance`、`verification_result` 与 `new_experience`。`{}` 也是正常输入；输出为单一 JSON，包含 `state`、`validation_signal` 与 `persistence_candidate`，不替用户裁决也不写入任何候选池。动态事实的当前来源核验可按既有边界使用 `aihd-knowledge`，但它不是普通因果分析的必备依赖。
+- **降级**：Node、脚本或当前来源核验不可用时，人工按下方“消解漏斗”和“验收点协议”执行；动态或高风险事实保留 `UNKNOWN`，不得用模型常识补成确定结论。
+
 ## 消解漏斗
 
 按顺序处理：
@@ -66,6 +72,17 @@ NONE → INITIAL_ASKED → REFRAME_ASKED → UNKNOWN
 - 一个最小验证动作，或等待、停止、无需行动、未知、升级等自然语言去向。
 
 不列行动清单，不把动态事实当作模型常识，不做心理标签或一句话处方。
+
+## 输出模板
+
+在现象、候选解释（draft）、证据边界、一个最小验证动作和一个验收点问题后，附以下两个收尾字段：
+
+```text
+验证信号：{CONFIRMED / EXCLUDED / UNKNOWN；说明哪条候选得到可观察信号与用户验收支持、被排除，或仍待验证}
+落库候选：{YES / NO；仅当出现新的机制、验证失败模式或可复用的边界规律时标记，不能静默写入任何库}
+```
+
+`YES` 只是候选标记，不等于结论正确、用户验收完成、已落库或可公开复用。
 
 ## 失败规则
 

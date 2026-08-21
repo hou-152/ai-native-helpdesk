@@ -9,11 +9,17 @@
     "scripts/install-deps.mjs",
     "scripts/manage-install.mjs",
     "skills/action/SKILL.md",
+    "skills/action/scripts/next-step.mjs",
     "skills/ai-native-helpdesk/SKILL.md",
     "skills/diagnosis/SKILL.md",
+    "skills/diagnosis/scripts/classify-state.mjs",
     "skills/good-question/SKILL.md",
+    "skills/good-question/scripts/clarify-gate.mjs",
     "skills/knowledge/SKILL.md",
+    "skills/knowledge/scripts/bm25-search.mjs",
     "skills/safety/SKILL.md",
-    "skills/thinking/SKILL.md"
+    "skills/safety/scripts/gate-decision.mjs",
+    "skills/thinking/SKILL.md",
+    "skills/thinking/scripts/analysis-state.mjs"
   ]
 }

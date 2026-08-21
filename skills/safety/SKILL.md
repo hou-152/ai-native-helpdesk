@@ -27,6 +27,32 @@ description: 守门红线处理参考文档（非路由目标）。入口守门�
 - 用户讨论"违法的话题"（讨论 ≠ 实施）
 - 用户表达"想死"但没迫近信号
 
+## 运行脚本
+
+`scripts/gate-decision.mjs` 把**已由入口守门得出的结构化信号**转成最小状态机结果；它不读取用户原话、不自行判断红线，也不查询或输出任何热线号码。
+
+```bash
+node skills/safety/scripts/gate-decision.mjs --input '{"redline":"irreversible_action_imminent","new_learning_candidate":false}'
+```
+
+输入是一个 JSON object：
+
+| 字段 | 取值 | 作用 |
+|---|---|---|
+| `redline` | `self_harm_imminent`／`harm_to_others_imminent`／`illegal_implementation_intent`／`irreversible_action_imminent`／`none`／`unknown` | 入口守门的已判定结果；省略或 `unknown` 返回 `NEEDS_INPUT` |
+| `service_region_known` | 可选 boolean | 自伤／他伤转介时，服务地区是否已知 |
+| `official_resource_verified` | 可选 boolean | 自伤／他伤转介时，本地官方资源是否已运行时核验 |
+| `discussion_or_help_seeking` | 可选 boolean | 违法话题实际是讨论／求助时转给 `good-question`／`thinking` |
+| `new_learning_candidate` | 可选 boolean | 调用方是否发现值得人工复核的新经验、新坑或规律 |
+
+合法输入只向 stdout 输出一行 JSON，至少包含 `status`、`validation_signal`、`persistence_candidate`。`--input '{}'` 是正常的 `NEEDS_INPUT` 结果；完全缺少 `--input`、参数格式错误或 JSON 无法解析时，只向 stderr 输出 JSON，并以非零状态退出。
+
+## 工具链
+
+- **必备**：运行脚本时仅需 Node.js ≥ 20；无外部包、API 或外部 skill 依赖。入口守门仍负责把用户表达判成结构化信号。
+- **可选**：自伤／他伤迫近时，服务地区信息和当前官方／权威资源查询能力用于核验本地人工资源；违法话题被确认是讨论或求助时，可转 `aihd-good-question` 或 `aihd-thinking`。
+- **降级路径**：地区未知、资源未核验或查询工具不可用时，输出 `REGION_OR_RESOURCE_UNVERIFIED`，不输出号码；只建议用户联系当地专业资源、医院或紧急服务。脚本不可用时，人工按本文件的红线表和停止规则处理，不放行风险动作。
+
 ## 做什么
 
 ### 自伤/他伤迫近
@@ -80,6 +106,19 @@ description: 守门红线处理参考文档（非路由目标）。入口守门�
 - ❌ 不做动机归因
 - ❌ 不做犀利话术
 - ❌ 不假装关心
+
+## 输出模板
+
+每次处理保持原有的承接／转介／暂停确认边界，并在结尾补充下列可观察标记：
+
+- **验证信号**：
+  - `confirmed`：本次确认的红线或转介条件；
+  - `excluded`：本次明确没有做的诊断、违法实施指导或未核验号码输出；
+  - `unknown`：尚未核验的服务地区、官方资源或红线分类。无证据时写 `UNKNOWN`，不补猜。
+- **落库候选**：
+  - `status`：`CANDIDATE`、`NOT_CANDIDATE` 或 `UNKNOWN`，标记是否出现值得人工复核的新经验、新坑或规律；
+  - `write_executed: false`：本 skill 只输出候选标记，不写入任何教训库或候选池；
+  - `reason`：说明标记依据或缺失信息。
 
 ## 失败规则
 

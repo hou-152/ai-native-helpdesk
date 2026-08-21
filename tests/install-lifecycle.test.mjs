@@ -20,12 +20,26 @@ const EXPECTED_RELEASE_FILES = Object.freeze([
   "scripts/install-deps.mjs",
   "scripts/manage-install.mjs",
   "skills/action/SKILL.md",
+  "skills/action/scripts/next-step.mjs",
   "skills/ai-native-helpdesk/SKILL.md",
   "skills/diagnosis/SKILL.md",
+  "skills/diagnosis/scripts/classify-state.mjs",
   "skills/good-question/SKILL.md",
+  "skills/good-question/scripts/clarify-gate.mjs",
   "skills/knowledge/SKILL.md",
+  "skills/knowledge/scripts/bm25-search.mjs",
   "skills/safety/SKILL.md",
-  "skills/thinking/SKILL.md"
+  "skills/safety/scripts/gate-decision.mjs",
+  "skills/thinking/SKILL.md",
+  "skills/thinking/scripts/analysis-state.mjs"
+]);
+const CHILD_SKILL_RUNTIMES = Object.freeze([
+  { skill: "skills/action/SKILL.md", script: "skills/action/scripts/next-step.mjs" },
+  { skill: "skills/diagnosis/SKILL.md", script: "skills/diagnosis/scripts/classify-state.mjs" },
+  { skill: "skills/good-question/SKILL.md", script: "skills/good-question/scripts/clarify-gate.mjs" },
+  { skill: "skills/knowledge/SKILL.md", script: "skills/knowledge/scripts/bm25-search.mjs" },
+  { skill: "skills/safety/SKILL.md", script: "skills/safety/scripts/gate-decision.mjs" },
+  { skill: "skills/thinking/SKILL.md", script: "skills/thinking/scripts/analysis-state.mjs" }
 ]);
 const RETIRED_PATH_PATTERNS = Object.freeze([
   /(?:^|\/)knowledge\/(?:public|archive)(?:\/|$)/,
@@ -241,7 +255,7 @@ test("verify rejects a reintroduced legacy loader as file-set drift", (t) => {
   assert.deepEqual(parseOutput(result), { status: "FAIL_CLOSED", reason_code: "INSTALL_FILE_SET_DRIFT" });
 });
 
-test("release manifest is sorted, exposes seven canonical skills, and excludes private, development, and retired runtime paths", () => {
+test("release manifest is sorted, exposes seven canonical skills with runnable child contracts, and excludes private, development, and retired runtime paths", () => {
   const manifest = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, "release-files.v1.json"), "utf8"));
   assert.deepEqual(manifest.files, EXPECTED_RELEASE_FILES);
   assert.deepEqual(manifest.files, [...manifest.files].sort());
@@ -260,6 +274,30 @@ test("release manifest is sorted, exposes seven canonical skills, and excludes p
     skillFiles.map((relativePath) => fs.readFileSync(path.join(REPO_ROOT, relativePath), "utf8").match(/^name:\s*(.+)$/m)?.[1]),
     ["aihd-action", "ai-native-helpdesk", "aihd-diagnosis", "aihd-good-question", "aihd-knowledge", "aihd-safety", "aihd-thinking"]
   );
+  assert.deepEqual(
+    manifest.files.filter((item) => item.startsWith("skills/") && item.includes("/scripts/") && item.endsWith(".mjs")),
+    CHILD_SKILL_RUNTIMES.map(({ script }) => script)
+  );
+  for (const { skill, script } of CHILD_SKILL_RUNTIMES) {
+    const skillText = fs.readFileSync(path.join(REPO_ROOT, skill), "utf8");
+    assert.match(skillText, /^## 工具链\s*$/m, skill);
+    assert.match(skillText, /验证信号/, skill);
+    assert.match(skillText, /落库候选/, skill);
+
+    const missingInput = run(path.join(REPO_ROOT, script), [], REPO_ROOT);
+    assert.notEqual(missingInput.status, 0, script + " unexpectedly accepted missing input");
+    assert.notEqual(String(missingInput.stderr ?? "").trim(), "", script + " did not report missing input on stderr");
+
+    const validInput = run(path.join(REPO_ROOT, script), ["--input", "{}"], REPO_ROOT);
+    assert.equal(validInput.status, 0, script + " failed valid minimum input: " + (validInput.stderr || validInput.stdout));
+    const output = JSON.parse(validInput.stdout);
+    assert.equal(typeof output, "object", script + " did not emit a JSON object");
+    assert.notEqual(output, null, script + " did not emit a JSON object");
+    assert.equal(Array.isArray(output), false, script + " did not emit a JSON object");
+    for (const field of ["status", "validation_signal", "persistence_candidate"]) {
+      assert.equal(Object.hasOwn(output, field), true, script + " omitted " + field);
+    }
+  }
   for (const item of manifest.files) {
     assert.equal(/^(?:\.git|\.internal|\.trash|evals|evidence|memory|node_modules|tests)(?:\/|$)/.test(item), false);
     assert.equal(/(?:^|\/)(?:\.env(?:\.|$)|[^/]+\.(?:log|sqlite|jsonl|ndjson))$/.test(item), false);

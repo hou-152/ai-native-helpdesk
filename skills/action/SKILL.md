@@ -57,6 +57,27 @@ description: 当用户知道要推进什么但需要一个下一步时使用；�
 
 不诊断用户为什么做不动，不列 3—5 个原因让用户选，不用标准模板覆盖具体约束。
 
+## 输出模板
+
+- 当前判断：用自然语言说明本回合的一个主要去向与依据。
+- 最小下一步：仅当去向为 `DO` 时，给出可观察、可回滚的一步；其他去向明确说明等待、停止、核验或补充什么。
+- 验证信号：`CONFIRMED`／`EXCLUDED`／`UNKNOWN` 之一，并说明本次处理确认了什么、排除了什么，或仍缺少什么证据。
+- 落库候选：`YES`／`NO`，标记本回合是否出现值得沉淀的新经验、新坑或规律；只标记，不写入任何候选池或资料库。
+
+## 工具链
+
+- 必备：无外部工具、API 或外部 skill。本子 skill 可仅按本文件的 8 种去向完成判断。
+- 可选：Node.js 20+ 可运行 [`scripts/next-step.mjs`](scripts/next-step.mjs) 复现判定骨架；触发红线时按同级 `aihd-safety` 的守门规则处理。
+- 降级：Node.js 或脚本不可用时，人工按「回合去向」表判断并保留 `UNKNOWN`；红线、权限不足或不可逆风险不能降级为 `DO`。
+
+最小脚本只接受 `--input '<JSON>'`。例如：
+
+```bash
+node scripts/next-step.mjs --input '{"action":{"available":true,"observable":true,"reversible":true}}'
+```
+
+`--input '{}'` 会返回一个正常的 `UNKNOWN` 结构化结果；缺少或非法 `--input` 会在 stderr 输出单一 JSON 并以非零状态退出。
+
 ## 失败规则
 
 - 用户不知道目标，且缺失信息改变路径：转 good-question。

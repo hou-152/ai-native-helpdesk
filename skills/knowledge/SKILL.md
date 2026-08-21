@@ -9,6 +9,12 @@ description: 当用户查询 AI／Agent／OpenClaw 的具体事实或历史处�
 
 **不赌用户记得对、信得对。** 用户可能记错、可能信了过时的说法、可能把推测当事实。本子 skill 接管"验证与溯源"这件事：检索公开知识库、区分原始事实／归纳／推测／未知，证据不足时保留 `UNKNOWN`，不编造。
 
+## 工具链
+
+- **必备**：对话合同本身无外部 API 必备依赖。若要运行随附的最小检索器，需 Node.js `>=20` 和调用者显式传入的本地 JSON corpus；`scripts/bm25-search.mjs` 只读取 `--input` 中的 JSON，不猜测路径、不访问网络，也没有 npm 依赖。
+- **可选**：公开 `ai-native-knowledge-base` 的候选池可作为上述 corpus；调用者显式提供私域源并获授权时，可使用宿主可发现的 `$dbs-knowledge` 做本子 skill 定义的可选增强。动态事实还可使用同回合的当前权威来源核验。
+- **降级路径**：没有 Node 或 corpus 时，不声称检索已发生，返回 `SOURCE_UNAVAILABLE`／`UNKNOWN` 并说明缺口；输入结构不合法时返回 `INVALID_INPUT`。`$dbs-knowledge` 不可发现、私域源未显式提供或无权限时，不模拟调用，保持 `SOURCE_UNAVAILABLE`。动态或高风险事实无法现场核验时转 `VERIFY`、`ESCALATE` 或 `UNKNOWN`。
+
 ## 何时加载
 
 入口判模命中“要查具体信息、历史经验或相关对话”时加载。
@@ -49,6 +55,31 @@ description: 当用户查询 AI／Agent／OpenClaw 的具体事实或历史处�
 调用者只需提供知识库在本机的路径（如 `AIHD_CANDIDATES_PATH` 或 `--candidates`）；不要求提供私域根目录或读取授权。
 
 公开摘录不足以回答时，如实返回 `MISS`／`UNKNOWN`，**不得用模型记忆冒充私域原文**。
+
+### 最小本地 BM25 执行器
+
+`scripts/bm25-search.mjs` 是用于明确传入 corpus 的独立执行器，不替代宿主路由，也**不会**调用或假设 `$dbs-knowledge` 存在 CLI／API。
+
+```bash
+node skills/knowledge/scripts/bm25-search.mjs --input '{
+  "query": "OpenClaw 如何验证安装结果？",
+  "limit": 3,
+  "corpus": [
+    {
+      "id": "example-1",
+      "question": "如何验证安装？",
+      "excerpt": "运行可观察的验证命令并检查结果。",
+      "source": "公开候选摘录"
+    }
+  ]
+}'
+```
+
+输入是一个 JSON 对象：`query` 为字符串，`corpus` 为数组，`limit` 为可选的 `1` 至 `20` 整数。每条 corpus 记录必须有 `id`，并至少提供 `question`、`excerpt`、`title`、`content` 或 `text` 之一；`source` 可选。合法输入只向 stdout 输出一个 JSON 对象：`HIT`／`MISS`／`SOURCE_UNAVAILABLE`／`UNKNOWN` 等状态，并含 `validation_signal` 与 `persistence_candidate`。完全缺少 `--input`、JSON 解析失败或 schema 不合法时，只向 stderr 输出一个 `INVALID_INPUT` JSON 并以非零码退出。
+
+可选 `new_pattern_observed: true | false` 只显式标记本轮是否观察到值得沉淀的新模式；它会反映为 `persistence_candidate.status` 的 `YES` 或 `NO`。未提供时为 `UNKNOWN`，且无论何种状态都固定 `write_executed: false`。
+
+只传入公开、脱敏或已获本轮明确授权的候选数据；不要把原始私域消息、凭证或不必要身份信息放进命令参数。该脚本的 `HIT` 仅代表显式 corpus 的词法候选命中；它不证明原始上下文、适用性、时效或用户问题已解决。`persistence_candidate` 只作候选标记，不写入任何库。
 
 ## 可选增强：私域原始对话（补全上下文时）
 
@@ -190,6 +221,16 @@ wrapper 在调用后，必须把实际读取的来源类型、快照截止时间
 - 1 个最小下一步。
 
 不分析心理动机，不发布标准答案，不把聊天观点漂白成事实，不把定位命中写成用户问题已解决。
+
+## 输出模板
+
+```text
+结论／状态：HIT、MISS、SOURCE_UNAVAILABLE、HOLD、VERIFY、ESCALATE、STOP 或 UNKNOWN。
+依据与边界：实际读取的来源类型、快照时效，以及事实／归纳／推测／未知的区分。
+最小下一步：仅 1 个与当前状态相符的动作。
+验证信号：确认了什么、排除了什么、仍有哪些未知；不能把候选命中写成已解决。
+落库候选：是／否／UNKNOWN，并说明是否出现了值得沉淀的新经验、新坑或规律；只标记，不写入任何库。
+```
 
 ## 失败规则
 
