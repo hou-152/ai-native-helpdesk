@@ -1,8 +1,10 @@
-# ai-native-helpdesk v1.0.0-private-source
+# ai-native-helpdesk
 
-这是一个未发布的减法实现：Helpdesk 不再随包分发标准答案，而是先守门、判模、按需加载合同；knowledge 路由调用用户显式授权的私域知识库，定位相关对话后回读原始内容和必要上下文。
+> 面向 AI／Agent／OpenClaw 社区的薄入口 Helpdesk Skill：先守门、判模、按需加载合同，knowledge 路由调用宿主显式授权的私域知识库，定位原始对话后回答当下问题。
 
-旧 8 卡公开面已撤销：当前源树和 release manifest 不再包含 PublicCard、公共 index 或卡片 loader；`v0.9.0` tag 与 GitHub Release 已删除。本次撤销不重写 Git 历史，旧提交仍可追溯。
+**当前版本：`v1.0.0-private-source`（未发布）**
+
+本版本是一个减法实现：不再随包分发"标准答案"。旧 8 卡公开面（PublicCard、公共 index、卡片 loader）已全部撤销，`v0.9.0` tag 与 GitHub Release 已删除；Git 历史未重写，旧提交仍可追溯。
 
 ## 双仓库架构
 
@@ -14,6 +16,22 @@
 | **[ai-native-knowledge-base](https://github.com/hou-152/ai-native-knowledge-base)** | 公开数据面 | 脱敏聊天语料（6,032 条）、候选池（2,153 条对话摘录）、管道脚本、知识原子化方法文档 |
 
 `ai-native-knowledge-base` 是本项目公开的数据参考面：发送者 ID 已脱敏，可供群成员检索历史对话、查看知识原子化方法与管道。helpdesk 的 knowledge 路由在私域侧使用 `$dbs-knowledge` 定位原始对话；公开数据面提供可分享、可审计的脱敏版本。
+
+---
+
+## 这是什么
+
+AI／Agent／OpenClaw 社区的成员经常问相似的问题：某个工具怎么配、某个坑怎么过、某个规则为什么没生效。传统做法是攒一个"标准答案库"，但标准答案会过期、会脱离上下文、会掩盖真实来源。
+
+本项目换了一种做法：**不存答案，只做守门和路由**。当用户要查具体事实或历史经验时，它调用宿主已授权的私域知识库（`$dbs-knowledge`），定位到原始对话后回读原文和必要上下文，再回答。
+
+它只做 5 件事：
+
+1. **守门**：先处理安全、隐私、不可逆和动态事实风险。
+2. **判模**：每轮选择 1 个主路由。
+3. **按需加载对应 contract**：合同文件决定该轮怎么回答。
+4. **knowledge 路由**：调用宿主可发现的 `$dbs-knowledge`，从用户显式授权的私域知识库定位原始对话。
+5. **回答 + 1 个最小下一步**：证据不足时保留 `HOLD`／`UNKNOWN`，不编造。
 
 ## 运行结构
 
@@ -29,34 +47,53 @@
 → 回答＋1 个最小下一步
 ```
 
-当前 release manifest 只包含：
+## 这不是什么
 
-```text
-ai-native-helpdesk/
-├── LICENSE
-├── README.md
-├── SKILL.md
-├── contracts/
-│   ├── action.md
-│   ├── good-question.md
-│   ├── knowledge.md
-│   ├── safety.md
-│   └── thinking.md
-├── docs/INSTALL.md
-└── scripts/manage-install.mjs
-```
-
-active PublicCard、公共索引、卡片 loader、Phase 1–4 运行代码和测试均为 `0`。退役文件仅保留在执行控制面的日期化 `.trash` 回收目录中，用于 30 天内恢复，不进入 Git 或安装包。
+- ❌ 不是公开标准答案库 —— 当前运行包不含知识卡、公共索引或卡片 loader。
+- ❌ 不是群聊原文导出器 —— 不向公开 Git、普通日志或无关用户暴露原文、成员信息和消息标识。
+- ❌ 不是召回、制卡、发布、反馈增长流水线。
+- ❌ 不是个人 Agent 记忆，也不是全量加载的诊断框架。
+- ❌ 不是用机器 `PASS` 代替"用户问题已解决"的产品效果证明。
 
 ## 依赖
 
-- Node.js 20 或更高版本，用于安装、验证、卸载和回滚。
-- 宿主可发现的 `$dbs-knowledge`。它是外部 Agent Skill 合同，不是 CLI，也不随本仓库复制。
-- 当前实现验证的上游锚点为 `dontbesilent2025/dbskill@7e770e54aaaa8f43cac344b536d3adce095ead8f`（tag `v2.18.24`）；该锚点只用于依赖复核，不代表上游提供固定 API 或状态枚举。
-- 调用者显式提供的私域知识库根目录和读取权限。
-- 知识库根目录内可读的 `SOURCE_OF_TRUTH.md`，以及导航绑定的原始来源、派生定位文件和完整性收据。
+| 依赖 | 说明 |
+|---|---|
+| Node.js 20+ | 用于安装、验证、卸载和回滚 |
+| `$dbs-knowledge` | 外部 Agent Skill 合同，不是 CLI，不随本仓库复制；由宿主自行发现和调用 |
+| 私域知识库根目录 | 调用者显式提供，含可读的 `SOURCE_OF_TRUTH.md` 和导航绑定的原始来源 |
 
-依赖或知识源不可用时，knowledge 路由返回 `SOURCE_UNAVAILABLE`；不得猜本机路径、模拟调用或用模型记忆冒充知识库。
+本候选验证所依据的上游锚点：`dontbesilent2025/dbskill@7e770e54aaaa8f43cac344b536d3adce095ead8f`（tag `v2.18.24`）。该锚点只用于依赖复核，不代表上游提供固定 API 或状态枚举。
+
+依赖或知识源不可用时，knowledge 路由返回 `SOURCE_UNAVAILABLE`；**不得**猜本机路径、模拟调用或用模型记忆冒充知识库。
+
+## 快速开始
+
+```bash
+# 1. 克隆（或直接使用已有 checkout）
+git clone https://github.com/hou-152/ai-native-helpdesk.git
+cd ai-native-helpdesk
+
+# 2. 安装到显式目标目录（不假设固定 Skill 目录）
+node scripts/manage-install.mjs install \
+  --source "/absolute/path/to/ai-native-helpdesk" \
+  --target "/absolute/path/to/installed-skill" \
+  --state "/absolute/path/to/install-state.json"
+
+# 3. 验证安装完整性（文件集合与字节必须与 state 一致）
+node "/absolute/path/to/installed-skill/scripts/manage-install.mjs" verify \
+  --target "/absolute/path/to/installed-skill" \
+  --state "/absolute/path/to/install-state.json"
+
+# 4. 跑测试（当前源码树）
+node --test
+```
+
+三个文档入口：
+
+- [docs/TUTORIAL.md](docs/TUTORIAL.md)：从零逐步教程（前置检查 → 安装 → 验证 → 知识源绑定 → 首次查询 → 覆盖旧版 → 卸载 → 回滚 → FAQ）
+- [docs/INSTALL-GUIDE-FOR-AGENT.md](docs/INSTALL-GUIDE-FOR-AGENT.md)：给另一个 Agent 看的安装视角（含 OpenClaw skills 目录方式）
+- [docs/INSTALL.md](docs/INSTALL.md)：安装器详细行为（安装、验证、覆盖、卸载、回滚、fail-closed 状态）
 
 ## knowledge 结果
 
@@ -71,7 +108,29 @@ active PublicCard、公共索引、卡片 loader、Phase 1–4 运行代码和�
 | `STOP` | 安全或不可逆门未通过 |
 | `UNKNOWN` | 当前证据不足 |
 
-`MISS` 不会统一变成“试试就知道了”。只有风险低、可逆、可观察，并且不涉及隐私、凭证、安全、动态事实或生产不可逆操作时，才给一个写明成功信号、停止条件和恢复方法的最小实验。
+`MISS` 不会统一变成"试试就知道了"。只有风险低、可逆、可观察，且不涉及隐私、凭证、安全、动态事实或生产不可逆操作时，才给一个写明成功信号、停止条件和恢复方法的最小实验。
+
+## 安装包内容
+
+`release-files.v1.json` 是安装白名单。当前只包含：
+
+```text
+ai-native-helpdesk/
+├── LICENSE
+├── README.md
+├── SKILL.md
+├── contracts/
+│   ├── action.md
+│   ├── good-question.md
+│   ├── knowledge.md
+│   ├── safety.md
+│   └── thinking.md
+├── docs/INSTALL.md
+├── docs/TUTORIAL.md
+└── scripts/manage-install.mjs
+```
+
+安装器只复制白名单文件，不做增量覆盖：目标已存在时先改名为可恢复 backup，再切换新安装。卸载和回滚也都是可逆的，不会直接删除。
 
 ## 隐私与来源边界
 
@@ -82,34 +141,28 @@ active PublicCard、公共索引、卡片 loader、Phase 1–4 运行代码和�
 - 默认不输出成员身份、消息／线程标识、群名、凭证或大段逐字原文；引用必须脱敏并缩到必要片段。
 - 动态事实必须在同一回合核验当前官方或权威来源；历史聊天不能替代。
 
-## 安装
-
-安装、验证、覆盖旧版本、卸载和回滚见 [docs/INSTALL.md](docs/INSTALL.md)。安装器使用显式 source、target 和 state，verify 会拒绝文件集合漂移和字节漂移。
-
 ## 验证
 
 ```bash
 node --test
 ```
 
-测试使用运行时生成的脱敏临时语料，不包含真实社区消息、成员信息、消息标识或私域路径。覆盖：
+测试使用运行时生成的脱敏临时语料，不包含真实社区消息、成员信息、消息标识或私域路径。覆盖：`HIT → raw/context`、`MISS`、`SOURCE_UNAVAILABLE`、source hash drift、定位命中但原始记录缺失、隐私／动态事实／不可逆动作／低风险最小实验边界，以及清洁安装、旧 8 卡覆盖、精确文件集 verify、回滚和软链拒绝。
 
-- `HIT → raw/context`；
-- `MISS`；
-- `SOURCE_UNAVAILABLE`；
-- source hash drift；
-- 定位命中但原始记录缺失；
-- 隐私、动态事实、不可逆动作和低风险最小实验边界；
-- 清洁安装、旧 8 卡覆盖、精确文件集 verify、回滚和软链拒绝。
-
-机器测试只证明合同与安装边界，不证明私域内容正确、用户接受、已经发布或产生效果。
+机器测试只证明合同与安装边界，**不**证明私域内容正确、用户接受、已经发布或产生效果。
 
 ## LICENSE
 
 本版本保留的代码、contracts 和文档按 Apache License 2.0 提供，见 [LICENSE](LICENSE)。`$dbs-knowledge` 是未打包的外部依赖，适用其上游许可证；本仓库没有复制其正文。
 
-## 历史边界
+## 项目状态
 
-- `v0.9.0`：已撤销；tag、GitHub Release 和当前树中的 8 卡发布面已删除，Git 历史未重写。
-- `v1.0.0-private-source`：当前未发布实现，active PublicCard 为 0，产品效果仍为 `UNKNOWN`。
-- 知识包／标签方向：已冻结（2026-08-20 验证：关键词分类合理率 40-50%，未达 80% 阈值；不上 LLM 方案 B，等真实使用痛点再重启）。
+| 项目 | 状态 |
+|---|---|
+| 运行面 | `v1.0.0-private-source`（未发布） |
+| 旧 8 卡公开面 | `REVOKED`（已撤销并归档回收） |
+| active PublicCard | `0` |
+| 产品效果 | `UNKNOWN`（30 人验证未开始） |
+| 知识包／标签方向 | `FROZEN`（2026-08-20 验证：关键词分类合理率 40-50%，未达 80% 阈值；不上 LLM 方案 B，等真实使用痛点再重启） |
+
+历史边界：`v0.9.0` 已撤销；tag、GitHub Release 和当前树中的 8 卡发布面已删除，Git 历史未重写。更多推进记录见 [PROGRESS.md](PROGRESS.md)。

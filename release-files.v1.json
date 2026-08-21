@@ -10,6 +10,7 @@
     "contracts/safety.md",
     "contracts/thinking.md",
     "docs/INSTALL.md",
+    "docs/TUTORIAL.md",
     "scripts/manage-install.mjs"
   ]
 }
