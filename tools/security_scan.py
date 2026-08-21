@@ -530,6 +530,15 @@ walk(ast, null, (node, parent) => {
     addFinding(node, "computed class field");
   }
 
+  if (
+    node.type === "Property"
+    && parent?.type === "ObjectPattern"
+    && node.computed
+    && staticString(node.key) === null
+  ) {
+    addFinding(node, "computed destructuring key");
+  }
+
   if (node.type === "CallExpression" || node.type === "NewExpression") {
     let name = null;
     if (node.callee.type === "Identifier") name = node.callee.name;
@@ -886,6 +895,13 @@ save(\"output.txt\", \"unsafe\");
             'const run = new Runner().value;\n'
             'run("return process[\'e\' + \'nv\'].HOME")();\n',
             "computed class field",
+        ),
+        "computed-destructuring-constructor-chain": (
+            'const key = process.argv.at(2);\n'
+            'const { [key]: first } = {};\n'
+            'const { [key]: run } = first;\n'
+            'run("return process[\'e\' + \'nv\'].HOME")();\n',
+            "computed destructuring key",
         ),
         "process-property-reexport": (
             'export { env } from "node:process";\n',
