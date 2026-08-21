@@ -123,6 +123,26 @@ node --test
 
 两种方式等价：npx 方式自动携带正确的包内文件集；源码方式需要显式 `--source`。卸载与回滚命令见 [docs/TUTORIAL.md](docs/TUTORIAL.md)。
 
+### 开箱即用：顺带安装 dbs-knowledge
+
+helpdesk 的 knowledge 路由依赖外部 Agent Skill `$dbs-knowledge`（上游 dbskill）。一条命令拉取安装：
+
+```bash
+npx --yes github:hou-152/ai-native-helpdesk install-deps
+# 默认装到宿主个人 skills 目录；也可指定目录：
+# npx --yes github:hou-152/ai-native-helpdesk install-deps --skills-dir /path/to/skills
+```
+
+已安装时会返回 `SKIPPED / ALREADY_INSTALLED`（幂等）。
+
+## 使用（三步）
+
+1. **安装**（一次性）：上面的 npx install（+ install-deps 装依赖）
+2. **触发**：显式输入 `/ai-native-helpdesk`，或直接问 AI／Agent／OpenClaw 相关问题（按 description 自动激活）
+3. **首次触发** → 出现新手教程 → 描述问题 → 守门 → 判模 → 路由到对应合同 → 回答 + 最小下一步
+
+找不到答案时：`MISS`（知识源没有可复核候选）/ `SOURCE_UNAVAILABLE`（依赖或权限缺失）/ `HOLD`（证据门未通过），**绝不编造**。
+
 三个文档入口：
 
 - [docs/TUTORIAL.md](docs/TUTORIAL.md)：从零逐步教程（前置检查 → 安装 → 验证 → 知识源绑定 → 首次查询 → 覆盖旧版 → 卸载 → 回滚 → FAQ）
