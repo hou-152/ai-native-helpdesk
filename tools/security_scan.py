@@ -122,6 +122,7 @@ const processAliases = new Set(["process"]);
 const processImportBindings = new Set();
 const constantInitializers = new Map();
 const computedValueAliases = new Set();
+const computedMemberPaths = new Set();
 const bindingCounts = new Map();
 
 function walk(node, parent, visit) {
@@ -276,12 +277,26 @@ function isFreshConstructorCapable(node) {
   ].includes(node?.type) && !(node.type === "Literal" && node.value === null);
 }
 
+function memberPath(node) {
+  if (node?.type === "Identifier") return node.name;
+  if (node?.type !== "MemberExpression") return null;
+  const objectPath = memberPath(node.object);
+  const name = propertyName(node);
+  return objectPath && name !== null ? `${objectPath}.${name}` : null;
+}
+
 function containsComputedValue(node) {
   let found = false;
   walk(node, null, (candidate) => {
     if (
       candidate.type === "Identifier"
       && computedValueAliases.has(candidate.name)
+    ) {
+      found = true;
+    }
+    if (
+      candidate.type === "MemberExpression"
+      && computedMemberPaths.has(memberPath(candidate))
     ) {
       found = true;
     }
@@ -296,9 +311,9 @@ function containsComputedValue(node) {
   return found;
 }
 
-let aliasesChanged = true;
-while (aliasesChanged) {
-  aliasesChanged = false;
+let computedValuesChanged = true;
+while (computedValuesChanged) {
+  computedValuesChanged = false;
   walk(ast, null, (node) => {
     let names = [];
     let value = null;
@@ -324,7 +339,14 @@ while (aliasesChanged) {
         && !computedValueAliases.has(name)
       ) {
         computedValueAliases.add(name);
-        aliasesChanged = true;
+        computedValuesChanged = true;
+      }
+    }
+    if (node.type === "AssignmentExpression" && node.left.type === "MemberExpression") {
+      const path = memberPath(node.left);
+      if (path && !computedMemberPaths.has(path)) {
+        computedMemberPaths.add(path);
+        computedValuesChanged = true;
       }
     }
   });
@@ -685,6 +707,15 @@ save(\"output.txt\", \"unsafe\");
             '{ const run = 0; }\n'
             'run("return process[\'e\' + \'nv\'].HOME")();\n',
             "computed constructor-capable access",
+        ),
+        "property-assigned-constructor-chain": (
+            'let key = process.argv[2];\n'
+            'const obj = {};\n'
+            'const box = {};\n'
+            'box.first = obj[key];\n'
+            'box.run = box.first[key];\n'
+            'box.run("return process[\'e\' + \'nv\'].HOME")();\n',
+            "computed call target",
         ),
         "process-property-reexport": (
             'export { env } from "node:process";\n',
