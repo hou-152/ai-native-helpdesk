@@ -440,6 +440,12 @@ while (computedValuesChanged) {
       names = bindingNames(node.left);
       value = node.right;
     }
+    if (node.type === "ForOfStatement") {
+      names = node.left.type === "VariableDeclaration"
+        ? node.left.declarations.flatMap((declaration) => bindingNames(declaration.id))
+        : bindingNames(node.left);
+      value = node.right;
+    }
     if (!value || !containsComputedValue(value)) return;
     for (const name of names) {
       if (
@@ -1025,6 +1031,16 @@ save(\"output.txt\", \"unsafe\");
             'let run = true;\n'
             'first &&= obj[key];\n'
             'run &&= first[key];\n'
+            'run("return 1")();\n',
+            "computed call target",
+        ),
+        "for-of-assigned-constructor-chain": (
+            'const key = process.argv.at(2);\n'
+            'const obj = {};\n'
+            'let first;\n'
+            'let run;\n'
+            'for (first of [obj[key]]) {}\n'
+            'for (run of [first[key]]) {}\n'
             'run("return 1")();\n',
             "computed call target",
         ),
