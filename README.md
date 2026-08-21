@@ -6,6 +6,17 @@
 
 本版本是一个减法实现：不再随包分发"标准答案"。旧 8 卡公开面（PublicCard、公共 index、卡片 loader）已全部撤销，`v0.9.0` tag 与 GitHub Release 已删除；Git 历史未重写，旧提交仍可追溯。
 
+## 双仓库架构
+
+本项目由两个 GitHub 仓库组成，分工不同：
+
+| 仓库 | 角色 | 内容 |
+|------|------|------|
+| **[ai-native-helpdesk](https://github.com/hou-152/ai-native-helpdesk)**（本仓库） | 入口 / 路由 / 合同 | 守门、判模、按需加载合同；knowledge 路由调用 `$dbs-knowledge` 定位私域原始对话 |
+| **[ai-native-knowledge-base](https://github.com/hou-152/ai-native-knowledge-base)** | 公开数据面 | 脱敏聊天语料（6,032 条）、候选池（2,153 条对话摘录）、管道脚本、知识原子化方法文档 |
+
+`ai-native-knowledge-base` 是本项目公开的数据参考面：发送者 ID 已脱敏，可供群成员检索历史对话、查看知识原子化方法与管道。helpdesk 的 knowledge 路由在私域侧使用 `$dbs-knowledge` 定位原始对话；公开数据面提供可分享、可审计的脱敏版本。
+
 ---
 
 ## 这是什么
@@ -78,7 +89,11 @@ node "/absolute/path/to/installed-skill/scripts/manage-install.mjs" verify \
 node --test
 ```
 
-完整的逐步教程（含知识源绑定、覆盖旧版本、卸载与回滚）见 [docs/TUTORIAL.md](docs/TUTORIAL.md)；安装器详细行为见 [docs/INSTALL.md](docs/INSTALL.md)。
+三个文档入口：
+
+- [docs/TUTORIAL.md](docs/TUTORIAL.md)：从零逐步教程（前置检查 → 安装 → 验证 → 知识源绑定 → 首次查询 → 覆盖旧版 → 卸载 → 回滚 → FAQ）
+- [docs/INSTALL-GUIDE-FOR-AGENT.md](docs/INSTALL-GUIDE-FOR-AGENT.md)：给另一个 Agent 看的安装视角（含 OpenClaw skills 目录方式）
+- [docs/INSTALL.md](docs/INSTALL.md)：安装器详细行为（安装、验证、覆盖、卸载、回滚、fail-closed 状态）
 
 ## knowledge 结果
 
@@ -120,6 +135,7 @@ ai-native-helpdesk/
 ## 隐私与来源边界
 
 - 公开包不内置私域绝对路径、私域 hash、消息／成员标识或原始正文。
+- 公开数据面（`ai-native-knowledge-base`）只含脱敏语料：发送者已映射为 `USER_NNN`，邮箱／手机号／路径／凭证等 7 类敏感模式 0 残留。
 - 派生定位命中只证明找到候选位置，不证明原话正确或问题已经解决。
 - 回答区分原始事实、跨消息归纳、模型推测和未知。
 - 默认不输出成员身份、消息／线程标识、群名、凭证或大段逐字原文；引用必须脱敏并缩到必要片段。
@@ -147,5 +163,6 @@ node --test
 | 旧 8 卡公开面 | `REVOKED`（已撤销并归档回收） |
 | active PublicCard | `0` |
 | 产品效果 | `UNKNOWN`（30 人验证未开始） |
+| 知识包／标签方向 | `FROZEN`（2026-08-20 验证：关键词分类合理率 40-50%，未达 80% 阈值；不上 LLM 方案 B，等真实使用痛点再重启） |
 
-更多历史与推进记录见 [PROGRESS.md](PROGRESS.md) 和 [docs/INSTALL.md](docs/INSTALL.md)。
+历史边界：`v0.9.0` 已撤销；tag、GitHub Release 和当前树中的 8 卡发布面已删除，Git 历史未重写。更多推进记录见 [PROGRESS.md](PROGRESS.md)。
