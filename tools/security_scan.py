@@ -73,6 +73,9 @@ const source = fs.readFileSync(0, "utf8");
 const allowedImports = new Set(JSON.parse(process.argv[1]));
 const allowedProcessProperties = new Set(JSON.parse(process.argv[2]));
 const forbiddenStaticStrings = new Set(["constructor"]);
+const forbiddenRuntimeObjects = new Map([
+  ["Reflect", "reflective property access"],
+]);
 const forbiddenCalls = new Map([
   ["exec", "process execution"],
   ["execFile", "process execution"],
@@ -102,6 +105,12 @@ const forbiddenCalls = new Map([
   ["chownSync", "file mutation"],
   ["open", "file mutation"],
   ["openSync", "file mutation"],
+  ["defineProperties", "reflective property access"],
+  ["defineProperty", "reflective property access"],
+  ["getOwnPropertyDescriptor", "reflective property access"],
+  ["getOwnPropertyDescriptors", "reflective property access"],
+  ["getPrototypeOf", "reflective property access"],
+  ["setPrototypeOf", "reflective property access"],
 ]);
 
 let ast;
@@ -529,6 +538,23 @@ walk(ast, null, (node, parent) => {
     }
   }
 
+  if (node.type === "Identifier" && forbiddenRuntimeObjects.has(node.name)) {
+    const isPropertyName = (
+      parent?.type === "MemberExpression"
+      && parent.property === node
+      && !parent.computed
+    );
+    const isObjectKey = (
+      parent?.type === "Property"
+      && parent.key === node
+      && !parent.computed
+      && !parent.shorthand
+    );
+    if (!isPropertyName && !isObjectKey) {
+      addFinding(node, forbiddenRuntimeObjects.get(node.name), node.name);
+    }
+  }
+
   if (isGlobalProcessMember(node)) {
     if (parent?.type === "MemberExpression" && parent.object === node) return;
     addFinding(node, "indirect process access", "global process");
@@ -716,6 +742,18 @@ save(\"output.txt\", \"unsafe\");
             'box.run = box.first[key];\n'
             'box.run("return process[\'e\' + \'nv\'].HOME")();\n',
             "computed call target",
+        ),
+        "reflect-get-constructor-chain": (
+            'const key = process.argv.at(2);\n'
+            'const first = Reflect.get({}, key);\n'
+            'const run = Reflect.get(first, key);\n'
+            'run("return process[\'e\' + \'nv\'].HOME")();\n',
+            "reflective property access: Reflect",
+        ),
+        "descriptor-constructor-access": (
+            'const key = process.argv.at(2);\n'
+            'Object.getOwnPropertyDescriptor({}, key).value;\n',
+            "reflective property access: getOwnPropertyDescriptor",
         ),
         "process-property-reexport": (
             'export { env } from "node:process";\n',
