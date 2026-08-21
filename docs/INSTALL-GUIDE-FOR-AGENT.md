@@ -11,23 +11,16 @@
 
 ## 二、安装方式（三选一）
 
-### 方式 A：OpenClaw 标准 skills 目录（推荐，如果你用 OpenClaw）
+### 方式 A：skills CLI 多宿主安装（推荐）
 
 ```bash
-# 1. 克隆到你的 skills 目录
-git clone https://github.com/hou-152/ai-native-helpdesk.git \
-  ~/.openclaw-lobster2/plugin-skills/ai-native-helpdesk
-
-# 或标准位置（取决于你的 OpenClaw 配置）
-# git clone https://github.com/hou-152/ai-native-helpdesk.git ~/.agents/skills/ai-native-helpdesk
-
-# 2. 确认 SKILL.md 可被 OpenClaw 发现（有 frontmatter: name/description）
-head -10 ~/.openclaw-lobster2/plugin-skills/ai-native-helpdesk/SKILL.md
+# 安装全部 7 个 skill 到所有支持的宿主
+npx -y skills add hou-152/ai-native-helpdesk -g --all
 ```
 
-OpenClaw 会按 frontmatter 的 `name: ai-native-helpdesk` 和 `description` 自动发现这个 Skill。
+`skills` CLI 会从 `skills/<name>/SKILL.md` 发现 7 个独立 skill 并按宿主目录规则安装。`--all` 写入面较广；只需一个宿主时使用 `--agent <agent>` 限定目标。
 
-### 方式 B：官方安装器（任意环境，含非 OpenClaw）
+### 方式 B：可逆发布包安装器（备选）
 
 ```bash
 # 从仓库 checkout 目录运行
@@ -42,18 +35,18 @@ node "/absolute/path/to/installed-skill/scripts/manage-install.mjs" verify \
   --state "/absolute/path/to/install-state.json"
 ```
 
+方式 B 生成的是可验证、可回滚的发布包；多宿主注册仍优先使用方式 A。
+
 ### 方式 C：手动复制（最快，无 Node 依赖）
 
 ```bash
 git clone https://github.com/hou-152/ai-native-helpdesk.git /tmp/aihd
-mkdir -p /path/to/your/skills/ai-native-helpdesk
-# 只复制 release-files.v1.json 白名单里的 10 个文件
-cp -R /tmp/aihd/SKILL.md /tmp/aihd/contracts /tmp/aihd/docs /tmp/aihd/scripts \
-  /tmp/aihd/LICENSE /tmp/aihd/README.md /tmp/aihd/release-files.v1.json \
-  /path/to/your/skills/ai-native-helpdesk/
+mkdir -p /path/to/your/skills
+# 复制 7 个独立 skill 目录到宿主的 skills 根目录
+cp -R /tmp/aihd/skills/. /path/to/your/skills/
 ```
 
-**推荐方式 A（OpenClaw）或方式 C（快速）**。方式 B 适合需要可回滚安装的正式环境。
+**推荐方式 A（多宿主）或方式 C（快速）**。方式 B 适合需要可回滚安装的正式环境。
 
 ## 三、安装后必须配置（关键！）
 
@@ -82,12 +75,11 @@ knowledge 路由只从**用户显式提供的知识库根目录**读数据，流
 ## 四、安装后自检（2 分钟）
 
 ```bash
-# 1. 检查文件齐了
-ls contracts/            # 应有 action/good-question/knowledge/safety/thinking.md
-ls scripts/              # 应有 manage-install.mjs
+# 1. 检查 7 个 Skill 都在
+find skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
 
-# 2. 检查版本
-head -6 SKILL.md         # version: 1.0.0
+# 2. 检查主 Skill 元数据
+head -6 skills/ai-native-helpdesk/SKILL.md
 
 # 3. 跑测试（可选，需要 Node 20+）
 node --test              # 21/21 应通过
@@ -110,7 +102,7 @@ node --test              # 21/21 应通过
 
 你问"clone 到 .agents/skills/ 目录还是其他方式"——**两种都可以**：
 
-- 如果你运行 OpenClaw：clone 到你的 skills 目录（方式 A），OpenClaw 自动发现
-- 如果只是临时评估：手动复制 10 个文件（方式 C），最快
+- 如果你运行 OpenClaw 或其他支持 Skills 的宿主：先用 `skills add`（方式 A）
+- 如果只是临时评估：手动复制 7 个 skill 目录（方式 C），最快
 
 **装完后最要紧的不是装，是配置**：你没有 `$dbs-knowledge` 或没有用户授权的知识库根目录时，knowledge 路由是空转的（返回 SOURCE_UNAVAILABLE）。先确认你那边 `dbs-knowledge` 可发现，再谈真正使用。

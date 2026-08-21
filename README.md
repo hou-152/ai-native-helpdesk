@@ -67,9 +67,21 @@ AI／Agent／OpenClaw 社区的成员经常问相似的问题：某个工具怎�
 
 依赖或知识源不可用时，knowledge 路由返回 `SOURCE_UNAVAILABLE`；**不得**猜本机路径、模拟调用或用模型记忆冒充知识库。
 
-## 快速开始
+## 安装
 
-### 方式 A：npx 一键安装（推荐）
+推荐：Claude Code、豆包、WorkBuddy、Codex 及其他支持 Skills 的 Agent。
+
+在终端执行：
+
+```bash
+npx -y skills add hou-152/ai-native-helpdesk -g --all
+```
+
+该命令由 Vercel Labs 的 `skills` CLI 发现并安装全部 7 个 skill。`--all` 会向全部支持的宿主写入；若只需一个宿主，使用该 CLI 的 `--agent <agent>` 参数限定目标。安装后回到 Agent，输入 `/ai-native-helpdesk 新手入门` 即可开始。
+
+## 可逆安装器（备选）
+
+### 方式 A：npx 一键安装
 
 无需克隆仓库，npx 直接从 GitHub 拉取并执行安装器：
 
@@ -121,7 +133,7 @@ node "/absolute/path/to/installed-skill/scripts/manage-install.mjs" verify \
 node --test
 ```
 
-两种方式等价：npx 方式自动携带正确的包内文件集；源码方式需要显式 `--source`。卸载与回滚命令见 [docs/TUTORIAL.md](docs/TUTORIAL.md)。
+两种方式等价：npx 方式自动携带正确的包内文件集；源码方式需要显式 `--source`。该安装器产出可验证、可回滚的发布包；多宿主注册请优先使用上方 `skills add` 命令。卸载与回滚命令见 [docs/TUTORIAL.md](docs/TUTORIAL.md)。
 
 ### 开箱即用：顺带安装 dbs-knowledge
 
@@ -170,7 +182,7 @@ npx --yes github:hou-152/ai-native-helpdesk install-deps
 → 回答 + 1 个最小下一步
 ```
 
-主 skill 是导航中心，只负责守门、判模和路由；具体处理由对应的子 skill 完成（对齐 dbs 的 `/dbs` → `/dbs-xxx` 模式）。你只需要记一件事：有 AI/Agent/OpenClaw 相关问题直接问。
+主 skill 是导航中心，只负责守门、判模和路由；6 个子 skill 负责具体处理（对齐 dbs 的 `/dbs` → `/dbs-xxx` 模式）。你只需要记一件事：有 AI/Agent/OpenClaw 相关问题直接问。
 
 找不到答案时：`MISS`（知识源没有可复核候选）/ `SOURCE_UNAVAILABLE`（依赖或权限缺失）/ `HOLD`（证据门未通过），**绝不编造**。
 
@@ -203,20 +215,21 @@ npx --yes github:hou-152/ai-native-helpdesk install-deps
 ai-native-helpdesk/
 ├── LICENSE
 ├── README.md
-├── SKILL.md                     ← 导航中心（守门 + 判模 + 路由 + 交接）
 ├── skills/
-│   ├── action/SKILL.md          ← 子 skill：最小下一步
-│   ├── good-question/SKILL.md   ← 子 skill：追问 1 个区分问题
-│   ├── knowledge/SKILL.md       ← 子 skill：知识库检索
-│   ├── safety/SKILL.md          ← 子 skill：安全红线
-│   └── thinking/SKILL.md        ← 子 skill：假设/逻辑/因果分析
+│   ├── action/SKILL.md                  ← 子 skill：最小下一步
+│   ├── ai-native-helpdesk/SKILL.md      ← 导航中心（守门 + 判模 + 路由 + 交接）
+│   ├── diagnosis/SKILL.md               ← 子 skill：心理／动机信号边界
+│   ├── good-question/SKILL.md           ← 子 skill：追问 1 个区分问题
+│   ├── knowledge/SKILL.md               ← 子 skill：知识库检索
+│   ├── safety/SKILL.md                  ← 守门参考
+│   └── thinking/SKILL.md                ← 子 skill：假设／逻辑／因果分析
 ├── docs/INSTALL.md
 ├── docs/TUTORIAL.md
 ├── scripts/install-deps.mjs
 └── scripts/manage-install.mjs
 ```
 
-主 Skill 是导航中心，5 个子 skill 是与它同级安装的独立 skill（`aihd-*` 命名，对齐 dbs 的 `/dbs` → `/dbs-xxx` 模式）。安装器只复制白名单文件，不做增量覆盖：目标已存在时先改名为可恢复 backup，再切换新安装。卸载和回滚也都是可逆的，不会直接删除。
+主 Skill 是导航中心，6 个子 skill 是与它同级安装的独立 skill（`aihd-*` 命名，对齐 dbs 的 `/dbs` → `/dbs-xxx` 模式）。`skills/<name>/SKILL.md` 的平铺布局让 `skills add` 默认发现全部 7 个。可逆安装器只复制白名单文件，不做增量覆盖：目标已存在时先改名为可恢复 backup，再切换新安装。卸载和回滚也都是可逆的，不会直接删除。
 
 ## 隐私与来源边界
 

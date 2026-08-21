@@ -14,13 +14,13 @@ const SOURCE_INSTALLER = path.join(REPO_ROOT, "scripts", "manage-install.mjs");
 const EXPECTED_RELEASE_FILES = Object.freeze([
   "LICENSE",
   "README.md",
-  "SKILL.md",
   "docs/INSTALL.md",
   "docs/SKILL-PHILOSOPHY.md",
   "docs/TUTORIAL.md",
   "scripts/install-deps.mjs",
   "scripts/manage-install.mjs",
   "skills/action/SKILL.md",
+  "skills/ai-native-helpdesk/SKILL.md",
   "skills/diagnosis/SKILL.md",
   "skills/good-question/SKILL.md",
   "skills/knowledge/SKILL.md",
@@ -139,7 +139,7 @@ test("fresh spaced-path install verifies a thin package with zero active card-st
     assert.equal(RETIRED_PATH_PATTERNS.some((pattern) => pattern.test(relativePath)), false, relativePath);
   }
 
-  const skill = fs.readFileSync(path.join(target, "SKILL.md"), "utf8");
+  const skill = fs.readFileSync(path.join(target, "skills", "ai-native-helpdesk", "SKILL.md"), "utf8");
   const knowledge = fs.readFileSync(path.join(target, "skills", "knowledge", "SKILL.md"), "utf8");
   assert.match(skill, /\$dbs-knowledge/);
   assert.match(knowledge, /SOURCE_UNAVAILABLE/);
@@ -241,10 +241,25 @@ test("verify rejects a reintroduced legacy loader as file-set drift", (t) => {
   assert.deepEqual(parseOutput(result), { status: "FAIL_CLOSED", reason_code: "INSTALL_FILE_SET_DRIFT" });
 });
 
-test("release manifest is sorted and excludes private, development, and retired runtime paths", () => {
+test("release manifest is sorted, exposes seven canonical skills, and excludes private, development, and retired runtime paths", () => {
   const manifest = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, "release-files.v1.json"), "utf8"));
   assert.deepEqual(manifest.files, EXPECTED_RELEASE_FILES);
   assert.deepEqual(manifest.files, [...manifest.files].sort());
+  assert.equal(fs.existsSync(path.join(REPO_ROOT, "SKILL.md")), false);
+  const skillFiles = manifest.files.filter((item) => item.startsWith("skills/") && item.endsWith("/SKILL.md"));
+  assert.deepEqual(skillFiles, [
+    "skills/action/SKILL.md",
+    "skills/ai-native-helpdesk/SKILL.md",
+    "skills/diagnosis/SKILL.md",
+    "skills/good-question/SKILL.md",
+    "skills/knowledge/SKILL.md",
+    "skills/safety/SKILL.md",
+    "skills/thinking/SKILL.md"
+  ]);
+  assert.deepEqual(
+    skillFiles.map((relativePath) => fs.readFileSync(path.join(REPO_ROOT, relativePath), "utf8").match(/^name:\s*(.+)$/m)?.[1]),
+    ["aihd-action", "ai-native-helpdesk", "aihd-diagnosis", "aihd-good-question", "aihd-knowledge", "aihd-safety", "aihd-thinking"]
+  );
   for (const item of manifest.files) {
     assert.equal(/^(?:\.git|\.internal|\.trash|evals|evidence|memory|node_modules|tests)(?:\/|$)/.test(item), false);
     assert.equal(/(?:^|\/)(?:\.env(?:\.|$)|[^/]+\.(?:log|sqlite|jsonl|ndjson))$/.test(item), false);
@@ -261,7 +276,7 @@ test("active source tree contains no retired runtime files outside local trash",
 });
 
 test("release preserves Apache-2.0 while treating dbs-knowledge as an unbundled dependency", () => {
-  const skill = fs.readFileSync(path.join(REPO_ROOT, "SKILL.md"), "utf8");
+  const skill = fs.readFileSync(path.join(REPO_ROOT, "skills", "ai-native-helpdesk", "SKILL.md"), "utf8");
   const license = fs.readFileSync(path.join(REPO_ROOT, "LICENSE"), "utf8");
   assert.match(skill, /^license: Apache-2\.0$/m);
   assert.match(skill, /外部 Agent Skill 合同/);

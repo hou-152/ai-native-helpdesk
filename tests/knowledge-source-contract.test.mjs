@@ -7,7 +7,7 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const SKILL_TEXT = fs.readFileSync(path.join(REPO_ROOT, "SKILL.md"), "utf8");
+const SKILL_TEXT = fs.readFileSync(path.join(REPO_ROOT, "skills", "ai-native-helpdesk", "SKILL.md"), "utf8");
 const CONTRACT_TEXT = fs.readFileSync(path.join(REPO_ROOT, "skills", "knowledge", "SKILL.md"), "utf8");
 
 function sha256(buffer) {
