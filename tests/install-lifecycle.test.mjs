@@ -15,6 +15,7 @@ const EXPECTED_RELEASE_FILES = Object.freeze([
   "LICENSE",
   "README.md",
   "docs/INSTALL.md",
+  "docs/SECURITY.md",
   "docs/SKILL-PHILOSOPHY.md",
   "docs/TUTORIAL.md",
   "scripts/install-deps.mjs",
