@@ -85,26 +85,37 @@ node "$TARGET_ROOT/scripts/manage-install.mjs" verify \
 
 ---
 
-## 4. 绑定知识源
+## 4. 绑定知识源（默认：公开知识库，clone 即用）
 
-本版本没有内置答案。knowledge 路由必须绑定一个私域知识库才能 `HIT`：
+本版本没有内置答案。knowledge 路由**默认检索公开知识库** `ai-native-knowledge-base`：
 
 ```text
-知识库根目录与权限
-→ SOURCE_OF_TRUTH.md
-→ 完整性收据
-→ 按导航定位派生文件
-→ 同一来源标识回读导航指定的原始文件和必要上下文
+clone 知识库（公开，无需授权）
+→ 用其随附的 BM25 检索脚本检索候选池（candidates-clean.jsonl）
+→ HIT：带来源引用的摘录 → 回答 + 最小下一步
+→ MISS：按低风险最小实验条件处理，不编造
+```
+
+```bash
+git clone https://github.com/hou-152/ai-native-knowledge-base.git
+cd ai-native-knowledge-base
+# 检索用法见该仓库 data/README.md（node scripts/<bm25脚本> --query "..."）
 ```
 
 要求：
 
+- 知识库已 clone 到本机，候选池文件可读；
+- 调用者只需提供知识库在本机的路径，**不需要私域根目录或读取授权**；
+- 公开摘录不足以回答时，如实返回 `MISS`／`UNKNOWN`，不得用模型记忆冒充私域原文。
+
+**可选增强（仅当需要回读私域原始对话补全上下文时）：**
+
 - 宿主能发现并调用 `$dbs-knowledge`（外部 Agent Skill，不随本包复制）；
-- 调用者显式提供知识库根目录和本轮读取权限；
+- 调用者显式提供私域知识库根目录和本轮读取权限；
 - 知识库根目录内有可读的 `SOURCE_OF_TRUTH.md` 导航；
 - 导航声明的原始来源、派生定位文件和完整性收据都可读。
 
-**不要**把知识库根目录写进公开包、release manifest 或普通日志。宿主无法发现 Skill、根目录未提供、权限不足或导航不可读时，正确结果是 `SOURCE_UNAVAILABLE`，不是猜测路径或假装查询成功。
+**不要**把私域知识库根目录写进公开包、release manifest 或普通日志。宿主无法发现 Skill、根目录未提供、权限不足或导航不可读时，正确结果是 `SOURCE_UNAVAILABLE`，不是猜测路径或假装查询成功。
 
 ---
 
@@ -118,9 +129,9 @@ node "$TARGET_ROOT/scripts/manage-install.mjs" verify \
 
 | 结果 | 含义 | 下一步 |
 |---|---|---|
-| `HIT` | 定位并回读了原始对话 | 基于原文回答 + 1 个最小下一步 |
+| `HIT` | 公开候选池命中（或已回读原始对话） | 基于摘录回答 + 1 个最小下一步 |
 | `MISS` | 知识源没有可复核候选 | 按合同给低风险最小实验，或如实说不知道 |
-| `SOURCE_UNAVAILABLE` | Skill／路径／权限／导航不可用 | 检查第 4 步 |
+| `SOURCE_UNAVAILABLE` | 知识库或 Skill／路径／权限不可用 | 检查第 4 步 |
 | `HOLD` | hash 或原始记录门未通过 | 检查知识库完整性收据 |
 
 `MISS` 不等于"试试就知道了"：只有低风险、可逆、可观察且不涉隐私／凭证／安全／动态事实／生产不可逆操作时，才给带成功信号和停止条件的最小实验。
@@ -198,7 +209,7 @@ node --test
 可能残留了旧 8 卡文件或旧 loader。按第 6 步覆盖重装，或清掉多余文件后重新 install 到新 target。
 
 **Q：查询总是 `SOURCE_UNAVAILABLE`？**
-按顺序查：`$dbs-knowledge` 可发现？知识库根目录已显式提供？读取权限有效？`SOURCE_OF_TRUTH.md` 存在且可读？导航绑定的文件存在？
+按顺序查：公开知识库已 clone 且候选池可读？BM25 检索脚本可用？（可选增强路径才需继续查）`$dbs-knowledge` 可发现？私域根目录已显式提供？读取权限有效？`SOURCE_OF_TRUTH.md` 存在且可读？
 
 **Q：能直接用当前目录当知识源吗？**
 不能。知识源必须显式提供；禁止把当前目录、用户目录、环境变量或历史会话猜成知识源。
@@ -211,6 +222,6 @@ node --test
 - [ ] `$dbs-knowledge` 可发现
 - [ ] install 成功
 - [ ] verify 返回 `VERIFIED / OK`
-- [ ] 知识库根目录 + `SOURCE_OF_TRUTH.md` 已绑定
+- [ ] 知识库已 clone（公开库默认即可；私域回读需额外授权）
 - [ ] 首次查询得到 `HIT`（或合理的 `MISS`／`HOLD`）
 - [ ] state 文件在安装目标外，未提交到公开仓库
