@@ -5,6 +5,7 @@
     "README.md",
     "SKILL.md",
     "docs/INSTALL.md",
+    "docs/SKILL-PHILOSOPHY.md",
     "docs/TUTORIAL.md",
     "scripts/install-deps.mjs",
     "scripts/manage-install.mjs",
