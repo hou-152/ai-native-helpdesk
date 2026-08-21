@@ -15,15 +15,15 @@ const EXPECTED_RELEASE_FILES = Object.freeze([
   "LICENSE",
   "README.md",
   "SKILL.md",
-  "contracts/action.md",
-  "contracts/good-question.md",
-  "contracts/knowledge.md",
-  "contracts/safety.md",
-  "contracts/thinking.md",
   "docs/INSTALL.md",
   "docs/TUTORIAL.md",
   "scripts/install-deps.mjs",
-  "scripts/manage-install.mjs"
+  "scripts/manage-install.mjs",
+  "skills/action/SKILL.md",
+  "skills/good-question/SKILL.md",
+  "skills/knowledge/SKILL.md",
+  "skills/safety/SKILL.md",
+  "skills/thinking/SKILL.md"
 ]);
 const RETIRED_PATH_PATTERNS = Object.freeze([
   /(?:^|\/)knowledge\/(?:public|archive)(?:\/|$)/,
@@ -138,7 +138,7 @@ test("fresh spaced-path install verifies a thin package with zero active card-st
   }
 
   const skill = fs.readFileSync(path.join(target, "SKILL.md"), "utf8");
-  const knowledge = fs.readFileSync(path.join(target, "contracts", "knowledge.md"), "utf8");
+  const knowledge = fs.readFileSync(path.join(target, "skills", "knowledge", "SKILL.md"), "utf8");
   assert.match(skill, /\$dbs-knowledge/);
   assert.match(knowledge, /SOURCE_UNAVAILABLE/);
   assert.match(knowledge, /SOURCE_OF_TRUTH\.md/);
@@ -221,7 +221,7 @@ test("verify fails closed after an installed contract drifts", (t) => {
   const fixture = tempCase(t);
   const { target, state } = installFresh(fixture, "tamper target");
   const installedInstaller = path.join(target, "scripts", "manage-install.mjs");
-  fs.appendFileSync(path.join(target, "contracts", "knowledge.md"), "\n");
+  fs.appendFileSync(path.join(target, "skills", "knowledge", "SKILL.md"), "\n");
 
   const result = run(installedInstaller, ["verify", "--target", target, "--state", state], fixture.unrelated);
   assert.equal(result.status, 65);

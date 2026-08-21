@@ -4,14 +4,14 @@
     "LICENSE",
     "README.md",
     "SKILL.md",
-    "contracts/action.md",
-    "contracts/good-question.md",
-    "contracts/knowledge.md",
-    "contracts/safety.md",
-    "contracts/thinking.md",
     "docs/INSTALL.md",
     "docs/TUTORIAL.md",
     "scripts/install-deps.mjs",
-    "scripts/manage-install.mjs"
+    "scripts/manage-install.mjs",
+    "skills/action/SKILL.md",
+    "skills/good-question/SKILL.md",
+    "skills/knowledge/SKILL.md",
+    "skills/safety/SKILL.md",
+    "skills/thinking/SKILL.md"
   ]
 }
