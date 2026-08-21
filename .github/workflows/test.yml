@@ -21,9 +21,9 @@ jobs:
         with:
           node-version: 20
           package-manager-cache: false
-      - name: Validate seven Skill packs
-        run: python3 tools/quick_validate.py
       - name: Scan six child runtimes
         run: python3 tools/security_scan.py
+      - name: Validate seven Skill packs
+        run: python3 tools/quick_validate.py
       - name: Run Node.js tests
         run: node --test

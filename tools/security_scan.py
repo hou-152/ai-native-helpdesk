@@ -76,6 +76,7 @@ const forbiddenStaticStrings = new Set(["constructor"]);
 const forbiddenRuntimeObjects = new Map([
   ["Reflect", "reflective property access"],
 ]);
+const approvedPrimitiveReaders = new Set(["readBoolean", "readEnum"]);
 const forbiddenCalls = new Map([
   ["exec", "process execution"],
   ["execFile", "process execution"],
@@ -133,6 +134,7 @@ const constantInitializers = new Map();
 const computedValueAliases = new Set();
 const computedMemberPaths = new Set();
 const bindingCounts = new Map();
+const approvedComputedReturnStarts = new Set();
 
 function walk(node, parent, visit) {
   if (!node || typeof node !== "object") return;
@@ -205,6 +207,17 @@ walk(ast, null, (node) => {
     for (const specifier of node.specifiers) noteBindings(specifier.local);
   }
   if (node.type === "CatchClause") noteBindings(node.param);
+  if (
+    node.type === "FunctionDeclaration"
+    && node.id
+    && approvedPrimitiveReaders.has(node.id.name)
+  ) {
+    walk(node.body, node, (candidate) => {
+      if (candidate.type === "ReturnStatement") {
+        approvedComputedReturnStarts.add(candidate.start);
+      }
+    });
+  }
 });
 
 walk(ast, null, (node) => {
@@ -269,6 +282,13 @@ function propertyName(member) {
   if (!member.computed && member.property.type === "Identifier") {
     return member.property.name;
   }
+  if (
+    member.computed
+    && member.property.type === "Literal"
+    && ["bigint", "number"].includes(typeof member.property.value)
+  ) {
+    return String(member.property.value);
+  }
   return staticString(member.property);
 }
 
@@ -318,6 +338,29 @@ function containsComputedValue(node) {
     }
   });
   return found;
+}
+
+function isComputedReturnValue(node) {
+  if (!node) return false;
+  if (node.type === "Identifier") return computedValueAliases.has(node.name);
+  if (node.type === "MemberExpression") return containsComputedValue(node);
+  if (node.type === "SequenceExpression") {
+    return isComputedReturnValue(node.expressions.at(-1));
+  }
+  if (node.type === "ConditionalExpression") {
+    return isComputedReturnValue(node.consequent)
+      || isComputedReturnValue(node.alternate);
+  }
+  if (node.type === "LogicalExpression") {
+    return isComputedReturnValue(node.left) || isComputedReturnValue(node.right);
+  }
+  if (node.type === "AssignmentExpression") {
+    return isComputedReturnValue(node.right);
+  }
+  if (node.type === "AwaitExpression" || node.type === "ChainExpression") {
+    return isComputedReturnValue(node.argument ?? node.expression);
+  }
+  return false;
 }
 
 let computedValuesChanged = true;
@@ -446,6 +489,31 @@ walk(ast, null, (node, parent) => {
   if (node.type === "ImportExpression") {
     addFinding(node, "dynamic code execution");
     return;
+  }
+
+  if (
+    node.type === "ReturnStatement"
+    && node.argument
+    && isComputedReturnValue(node.argument)
+    && !approvedComputedReturnStarts.has(node.start)
+  ) {
+    addFinding(node, "computed value return");
+  }
+
+  if (
+    node.type === "ArrowFunctionExpression"
+    && node.body.type !== "BlockStatement"
+    && isComputedReturnValue(node.body)
+  ) {
+    addFinding(node, "computed value return");
+  }
+
+  if (
+    node.type === "YieldExpression"
+    && node.argument
+    && isComputedReturnValue(node.argument)
+  ) {
+    addFinding(node, "computed value return");
   }
 
   if (node.type === "CallExpression" || node.type === "NewExpression") {
@@ -754,6 +822,22 @@ save(\"output.txt\", \"unsafe\");
             'const key = process.argv.at(2);\n'
             'Object.getOwnPropertyDescriptor({}, key).value;\n',
             "reflective property access: getOwnPropertyDescriptor",
+        ),
+        "helper-return-constructor-chain": (
+            'const key = process.argv.at(2);\n'
+            'function get(object, property) { return object[property]; }\n'
+            'const first = get({}, key);\n'
+            'const run = get(first, key);\n'
+            'run("return process[\'e\' + \'nv\'].HOME")();\n',
+            "computed value return",
+        ),
+        "arrow-return-constructor-chain": (
+            'const key = process.argv.at(2);\n'
+            'const get = (object, property) => object[property];\n'
+            'const first = get({}, key);\n'
+            'const run = get(first, key);\n'
+            'run("return 1")();\n',
+            "computed value return",
         ),
         "process-property-reexport": (
             'export { env } from "node:process";\n',
