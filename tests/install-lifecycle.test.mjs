@@ -22,6 +22,7 @@ const EXPECTED_RELEASE_FILES = Object.freeze([
   "contracts/thinking.md",
   "docs/INSTALL.md",
   "docs/TUTORIAL.md",
+  "scripts/install-deps.mjs",
   "scripts/manage-install.mjs"
 ]);
 const RETIRED_PATH_PATTERNS = Object.freeze([

@@ -4,12 +4,13 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
+import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const DEFAULT_SOURCE = path.resolve(path.dirname(SCRIPT_PATH), "..");
 const MANIFEST_NAME = "release-files.v1.json";
-const COMMANDS = new Set(["install", "verify", "uninstall", "rollback"]);
+const COMMANDS = new Set(["install", "verify", "uninstall", "rollback", "install-deps"]);
 const FORBIDDEN_RELEASE_PREFIXES = [
   ".git/",
   ".internal/",
@@ -49,14 +50,18 @@ function parseArgs(argv) {
   const [command, ...rest] = argv;
   if (!COMMANDS.has(command)) fail("INVALID_COMMAND");
   const options = {};
+  const allowedKeys = command === "install-deps"
+    ? new Set(["skills-dir"])
+    : new Set(["source", "target", "state"]);
   for (let index = 0; index < rest.length; index += 2) {
     const flag = rest[index];
     const value = rest[index + 1];
     if (!flag?.startsWith("--") || typeof value !== "string" || value.length === 0) fail("INVALID_ARGUMENTS");
     const key = flag.slice(2);
-    if (!new Set(["source", "target", "state"]).has(key) || Object.hasOwn(options, key)) fail("INVALID_ARGUMENTS");
+    if (!allowedKeys.has(key) || Object.hasOwn(options, key)) fail("INVALID_ARGUMENTS");
     options[key] = value;
   }
+  if (command === "install-deps") return { command, options };
   if (!options.target) fail("TARGET_REQUIRED");
   if (command !== "install" && options.source) fail("SOURCE_ONLY_ALLOWED_FOR_INSTALL");
   return { command, options };
@@ -372,6 +377,21 @@ function emit(value, exitCode = 0) {
   process.exitCode = exitCode;
 }
 
+function runInstallDeps(options) {
+  const depsScript = path.join(path.dirname(SCRIPT_PATH), "install-deps.mjs");
+  if (!fs.existsSync(depsScript)) fail("DEPS_SCRIPT_MISSING");
+  const args = options["skills-dir"]
+    ? [depsScript, "--skills-dir", options["skills-dir"]]
+    : [depsScript];
+  const result = spawnSync(process.execPath, args, { encoding: "utf8", timeout: 180000 });
+  if (result.status !== 0) fail("DEPS_INSTALL_FAILED");
+  try {
+    return JSON.parse(result.stdout);
+  } catch {
+    fail("DEPS_INSTALL_INVALID_OUTPUT");
+  }
+}
+
 function main() {
   try {
     const { command, options } = parseArgs(process.argv.slice(2));
@@ -379,7 +399,9 @@ function main() {
       ? install(options)
       : command === "verify"
         ? verify(options)
-        : deactivate(command, options);
+        : command === "install-deps"
+          ? runInstallDeps(options)
+          : deactivate(command, options);
     emit(result);
   } catch (error) {
     emit({

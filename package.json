@@ -4,7 +4,8 @@
   "description": "面向 AI/Agent/OpenClaw 社区的薄入口 Helpdesk Skill：先守门、判模、按需加载合同，knowledge 路由调用宿主显式授权的私域知识库。",
   "type": "module",
   "bin": {
-    "ai-native-helpdesk": "scripts/manage-install.mjs"
+    "ai-native-helpdesk": "scripts/manage-install.mjs",
+    "ai-native-helpdesk-deps": "scripts/install-deps.mjs"
   },
   "files": [
     "LICENSE",

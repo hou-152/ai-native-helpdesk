@@ -11,6 +11,7 @@
     "contracts/thinking.md",
     "docs/INSTALL.md",
     "docs/TUTORIAL.md",
+    "scripts/install-deps.mjs",
     "scripts/manage-install.mjs"
   ]
 }
