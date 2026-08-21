@@ -71,10 +71,10 @@ AI／Agent／OpenClaw 社区的成员经常问相似的问题：某个工具怎�
 
 ### 方式 A：npx 一键安装（推荐）
 
-无需克隆仓库，npx 会临时拉取 npm 包并执行安装器：
+无需克隆仓库，npx 直接从 GitHub 拉取并执行安装器：
 
 ```bash
-npx ai-native-helpdesk install \
+npx --yes github:hou-152/ai-native-helpdesk install \
   --target "/absolute/path/to/installed-skill" \
   --state "/absolute/path/to/install-state.json"
 ```
@@ -82,7 +82,19 @@ npx ai-native-helpdesk install \
 安装完成后，从与源码无关的工作目录验证：
 
 ```bash
-npx ai-native-helpdesk verify \
+npx --yes github:hou-152/ai-native-helpdesk verify \
+  --target "/absolute/path/to/installed-skill" \
+  --state "/absolute/path/to/install-state.json"
+```
+
+卸载与回滚同理：
+
+```bash
+npx --yes github:hou-152/ai-native-helpdesk uninstall \
+  --target "/absolute/path/to/installed-skill" \
+  --state "/absolute/path/to/install-state.json"
+
+npx --yes github:hou-152/ai-native-helpdesk rollback \
   --target "/absolute/path/to/installed-skill" \
   --state "/absolute/path/to/install-state.json"
 ```
