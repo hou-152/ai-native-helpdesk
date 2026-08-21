@@ -1,10 +1,11 @@
 ---
 name: ai-native-helpdesk
 description: 面向 AI／Agent／OpenClaw 社区的薄入口 Helpdesk Skill 导航中心。负责守门、判模并按需路由到子 skill（aihd-diagnosis / aihd-good-question / aihd-thinking / aihd-action / aihd-knowledge）。用户不知道该问谁、要查 AI/Agent/OpenClaw 相关经验或需要社区处理经验时使用。
-version: 1.2.0
-status: SUB_SKILL_NAVIGATION / NOT_RELEASED / PRODUCT_VALIDATION_UNKNOWN
-author: 减
 license: Apache-2.0
+metadata:
+  version: 1.2.0
+  status: SUB_SKILL_NAVIGATION / NOT_RELEASED / PRODUCT_VALIDATION_UNKNOWN
+  author: 减
 ---
 
 # ai-native-helpdesk：AI Native 社区薄入口导航中心

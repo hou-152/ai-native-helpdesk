@@ -76,6 +76,28 @@ description: 当用户表现出心理或动机信号（做不动、拖延、反�
 
 不输出：心理诊断、动机归因、人格标签、治疗建议、犀利话术。
 
+## 输出模板
+
+- 承接与边界：一句承接，并且只标记观察到的信号，不诊断、不归因。
+- 当前判断：说明信号属于心理／动机、情绪、执行、混合或未知中的哪一类，以及当前边界。
+- 后续处理：按分类给出 action、safety、边界处理或回主流程的一个明确方向。
+- 验证信号：`CONFIRMED`／`EXCLUDED`／`UNKNOWN` 之一，说明本回合确认了哪种信号、排除了哪种解释，或为何仍无法区分。
+- 落库候选：`YES`／`NO`，标记本回合是否出现值得沉淀的新模式、新坑或规律；只标记，不写入任何候选池或资料库。
+
+## 工具链
+
+- 必备：无外部工具、API 或外部 skill。本子 skill 可仅按本文件的信号表与处理流程完成边界判断。
+- 可选：Node.js 20+ 可运行 [`scripts/classify-state.mjs`](scripts/classify-state.mjs) 复现最小状态机；触发红线时按同级 `aihd-safety` 守门，执行层处理可交给 `aihd-action`。
+- 降级：Node.js 或脚本不可用时，人工按「分类」表输出 `UNKNOWN` 或「信号混合」；不得把不确定信号升级为心理诊断，也不得绕过红线守门。
+
+最小脚本只接受 `--input '<JSON>'`。例如：
+
+```bash
+node scripts/classify-state.mjs --input '{"psychological_or_motivation_signal":true}'
+```
+
+`--input '{}'` 会返回一个正常的 `UNKNOWN` 结构化结果；缺少或非法 `--input` 会在 stderr 输出单一 JSON 并以非零状态退出。
+
 ## 失败规则
 
 - 无法判断是心理还是执行问题：标记"信号混合"，转 aihd-action（给可观察可回滚的一步，动作本身会暴露卡点）。
