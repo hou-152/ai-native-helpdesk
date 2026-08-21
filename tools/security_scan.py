@@ -78,12 +78,21 @@ const forbiddenRuntimeObjects = new Map([
   ["Reflect", "reflective property access"],
 ]);
 const approvedPrimitiveReaders = new Set(["readBoolean", "readEnum"]);
-const approvedPrimitiveReaderHashes = new Set([
-  "0d6f3e35f0f07410fb69c7405495b2b4417c512485751384c55d7d27a67720ad",
-  "2da440a504c6a13664ff2067a9acbda2a19bdb7920dec6d8af042a42d648fb56",
-  "5d4a32d75eb30ec0f1e8277747a647ddecafd834ba8cead0eb17ad8471d570a5",
+const trustedFunctionHashes = new Map([
+  ["pickText", new Set([
+    "3947c9a13128acd6e6bec07237313acac5b009a3fdd2972167caeb9fa81e8933",
+  ])],
+  ["readBoolean", new Set([
+    "0d6f3e35f0f07410fb69c7405495b2b4417c512485751384c55d7d27a67720ad",
+    "5d4a32d75eb30ec0f1e8277747a647ddecafd834ba8cead0eb17ad8471d570a5",
+  ])],
+  ["readEnum", new Set([
+    "2da440a504c6a13664ff2067a9acbda2a19bdb7920dec6d8af042a42d648fb56",
+  ])],
+  ["text", new Set([
+    "5fe0e95cd3453ceebee90f99afe1eb80d8041e92dc8d201e565de50684f3a639",
+  ])],
 ]);
-const approvedComputedConsumers = new Set(["text", "values.has"]);
 const forbiddenCalls = new Map([
   ["exec", "process execution"],
   ["execFile", "process execution"],
@@ -142,6 +151,9 @@ const computedValueAliases = new Set();
 const computedMemberPaths = new Set();
 const bindingCounts = new Map();
 const approvedComputedReturnStarts = new Set();
+const approvedComputedConsumerStarts = new Set();
+const trustedFunctionStarts = new Set();
+const trustedFunctionNames = new Set();
 
 function walk(node, parent, visit) {
   if (!node || typeof node !== "object") return;
@@ -217,16 +229,42 @@ walk(ast, null, (node) => {
   if (
     node.type === "FunctionDeclaration"
     && node.id
-    && approvedPrimitiveReaders.has(node.id.name)
-    && approvedPrimitiveReaderHashes.has(
-      crypto.createHash("sha256")
-        .update(source.slice(node.start, node.end))
-        .digest("hex")
+    && trustedFunctionHashes.get(node.id.name)?.has(
+      crypto.createHash("sha256").update(source.slice(node.start, node.end)).digest("hex")
     )
   ) {
+    trustedFunctionStarts.add(node.start);
+    trustedFunctionNames.add(node.id.name);
+  }
+});
+
+walk(ast, null, (node) => {
+  if (
+    node.type !== "FunctionDeclaration"
+    || !node.id
+    || !trustedFunctionStarts.has(node.start)
+  ) return;
+  if (approvedPrimitiveReaders.has(node.id.name)) {
     walk(node.body, node, (candidate) => {
       if (candidate.type === "ReturnStatement") {
         approvedComputedReturnStarts.add(candidate.start);
+      }
+      if (
+        candidate.type === "CallExpression"
+        && calleePath(candidate.callee) === "values.has"
+      ) {
+        approvedComputedConsumerStarts.add(candidate.start);
+      }
+    });
+  }
+  if (
+    node.id.name === "pickText"
+    && trustedFunctionNames.has("text")
+    && bindingCounts.get("text") === 1
+  ) {
+    walk(node.body, node, (candidate) => {
+      if (candidate.type === "CallExpression" && calleePath(candidate.callee) === "text") {
+        approvedComputedConsumerStarts.add(candidate.start);
       }
     });
   }
@@ -568,7 +606,7 @@ walk(ast, null, (node, parent) => {
       addFinding(node, "computed call target");
     }
     if (
-      !approvedComputedConsumers.has(calleePath(node.callee))
+      !approvedComputedConsumerStarts.has(node.start)
       && node.arguments.some((argument) => (
         ["ArrowFunctionExpression", "FunctionExpression"].includes(argument.type)
           ? false
@@ -903,6 +941,25 @@ save(\"output.txt\", \"unsafe\");
             'select({}, key, value => { first = value; });\n'
             'select(first, key, value => { run = value; });\n'
             'run("return process[\'e\' + \'nv\'].HOME")();\n',
+            "computed value argument",
+        ),
+        "spoofed-values-has-consumer": (
+            'const key = process.argv.at(2);\n'
+            'const obj = {};\n'
+            'let first;\n'
+            'let run;\n'
+            'const values = { has(value) { first ??= value; run = value; } };\n'
+            'values.has(obj[key]);\n'
+            'values.has(first[key]);\n'
+            'run("return process[\'e\' + \'nv\'].HOME")();\n',
+            "computed value argument",
+        ),
+        "spoofed-text-consumer": (
+            'const key = process.argv.at(2);\n'
+            'let run;\n'
+            'function text(value) { run = value; }\n'
+            'text({}[key]);\n'
+            'run("return 1")();\n',
             "computed value argument",
         ),
         "class-field-constructor-chain": (
