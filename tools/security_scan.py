@@ -125,28 +125,36 @@ function addFinding(node, label, detail = "") {
   });
 }
 
-function noteBindings(pattern) {
-  if (!pattern) return;
+function bindingNames(pattern, names = []) {
+  if (!pattern) return names;
   if (pattern.type === "Identifier") {
-    bindingCounts.set(pattern.name, (bindingCounts.get(pattern.name) ?? 0) + 1);
-    return;
+    names.push(pattern.name);
+    return names;
   }
   if (pattern.type === "AssignmentPattern") {
-    noteBindings(pattern.left);
-    return;
+    return bindingNames(pattern.left, names);
   }
   if (pattern.type === "RestElement") {
-    noteBindings(pattern.argument);
-    return;
+    return bindingNames(pattern.argument, names);
   }
   if (pattern.type === "ArrayPattern") {
-    for (const element of pattern.elements) noteBindings(element);
-    return;
+    for (const element of pattern.elements) bindingNames(element, names);
+    return names;
   }
   if (pattern.type === "ObjectPattern") {
     for (const property of pattern.properties) {
-      noteBindings(property.type === "RestElement" ? property.argument : property.value);
+      bindingNames(
+        property.type === "RestElement" ? property.argument : property.value,
+        names
+      );
     }
+  }
+  return names;
+}
+
+function noteBindings(pattern) {
+  for (const name of bindingNames(pattern)) {
+    bindingCounts.set(name, (bindingCounts.get(name) ?? 0) + 1);
   }
 }
 
@@ -258,29 +266,28 @@ let aliasesChanged = true;
 while (aliasesChanged) {
   aliasesChanged = false;
   walk(ast, null, (node) => {
-    let name = null;
+    let names = [];
     let value = null;
-    if (node.type === "VariableDeclarator" && node.id.type === "Identifier") {
-      name = node.id.name;
+    if (node.type === "VariableDeclarator") {
+      names = bindingNames(node.id);
       value = node.init;
     }
     if (
       node.type === "AssignmentExpression"
       && node.operator === "="
-      && node.left.type === "Identifier"
     ) {
-      name = node.left.name;
+      names = bindingNames(node.left);
       value = node.right;
     }
-    if (
-      name
-      && value
-      && bindingCounts.get(name) === 1
-      && !computedValueAliases.has(name)
-      && containsComputedValue(value)
-    ) {
-      computedValueAliases.add(name);
-      aliasesChanged = true;
+    if (!value || !containsComputedValue(value)) return;
+    for (const name of names) {
+      if (
+        bindingCounts.get(name) === 1
+        && !computedValueAliases.has(name)
+      ) {
+        computedValueAliases.add(name);
+        aliasesChanged = true;
+      }
     }
   });
 }
@@ -393,6 +400,15 @@ walk(ast, null, (node, parent) => {
     }
     if (name && forbiddenStaticStrings.has(name)) {
       addFinding(node, "dynamic code execution", name);
+    }
+    if (
+      node.computed
+      && name === null
+      && node.object.type === "MemberExpression"
+      && node.object.computed
+      && propertyName(node.object) === null
+    ) {
+      addFinding(node, "computed member chain");
     }
     if (isGlobalObject(node.object) && !name) {
       addFinding(node, "computed global access");
@@ -591,6 +607,19 @@ save(\"output.txt\", \"unsafe\");
             'const objectConstructor = ({})[key];\n'
             'const functionConstructor = objectConstructor[key];\n'
             'functionConstructor("return process[\'e\' + \'nv\'].SECRET")();\n',
+            "computed call target",
+        ),
+        "destructured-computed-constructor-chain": (
+            'let key = process.argv[2];\n'
+            'const [run] = [({})[key][key]];\n'
+            'run("return process[\'e\' + \'nv\'].SECRET")();\n',
+            "computed member chain",
+        ),
+        "split-destructured-constructor-chain": (
+            'let key = getKey();\n'
+            'const [objectConstructor] = [({})[key]];\n'
+            'const { run } = { run: objectConstructor[key] };\n'
+            'run("return 1")();\n',
             "computed call target",
         ),
         "process-property-reexport": (
