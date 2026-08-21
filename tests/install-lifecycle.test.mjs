@@ -20,6 +20,7 @@ const EXPECTED_RELEASE_FILES = Object.freeze([
   "scripts/install-deps.mjs",
   "scripts/manage-install.mjs",
   "skills/action/SKILL.md",
+  "skills/diagnosis/SKILL.md",
   "skills/good-question/SKILL.md",
   "skills/knowledge/SKILL.md",
   "skills/safety/SKILL.md",

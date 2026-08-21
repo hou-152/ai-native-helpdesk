@@ -1,6 +1,6 @@
 ---
 name: aihd-safety
-description: 当用户触红线时使用。入口 SKILL.md 守门命中红线时按需 read_file 本文件。
+description: 守门红线处理参考文档（非路由目标）。入口守门命中安全红线时，按本文件规则执行承接、转介、暂停确认；不由判模路由到本文件。
 ---
 
 # skills/safety（子 skill）

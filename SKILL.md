@@ -1,6 +1,6 @@
 ---
 name: ai-native-helpdesk
-description: 面向 AI／Agent／OpenClaw 社区的薄入口 Helpdesk Skill 导航中心。负责守门、判模并按需路由到子 skill（aihd-good-question / aihd-thinking / aihd-action / aihd-knowledge / aihd-safety）。用户不知道该问谁、要查 AI/Agent/OpenClaw 相关经验或需要社区处理经验时使用。
+description: 面向 AI／Agent／OpenClaw 社区的薄入口 Helpdesk Skill 导航中心。负责守门、判模并按需路由到子 skill（aihd-diagnosis / aihd-good-question / aihd-thinking / aihd-action / aihd-knowledge）。用户不知道该问谁、要查 AI/Agent/OpenClaw 相关经验或需要社区处理经验时使用。
 version: 1.2.0
 status: SUB_SKILL_NAVIGATION / NOT_RELEASED / PRODUCT_VALIDATION_UNKNOWN
 author: 减
@@ -80,13 +80,13 @@ license: Apache-2.0
 
 依次检查，高优先级门未通过时不进入普通处理：
 
-1. **安全红线**：迫近的自伤、他伤或违法实施意图 → 直接转 `aihd-safety`。
+1. **安全红线**：迫近的自伤、他伤或违法实施意图 → 按 `skills/safety/SKILL.md` 的红线处理规则直接执行（承接→转介→暂停确认），不路由到子 skill。
 2. **隐私红线**：他人身份、私密原话、成员／消息标识或凭证 → 停止外发并最小化、脱敏。
 3. **不可逆行动**：删除、转账、全量发送、覆盖生产数据 → 暂停并确认。
 4. **动态事实**：价格、政策、版本、官方号码、运行状态 → 同一回合核验当前权威来源。
 5. **个人信息保存**：获得用户对目的和范围的明确同意。
 
-优先级：安全 > 隐私 > 不可逆 > 动态事实 > 个人信息。
+优先级：安全 > 隐私 > 不可逆 > 动态事实 > 个人信息。红线处理规则见 `skills/safety/SKILL.md`（守门参考文档，非路由目标）。
 
 ### Step 2：判模并路由（判断是本 Skill 的核心资产）
 
@@ -94,11 +94,12 @@ license: Apache-2.0
 
 | 优先级 | 检查信号 | 主路由 | 子 skill |
 |---|---|---|---|
-| 1 | 守门强制：触发安全红线 | safety | `aihd-safety` |
-| 2 | 信息缺口：缺一个明确事实，且该事实的不同答案会实质改变答案／边界／风险／下一步 | good-question | `aihd-good-question` |
-| 3 | 事实查询：问“是什么／怎么用／怎么配／以前怎么处理过” | knowledge | `aihd-knowledge` |
-| 4 | 因果分析：问“为什么／怎么回事／是不是 X” | thinking | `aihd-thinking` |
-| 5 | 行动需求：知道该做但做不动，或直接要「下一步做什么」 | action | `aihd-action` |
+| 1 | 守门强制：触发安全红线 | safety | 不路由，守门直接按红线规则处理 |
+| 2 | 心理/动机信号：情绪宣泄、做不动但带心理特征（拖延/逃避/自我设限）、反复换方向 | diagnosis | `aihd-diagnosis` |
+| 3 | 信息缺口：缺一个明确事实，且该事实的不同答案会实质改变答案／边界／风险／下一步 | good-question | `aihd-good-question` |
+| 4 | 事实查询：问“是什么／怎么用／怎么配／以前怎么处理过” | knowledge | `aihd-knowledge` |
+| 5 | 因果分析：问“为什么／怎么回事／是不是 X” | thinking | `aihd-thinking` |
+| 6 | 行动需求：纯执行卡点（缺资源/方法/权限），或直接要「下一步做什么」 | action | `aihd-action` |
 
 **判模质量守则：**
 
@@ -125,7 +126,7 @@ license: Apache-2.0
 3. **解释依据**：说清楚「刚才得出 X，因此下一步是 Y」。
 4. **用户追问时重新路由**：新问题重新走模式 A 的守门和判模。
 
-**导航地图（常见去向）**：子 skill 的结论信号 → 对应下一步。例如 `HIT` → 基于摘录落地；`MISS` 低风险 → 给最小实验；`MISS` 动态/高风险 → `VERIFY / ESCALATE / UNKNOWN`；`SOURCE_UNAVAILABLE` → 说明缺依赖不编造；safety 处理完 → 只做安全动作不切换模块。
+**导航地图（常见去向）**：子 skill 的结论信号 → 对应下一步。例如 `HIT` → 基于摘录落地；`MISS` 低风险 → 给最小实验；`MISS` 动态/高风险 → `VERIFY / ESCALATE / UNKNOWN`；`SOURCE_UNAVAILABLE` → 说明缺依赖不编造；红线处理完 → 只做安全动作不切换模块。
 
 ---
 
@@ -162,7 +163,7 @@ license: Apache-2.0
 - **主 skill 是默认导航中心**：走主 skill 时，守门 → 判模 → 路由到子 skill；子 skill 处理完返回结论和最小下一步。
 - **两者不冲突**：独立触发省去导航；主 skill 路由保证守门和判模不漏。子 skill 自身仍按“对话宪法”输出（一次一问、够用即停、事实与解释分离、可观察可回滚、结尾必有下一步）。
 
-用户直接触发子 skill 时，子 skill 先做基础守门（安全/隐私/不可逆/动态事实），再处理；红线仍转 `aihd-safety`。
+用户直接触发子 skill 时，子 skill 先做基础守门（安全/隐私/不可逆/动态事实），再处理；红线由守门直接处理（见 `skills/safety/SKILL.md`）。
 
 ## 子 skill 缺失 fail-closed
 
@@ -205,7 +206,7 @@ knowledge 路由由 `aihd-knowledge` 子 skill 处理，默认检索公开知识
 ## 当前状态
 
 - 运行包不含知识卡、公共索引或卡片 loader（active PublicCard 为 `0`）。
-- 主 Skill v1.2.0：纯导航中心（守门＋判模＋路由＋交接＋通用输出规则），5 个子 skill（aihd-*）承担全部处理细节。
+- 主 Skill v1.2.0：纯导航中心（守门＋判模＋路由＋交接＋通用输出规则），5 个子 skill（aihd-*）承担全部处理细节；红线处理内联在守门（参考 skills/safety/SKILL.md），不作为子 skill 路由目标。
 - 退役文件保留在执行控制面的 `.trash` 回收目录（30 天可恢复，不进 Git）。
 - 社区端到端与用户问题解决效果仍为 `UNKNOWN`。
 
