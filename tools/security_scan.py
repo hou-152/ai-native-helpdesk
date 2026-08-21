@@ -100,6 +100,9 @@ try {
 const findings = [];
 const processAliases = new Set(["process"]);
 const processImportBindings = new Set();
+const constantInitializers = new Map();
+const computedValueAliases = new Set();
+const bindingCounts = new Map();
 
 function walk(node, parent, visit) {
   if (!node || typeof node !== "object") return;
@@ -122,16 +125,104 @@ function addFinding(node, label, detail = "") {
   });
 }
 
-function staticString(node) {
+function noteBindings(pattern) {
+  if (!pattern) return;
+  if (pattern.type === "Identifier") {
+    bindingCounts.set(pattern.name, (bindingCounts.get(pattern.name) ?? 0) + 1);
+    return;
+  }
+  if (pattern.type === "AssignmentPattern") {
+    noteBindings(pattern.left);
+    return;
+  }
+  if (pattern.type === "RestElement") {
+    noteBindings(pattern.argument);
+    return;
+  }
+  if (pattern.type === "ArrayPattern") {
+    for (const element of pattern.elements) noteBindings(element);
+    return;
+  }
+  if (pattern.type === "ObjectPattern") {
+    for (const property of pattern.properties) {
+      noteBindings(property.type === "RestElement" ? property.argument : property.value);
+    }
+  }
+}
+
+walk(ast, null, (node) => {
+  if (node.type === "VariableDeclarator") noteBindings(node.id);
+  if (
+    node.type === "FunctionDeclaration"
+    || node.type === "FunctionExpression"
+    || node.type === "ArrowFunctionExpression"
+  ) {
+    if (node.id) noteBindings(node.id);
+    for (const parameter of node.params) noteBindings(parameter);
+  }
+  if (node.type === "ClassDeclaration" || node.type === "ClassExpression") {
+    if (node.id) noteBindings(node.id);
+  }
+  if (node.type === "ImportDeclaration") {
+    for (const specifier of node.specifiers) noteBindings(specifier.local);
+  }
+  if (node.type === "CatchClause") noteBindings(node.param);
+});
+
+walk(ast, null, (node) => {
+  if (node.type !== "VariableDeclaration" || node.kind !== "const") return;
+  for (const declaration of node.declarations) {
+    if (declaration.id.type !== "Identifier" || !declaration.init) continue;
+    const name = declaration.id.name;
+    if (constantInitializers.has(name)) {
+      constantInitializers.set(name, null);
+      continue;
+    }
+    constantInitializers.set(name, declaration.init);
+  }
+});
+
+function staticString(node, resolving = new Set()) {
   if (!node) return null;
   if (node.type === "Literal" && typeof node.value === "string") return node.value;
   if (node.type === "TemplateLiteral" && node.expressions.length === 0) {
     return node.quasis[0]?.value?.cooked ?? null;
   }
+  if (node.type === "Identifier" && constantInitializers.has(node.name)) {
+    const initializer = constantInitializers.get(node.name);
+    if (!initializer || resolving.has(node.name)) return null;
+    const nextResolving = new Set(resolving);
+    nextResolving.add(node.name);
+    return staticString(initializer, nextResolving);
+  }
   if (node.type === "BinaryExpression" && node.operator === "+") {
-    const left = staticString(node.left);
-    const right = staticString(node.right);
+    const left = staticString(node.left, resolving);
+    const right = staticString(node.right, resolving);
     return left === null || right === null ? null : left + right;
+  }
+  if (
+    node.type === "CallExpression"
+    && node.callee.type === "MemberExpression"
+    && propertyName(node.callee) === "join"
+    && node.callee.object.type === "ArrayExpression"
+    && node.arguments.length <= 1
+  ) {
+    const separator = node.arguments.length === 0
+      ? ","
+      : staticString(node.arguments[0], resolving);
+    if (separator === null) return null;
+    const parts = [];
+    for (const element of node.callee.object.elements) {
+      if (!element) {
+        parts.push("");
+        continue;
+      }
+      if (element.type === "SpreadElement") return null;
+      const part = staticString(element, resolving);
+      if (part === null) return null;
+      parts.push(part);
+    }
+    return parts.join(separator);
   }
   return null;
 }
@@ -143,10 +234,67 @@ function propertyName(member) {
   return staticString(member.property);
 }
 
+function containsComputedValue(node) {
+  let found = false;
+  walk(node, null, (candidate) => {
+    if (
+      candidate.type === "Identifier"
+      && computedValueAliases.has(candidate.name)
+    ) {
+      found = true;
+    }
+    if (
+      candidate.type === "MemberExpression"
+      && candidate.computed
+      && propertyName(candidate) === null
+    ) {
+      found = true;
+    }
+  });
+  return found;
+}
+
+let aliasesChanged = true;
+while (aliasesChanged) {
+  aliasesChanged = false;
+  walk(ast, null, (node) => {
+    let name = null;
+    let value = null;
+    if (node.type === "VariableDeclarator" && node.id.type === "Identifier") {
+      name = node.id.name;
+      value = node.init;
+    }
+    if (
+      node.type === "AssignmentExpression"
+      && node.operator === "="
+      && node.left.type === "Identifier"
+    ) {
+      name = node.left.name;
+      value = node.right;
+    }
+    if (
+      name
+      && value
+      && bindingCounts.get(name) === 1
+      && !computedValueAliases.has(name)
+      && containsComputedValue(value)
+    ) {
+      computedValueAliases.add(name);
+      aliasesChanged = true;
+    }
+  });
+}
+
 function importedName(specifier) {
   if (specifier.type !== "ImportSpecifier") return null;
   if (specifier.imported.type === "Identifier") return specifier.imported.name;
   return specifier.imported.value;
+}
+
+function reexportedName(specifier) {
+  if (specifier.type !== "ExportSpecifier") return null;
+  if (specifier.local.type === "Identifier") return specifier.local.name;
+  return specifier.local.value;
 }
 
 function isGlobalObject(node) {
@@ -200,7 +348,21 @@ walk(ast, null, (node) => {
     (node.type === "ExportAllDeclaration" || node.type === "ExportNamedDeclaration")
     && node.source
   ) {
-    checkModule(node.source, node.source.value);
+    const moduleName = node.source.value;
+    checkModule(node.source, moduleName);
+    if (moduleName !== "node:process") return;
+    if (node.type === "ExportAllDeclaration") {
+      addFinding(node, "indirect process access", "node:process re-export");
+      return;
+    }
+    for (const specifier of node.specifiers) {
+      const name = reexportedName(specifier);
+      if (name === "default") {
+        addFinding(specifier, "indirect process access", "default re-export");
+      } else if (!name || !allowedProcessProperties.has(name)) {
+        addFinding(specifier, "forbidden process property", name ?? "computed");
+      }
+    }
   }
 });
 
@@ -216,6 +378,9 @@ walk(ast, null, (node, parent) => {
     if (node.callee.type === "MemberExpression") name = propertyName(node.callee);
     const label = name ? forbiddenCalls.get(name) : null;
     if (label) addFinding(node, label, name);
+    if (containsComputedValue(node.callee)) {
+      addFinding(node, "computed call target");
+    }
   }
 
   if (node.type === "MemberExpression") {
@@ -235,7 +400,13 @@ walk(ast, null, (node, parent) => {
   }
 
   if (
-    ["BinaryExpression", "Literal", "TemplateLiteral"].includes(node.type)
+    [
+      "BinaryExpression",
+      "CallExpression",
+      "Identifier",
+      "Literal",
+      "TemplateLiteral",
+    ].includes(node.type)
     && forbiddenStaticStrings.has(staticString(node))
   ) {
     addFinding(node, "dynamic code execution", staticString(node));
@@ -395,7 +566,7 @@ save(\"output.txt\", \"unsafe\");
         ),
         "dynamic-global-property": (
             'const name = "fetch";\nawait globalThis[name]("https://example.com");\n',
-            "computed global access",
+            "network client: fetch",
         ),
         "constructor-chain": (
             '({}).constructor.constructor("return process[\'e\' + \'nv\'].SECRET")();\n',
@@ -404,6 +575,35 @@ save(\"output.txt\", \"unsafe\");
         "computed-constructor-chain": (
             'const key = "con" + "structor";\n({})[key][key]("return 1")();\n',
             "dynamic code execution: constructor",
+        ),
+        "joined-constructor-chain": (
+            'const key = ["con", "structor"].join("");\n'
+            '({})[key][key]("return process[\'e\' + \'nv\'].SECRET")();\n',
+            "dynamic code execution: constructor",
+        ),
+        "runtime-computed-constructor-chain": (
+            'let key = getKey();\n'
+            '({})[key][key]("return 1")();\n',
+            "computed call target",
+        ),
+        "aliased-computed-constructor-chain": (
+            'let key = getKey();\n'
+            'const objectConstructor = ({})[key];\n'
+            'const functionConstructor = objectConstructor[key];\n'
+            'functionConstructor("return process[\'e\' + \'nv\'].SECRET")();\n',
+            "computed call target",
+        ),
+        "process-property-reexport": (
+            'export { env } from "node:process";\n',
+            "forbidden process property: env",
+        ),
+        "process-default-reexport": (
+            'export { default as proc } from "node:process";\n',
+            "indirect process access: default re-export",
+        ),
+        "process-export-all": (
+            'export * from "node:process";\n',
+            "indirect process access: node:process re-export",
         ),
     }
     for name, (source, expected) in fixtures.items():
