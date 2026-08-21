@@ -165,23 +165,23 @@ license: Apache-2.0
 knowledge 路由必须按下面顺序执行，详细规则见 `contracts/knowledge.md`：
 
 ```text
-显式知识源与权限
-→ 调用 $dbs-knowledge
-→ 先读 SOURCE_OF_TRUTH.md
-→ 按导航指定的派生文件定位候选
-→ 按同一来源标识回读导航指定的原始文件和必要上下文
-→ 区分原始事实、跨消息归纳、模型推测和未知
-→ 回答与最小下一步
+问题 → 守门通过
+→ 默认：检索公开知识库（ai-native-knowledge-base）候选池
+   （用知识库随附的 BM25 检索脚本，见其 data/README.md）
+→ HIT：带来源引用的摘录 → 回答 + 最小下一步
+→ MISS：按低风险最小实验条件处理，不编造
+→ 可选增强：摘录不足且调用者显式授权私域源时
+   才调用 $dbs-knowledge 回读原始对话补全上下文
 ```
 
-派生文件命中只证明“找到候选位置”，不能直接成为答案。来源 hash 漂移、原始记录缺失、删除正文、附件不可读、线程不完整或来源冲突时，停止该分支并返回 `HOLD`／`UNKNOWN`。
+默认知识源是公开仓库 `ai-native-knowledge-base`（脱敏语料 6,032 条 + 候选池 1,415 条 + BM25 检索脚本），clone 即用，不需要授权。公开摘录不足以回答时，如实返回 `MISS`／`UNKNOWN`，不得用模型记忆冒充私域原文。
 
 依赖与知识源：
 
-- `$dbs-knowledge` 是外部 Agent Skill 合同，不是 CLI，也不随本包复制；其许可证和发布节奏由上游拥有。本候选验证所依据的上游锚点为 `dontbesilent2025/dbskill@7e770e54aaaa8f43cac344b536d3adce095ead8f`（tag `v2.18.24`）。
-- 调用者必须显式提供私域知识库根目录和读取权限，或让当前项目的知识库导航明确指向它。
+- 默认知识源：公开仓库 `ai-native-knowledge-base`（脱敏语料、候选池、BM25 检索脚本），clone 即用，无需授权。
+- 可选增强：`$dbs-knowledge` 是外部 Agent Skill 合同，不是 CLI，也不随本包复制；其许可证和发布节奏由上游拥有。本候选验证所依据的上游锚点为 `dontbesilent2025/dbskill@7e770e54aaaa8f43cac344b536d3adce095ead8f`（tag `v2.18.24`）。仅在调用者显式提供私域知识源、需要补全上下文时才使用。
 - 禁止把本机默认路径、环境变量、当前目录或历史聊天猜成知识源。
-- `$dbs-knowledge` 不可发现、知识源未提供、权限不足或导航无法读取时，返回 `SOURCE_UNAVAILABLE`；不得模拟调用或改用模型记忆冒充知识库。
+- 公开知识库不可检索、或可选增强路径的依赖不可用时，返回 `SOURCE_UNAVAILABLE`；不得模拟调用或改用模型记忆冒充知识库。
 
 公开包不假设 `$dbs-knowledge` 有 shell 命令、固定 API、输入 schema 或固定安装路径。上游只约定知识库导航与原始文件调用链；本候选的宿主 wrapper 在调用前自行核验本轮查询、显式 `source_root`、读取权限和风险标签，再把实际结果归一化为本候选内部的 `HIT`、`MISS`、`SOURCE_UNAVAILABLE`、`HOLD`、`VERIFY`、`ESCALATE`、`STOP` 或 `UNKNOWN`。这些状态不是上游 Skill 的返回 API；wrapper 不可用时按 `SOURCE_UNAVAILABLE` 处理。
 

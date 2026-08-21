@@ -1,6 +1,6 @@
 ---
 name: knowledge
-description: 当用户查询 AI／Agent／OpenClaw 的具体事实或历史处理经验时使用；调用 dbs-knowledge，从显式私域知识源定位并回读原始对话。
+description: 当用户查询 AI／Agent／OpenClaw 的具体事实或历史处理经验时使用；默认检索公开知识库（ai-native-knowledge-base）候选池，需要补全上下文时才回读私域原始对话。
 ---
 
 # contracts/knowledge
@@ -15,7 +15,7 @@ description: 当用户查询 AI／Agent／OpenClaw 的具体事实或历史处�
 - 用户查询产品、配置、版本或官方文档。
 - 用户想知道社区过去怎样处理过相似问题。
 
-超出 AI／Agent／OpenClaw 社区范围的问题，不使用本 Skill 的私域知识源。
+超出 AI／Agent／OpenClaw 社区范围的问题，不使用本合同的私域知识源。
 
 ## 前置守门
 
@@ -28,16 +28,33 @@ description: 当用户查询 AI／Agent／OpenClaw 的具体事实或历史处�
 
 高优先级门未通过时，不继续普通知识查询。
 
-## 私域知识源合同
+## 默认知识源：公开知识库（已成型，clone 即用）
 
-调用前必须具备：
+本合同的默认知识源是公开仓库 **`ai-native-knowledge-base`**：
 
-- `$dbs-knowledge`：当前宿主可以发现并调用的外部 Agent Skill；
+| 内容 | 状态 |
+|---|---|
+| 脱敏聊天语料（6,032 条，发送者 → `USER_NNN`，7 类敏感模式 0 残留） | 公开 |
+| 候选池（1,415 条干净摘录，含来源引用） | 公开 |
+| BM25 检索脚本 | 公开 |
+
+默认检索方式（**不需要授权**，clone 知识库即可）：用知识库随附的 BM25 检索脚本检索候选池（`data/candidates-clean.jsonl`），脚本名与用法见该知识库的 `data/README.md`。
+
+返回 `HIT` 时带 `score / id / question / excerpt / source`（快照 hash + 消息 ID + 发送者），可溯源但**不含原始正文**。返回 `MISS` 时按本合同 MISS 处理。
+
+调用者只需提供知识库在本机的路径（如 `AIHD_CANDIDATES_PATH` 或 `--candidates`）；不要求提供私域根目录或读取授权。
+
+公开摘录不足以回答时，如实返回 `MISS`／`UNKNOWN`，**不得用模型记忆冒充私域原文**。
+
+## 可选增强：私域原始对话（补全上下文时）
+
+当公开候选的摘录不足以回答，且调用者**显式提供**私域知识源时，才使用 `$dbs-knowledge` 回读原始对话补全上下文。此路径才涉及"授权"：
+
+- `$dbs-knowledge`：当前宿主可以发现并调用的外部 Agent Skill（上游 `dontbesilent2025/dbskill`，不随本包复制）；
 - `source_root`：调用者显式提供或当前项目知识库导航明确登记的私域根目录；
 - `read_permission`：对本轮查询目的和范围有效的读取权限；
 - `SOURCE_OF_TRUTH.md`：知识库导航，说明原始文件、派生定位文件、完整性收据、版本和冲突规则；
-- `snapshot_cutoff`：如果导航或收据提供，记录当前快照截止时间；
-- `integrity_receipt`：如果导航声明 manifest、validation 或 SHA-256 收据，按其登记核对原始与派生文件。
+- `snapshot_cutoff` / `integrity_receipt`：如导航提供则按其核对。
 
 公开包不得内置 `source_root`、私域文件 hash、消息／成员标识或原始正文。不得把当前目录、用户目录、环境变量或历史会话猜成知识源。
 
@@ -49,21 +66,22 @@ description: 当用户查询 AI／Agent／OpenClaw 的具体事实或历史处�
 
 ```text
 query
-source_root（调用者显式提供）
-read_permission（本轮有效）
+source_root（可选增强路径才需要；调用者显式提供）
+read_permission（可选增强路径才需要）
 risk_labels（privacy／dynamic／irreversible／high_risk）
 ```
 
-wrapper 在调用 `$dbs-knowledge` 后，必须把实际读取的来源类型、快照截止时间、证据边界和 1 个下一步归一化为本合同表中的内部结果状态。没有可调用的 `$dbs-knowledge`、无法绑定 source 或无法读回原始上下文时，内部状态为 `SOURCE_UNAVAILABLE` 或 `HOLD`，不得用模型记忆补齐。公开仓库的脱敏测试只验证这个内部协议的顺序和失败边界，不冒充宿主端到端集成。
+wrapper 在调用后，必须把实际读取的来源类型、快照截止时间、证据边界和 1 个下一步归一化为本合同表中的内部结果状态。没有可调用的 `$dbs-knowledge`、无法绑定 source 或无法读回原始上下文时，内部状态为 `SOURCE_UNAVAILABLE` 或 `HOLD`，不得用模型记忆补齐。公开仓库的脱敏测试只验证这个内部协议的顺序和失败边界，不冒充宿主端到端集成。
 
 以下情况返回 `SOURCE_UNAVAILABLE`，不模拟调用：
 
-- `$dbs-knowledge` 不可发现；
-- 没有显式知识源；
-- 根目录或 `SOURCE_OF_TRUTH.md` 不存在、不可读或权限不符；
-- 导航没有指向可复核的原始来源。
+- 公开知识库不可检索（脚本缺失、候选池不可读）；
+- `$dbs-knowledge` 不可发现（仅可选增强路径）；
+- 没有显式私域知识源（仅可选增强路径）；
+- 根目录或 `SOURCE_OF_TRUTH.md` 不存在、不可读或权限不符（仅可选增强路径）；
+- 导航没有指向可复核的原始来源（仅可选增强路径）。
 
-## 固定读取顺序
+## 固定读取顺序（可选增强路径）
 
 ### 1. 先读知识库导航
 
@@ -150,9 +168,9 @@ wrapper 在调用 `$dbs-knowledge` 后，必须把实际读取的来源类型、
 
 | 结果 | 含义 | 下一步 |
 |---|---|---|
-| `HIT` | 已定位并回读原始消息与必要上下文 | 回答并标清事实、归纳、推测和未知 |
+| `HIT` | 公开候选池命中（或已回读原始消息） | 回答并标清事实、归纳、推测和未知 |
 | `MISS` | 没有可复核候选 | 仅在低风险条件齐全时给最小实验 |
-| `SOURCE_UNAVAILABLE` | Skill、路径、权限或导航不可用 | 告知依赖缺口，不模拟 |
+| `SOURCE_UNAVAILABLE` | 知识库或 Skill、路径、权限不可用 | 告知依赖缺口，不模拟 |
 | `HOLD` | hash、原始记录、附件、线程或冲突门未通过 | 停止该来源分支 |
 | `VERIFY` | 动态或高风险事实需要当前核验 | 读取当前权威来源 |
 | `ESCALATE` | 需要专业资格或更高权限 | 交给合适的人 |
@@ -172,8 +190,9 @@ wrapper 在调用 `$dbs-knowledge` 后，必须把实际读取的来源类型、
 ## 失败规则
 
 - 合同缺失：模块暂不可用，不模拟。
-- `$dbs-knowledge` 不可发现：`SOURCE_UNAVAILABLE`。
-- 知识源未显式提供或权限不足：`SOURCE_UNAVAILABLE`。
+- 公开知识库不可检索：`SOURCE_UNAVAILABLE`。
+- `$dbs-knowledge` 不可发现（可选增强路径）：`SOURCE_UNAVAILABLE`。
+- 私域源未显式提供或权限不足（可选增强路径）：`SOURCE_UNAVAILABLE`。
 - hash／版本绑定失配：`HOLD`。
 - 派生命中但原始消息或上下文无法复核：`HOLD / UNKNOWN`。
 - `MISS`：只按本合同的低风险最小实验条件继续。
