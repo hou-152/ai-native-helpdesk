@@ -77,6 +77,7 @@ const forbiddenRuntimeObjects = new Map([
   ["Reflect", "reflective property access"],
 ]);
 const approvedPrimitiveReaders = new Set(["readBoolean", "readEnum"]);
+const approvedComputedConsumers = new Set(["text", "values.has"]);
 const forbiddenCalls = new Map([
   ["exec", "process execution"],
   ["execFile", "process execution"],
@@ -314,6 +315,11 @@ function memberPath(node) {
   return objectPath && name !== null ? `${objectPath}.${name}` : null;
 }
 
+function calleePath(node) {
+  if (node?.type === "Identifier") return node.name;
+  return memberPath(node);
+}
+
 function containsComputedValue(node) {
   let found = false;
   walk(node, null, (candidate) => {
@@ -524,6 +530,18 @@ walk(ast, null, (node, parent) => {
     if (label) addFinding(node, label, name);
     if (containsComputedValue(node.callee)) {
       addFinding(node, "computed call target");
+    }
+    if (
+      !approvedComputedConsumers.has(calleePath(node.callee))
+      && node.arguments.some((argument) => (
+        ["ArrowFunctionExpression", "FunctionExpression"].includes(argument.type)
+          ? false
+          : argument.type === "SpreadElement"
+            ? containsComputedValue(argument.argument)
+            : containsComputedValue(argument)
+      ))
+    ) {
+      addFinding(node, "computed value argument");
     }
   }
 
@@ -838,6 +856,18 @@ save(\"output.txt\", \"unsafe\");
             'const run = get(first, key);\n'
             'run("return 1")();\n',
             "computed value return",
+        ),
+        "callback-argument-constructor-chain": (
+            'const key = process.argv.at(2);\n'
+            'function select(object, property, callback) {\n'
+            '  callback(object[property]);\n'
+            '}\n'
+            'let first;\n'
+            'let run;\n'
+            'select({}, key, value => { first = value; });\n'
+            'select(first, key, value => { run = value; });\n'
+            'run("return process[\'e\' + \'nv\'].HOME")();\n',
+            "computed value argument",
         ),
         "process-property-reexport": (
             'export { env } from "node:process";\n',
