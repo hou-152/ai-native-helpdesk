@@ -93,6 +93,7 @@ const trustedFunctionHashes = new Map([
     "5fe0e95cd3453ceebee90f99afe1eb80d8041e92dc8d201e565de50684f3a639",
   ])],
 ]);
+const computedAssignmentOperators = new Set(["=", "&&=", "??=", "||="]);
 const forbiddenCalls = new Map([
   ["exec", "process execution"],
   ["execFile", "process execution"],
@@ -434,7 +435,7 @@ while (computedValuesChanged) {
     }
     if (
       node.type === "AssignmentExpression"
-      && node.operator === "="
+      && computedAssignmentOperators.has(node.operator)
     ) {
       names = bindingNames(node.left);
       value = node.right;
@@ -996,6 +997,36 @@ save(\"output.txt\", \"unsafe\");
             'try { throw first[key]; } catch (error) { run = error; }\n'
             'run("return process[\'e\' + \'nv\'].HOME")();\n',
             "computed value throw",
+        ),
+        "nullish-assigned-constructor-chain": (
+            'const key = process.argv.at(2);\n'
+            'const obj = {};\n'
+            'let first;\n'
+            'let run;\n'
+            'first ??= obj[key];\n'
+            'run ??= first[key];\n'
+            'run("return 1")();\n',
+            "computed call target",
+        ),
+        "or-assigned-constructor-chain": (
+            'const key = process.argv.at(2);\n'
+            'const obj = {};\n'
+            'let first;\n'
+            'let run;\n'
+            'first ||= obj[key];\n'
+            'run ||= first[key];\n'
+            'run("return 1")();\n',
+            "computed call target",
+        ),
+        "and-assigned-constructor-chain": (
+            'const key = process.argv.at(2);\n'
+            'const obj = {};\n'
+            'let first = true;\n'
+            'let run = true;\n'
+            'first &&= obj[key];\n'
+            'run &&= first[key];\n'
+            'run("return 1")();\n',
+            "computed call target",
         ),
         "process-property-reexport": (
             'export { env } from "node:process";\n',
