@@ -69,6 +69,26 @@ AI／Agent／OpenClaw 社区的成员经常问相似的问题：某个工具怎�
 
 ## 快速开始
 
+### 方式 A：npx 一键安装（推荐）
+
+无需克隆仓库，npx 会临时拉取 npm 包并执行安装器：
+
+```bash
+npx ai-native-helpdesk install \
+  --target "/absolute/path/to/installed-skill" \
+  --state "/absolute/path/to/install-state.json"
+```
+
+安装完成后，从与源码无关的工作目录验证：
+
+```bash
+npx ai-native-helpdesk verify \
+  --target "/absolute/path/to/installed-skill" \
+  --state "/absolute/path/to/install-state.json"
+```
+
+### 方式 B：从源码仓库安装
+
 ```bash
 # 1. 克隆（或直接使用已有 checkout）
 git clone https://github.com/hou-152/ai-native-helpdesk.git
@@ -88,6 +108,8 @@ node "/absolute/path/to/installed-skill/scripts/manage-install.mjs" verify \
 # 4. 跑测试（当前源码树）
 node --test
 ```
+
+两种方式等价：npx 方式自动携带正确的包内文件集；源码方式需要显式 `--source`。卸载与回滚命令见 [docs/TUTORIAL.md](docs/TUTORIAL.md)。
 
 三个文档入口：
 

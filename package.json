@@ -1,0 +1,34 @@
+{
+  "name": "ai-native-helpdesk",
+  "version": "1.0.0",
+  "description": "面向 AI/Agent/OpenClaw 社区的薄入口 Helpdesk Skill：先守门、判模、按需加载合同，knowledge 路由调用宿主显式授权的私域知识库。",
+  "type": "module",
+  "bin": {
+    "ai-native-helpdesk": "scripts/manage-install.mjs"
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "SKILL.md",
+    "contracts/",
+    "docs/",
+    "release-files.v1.json",
+    "scripts/"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "ai-native",
+    "helpdesk",
+    "openclaw",
+    "skill",
+    "knowledge",
+    "agent"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hou-152/ai-native-helpdesk.git"
+  }
+}
