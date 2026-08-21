@@ -252,7 +252,7 @@ node --test
 
 ## LICENSE
 
-本版本保留的代码、contracts 和文档按 Apache License 2.0 提供，见 [LICENSE](LICENSE)。`$dbs-knowledge` 是未打包的外部依赖，适用其上游许可证；本仓库没有复制其正文。
+本版本保留的 Skill、脚本和文档按 Apache License 2.0 提供，见 [LICENSE](LICENSE)。`$dbs-knowledge` 是未打包的外部依赖，适用其上游许可证；本仓库没有复制其正文。
 
 ## 项目状态
 

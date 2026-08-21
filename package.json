@@ -10,7 +10,6 @@
   "files": [
     "LICENSE",
     "README.md",
-    "contracts/",
     "docs/",
     "release-files.v1.json",
     "scripts/",
