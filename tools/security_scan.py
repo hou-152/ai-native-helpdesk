@@ -522,6 +522,14 @@ walk(ast, null, (node, parent) => {
     addFinding(node, "computed value return");
   }
 
+  if (
+    node.type === "PropertyDefinition"
+    && node.value
+    && containsComputedValue(node.value)
+  ) {
+    addFinding(node, "computed class field");
+  }
+
   if (node.type === "CallExpression" || node.type === "NewExpression") {
     let name = null;
     if (node.callee.type === "Identifier") name = node.callee.name;
@@ -868,6 +876,16 @@ save(\"output.txt\", \"unsafe\");
             'select(first, key, value => { run = value; });\n'
             'run("return process[\'e\' + \'nv\'].HOME")();\n',
             "computed value argument",
+        ),
+        "class-field-constructor-chain": (
+            'const key = process.argv.at(2);\n'
+            'const obj = {};\n'
+            'class First { value = obj[key]; }\n'
+            'const first = new First().value;\n'
+            'class Runner { value = first[key]; }\n'
+            'const run = new Runner().value;\n'
+            'run("return process[\'e\' + \'nv\'].HOME")();\n',
+            "computed class field",
         ),
         "process-property-reexport": (
             'export { env } from "node:process";\n',
