@@ -14,7 +14,8 @@
     "contracts/",
     "docs/",
     "release-files.v1.json",
-    "scripts/"
+    "scripts/",
+    "skills/"
   ],
   "engines": {
     "node": ">=20"

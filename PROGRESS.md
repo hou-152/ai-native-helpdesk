@@ -1,5 +1,13 @@
 # PROGRESS
 
+## 2026-08-22：修复 npm 发布包缺失 skills/ 目录
+
+- 现场：按 README 方式 A 执行 `npx --yes github:hou-152/ai-native-helpdesk install`，安装器确定性失败，`reason_code=RELEASE_FILE_UNAVAILABLE`。
+- 根因：`package.json` 的 `files` 白名单缺少 `"skills/"`，`npm pack` 只带 10 个文件；`release-files.v1.json` 要求的 6 个 `skills/*/SKILL.md` 全部不在包里，manifest 加载阶段即 fail-closed。
+- 修复：`package.json` 的 `files` 追加 `"skills/"`（一行，manifest 与安装器未改动）。
+- 验证：`npm pack --dry-run` 现含全部 6 个 `skills/*/SKILL.md`（共 16 个文件）；`node --test` 为 `21/21 PASS`，fail／cancelled／skipped／todo 均为 `0`。
+- 交付边界：修复仅本地 commit，未 push；远端 `main` 在 push 前仍带此缺陷，npx 路径需修复进入远端后才可用。
+
 ## 2026-08-20：撤销旧 8 卡公开面
 
 - Owner 已明确授权删除当前树中的 8 张卡、公共 index、旧 loader、相关生产／反馈／发布机制，并删除 `v0.9.0` tag 与 GitHub Release。
