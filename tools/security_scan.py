@@ -43,7 +43,7 @@ FORBIDDEN_PATTERNS: Dict[str, Pattern[str]] = {
     ),
 }
 IMPORT_PATTERN = re.compile(
-    r"^\s*import(?:\s+.+?\s+from\s+|\s*)[\"']([^\"']+)[\"']",
+    r"^\s*import\s+(?:(?:[\s\S]*?)\s+from\s+)?[\"']([^\"']+)[\"']",
     re.MULTILINE,
 )
 
@@ -52,12 +52,7 @@ class ScanError(Exception):
     """A security gate failure."""
 
 
-def scan_script(relative_path: str) -> str:
-    path = REPO_ROOT / relative_path
-    if not path.is_file():
-        raise ScanError(f"{relative_path}: missing")
-    source = path.read_text(encoding="utf-8")
-
+def scan_source(relative_path: str, source: str) -> None:
     for module in IMPORT_PATTERN.findall(source):
         if module not in ALLOWED_NODE_IMPORTS:
             raise ScanError(f"{relative_path}: import not allowlisted: {module}")
@@ -66,6 +61,29 @@ def scan_script(relative_path: str) -> str:
         if match:
             line = source.count("\n", 0, match.start()) + 1
             raise ScanError(f"{relative_path}:{line}: forbidden {label}")
+
+
+def validate_scanner_regressions() -> None:
+    multiline_import_bypass = """import {
+  writeFileSync as save
+} from \"node:fs\";
+save(\"output.txt\", \"unsafe\");
+"""
+    try:
+        scan_source("regression/multiline-import.mjs", multiline_import_bypass)
+    except ScanError as error:
+        if "import not allowlisted: node:fs" not in str(error):
+            raise ScanError(f"multiline import regression failed unexpectedly: {error}") from error
+    else:
+        raise ScanError("multiline import regression bypassed the import allowlist")
+
+
+def scan_script(relative_path: str) -> str:
+    path = REPO_ROOT / relative_path
+    if not path.is_file():
+        raise ScanError(f"{relative_path}: missing")
+    source = path.read_text(encoding="utf-8")
+    scan_source(relative_path, source)
 
     checked = subprocess.run(
         ["node", "--check", str(path)],
@@ -85,6 +103,7 @@ def scan_script(relative_path: str) -> str:
 def main() -> int:
     results: List[str] = []
     try:
+        validate_scanner_regressions()
         for relative_path in SCRIPTS:
             results.append(scan_script(relative_path))
     except (FileNotFoundError, OSError, subprocess.TimeoutExpired, ScanError) as error:
