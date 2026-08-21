@@ -155,7 +155,7 @@ node "$SOURCE_ROOT/scripts/manage-install.mjs" install \
 2. active target 中没有 `knowledge/public/`；
 3. active target 中没有 `knowledge/archive/`；
 4. active target 中没有 `query-public-card.mjs` 或 `query-candidates.mjs`；
-5. manifest 只列入口、5 个合同、安装文档、教程、许可证和安装器；
+5. manifest 只列入口、5 个子 skill、安装文档、教程、许可证和安装器；
 6. state 的 `previous_target.backup` 指向可恢复旧目标。
 
 **不要手工删除 backup。** 确认不再需要恢复后，按组织的 30 天保留规则处理。

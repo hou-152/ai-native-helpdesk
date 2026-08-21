@@ -160,15 +160,17 @@ npx --yes github:hou-152/ai-native-helpdesk install-deps
 
 首次使用会输出一段欢迎语：说明可以交付什么、系统怎样工作、会得到什么结果，然后让你直接描述问题。
 
-**④ 描述问题 → 守门 → 判模 → 路由到对应合同 → 回答 + 最小下一步**
+**④ 描述问题 → 守门 → 判模 → 路由到对应子 skill → 回答 + 最小下一步**
 
 ```text
 你的问题
 → 守门（安全 > 隐私 > 不可逆 > 动态事实 > 个人信息）
 → 判模（5 个主路由选 1 个）
-→ 加载对应合同
+→ 路由到对应子 skill（aihd-good-question / aihd-thinking / aihd-action / aihd-knowledge / aihd-safety）
 → 回答 + 1 个最小下一步
 ```
+
+主 skill 是导航中心，只负责守门、判模和路由；具体处理由对应的子 skill 完成（对齐 dbs 的 `/dbs` → `/dbs-xxx` 模式）。你只需要记一件事：有 AI/Agent/OpenClaw 相关问题直接问。
 
 找不到答案时：`MISS`（知识源没有可复核候选）/ `SOURCE_UNAVAILABLE`（依赖或权限缺失）/ `HOLD`（证据门未通过），**绝不编造**。
 
@@ -201,19 +203,20 @@ npx --yes github:hou-152/ai-native-helpdesk install-deps
 ai-native-helpdesk/
 ├── LICENSE
 ├── README.md
-├── SKILL.md
-├── contracts/
-│   ├── action.md
-│   ├── good-question.md
-│   ├── knowledge.md
-│   ├── safety.md
-│   └── thinking.md
+├── SKILL.md                     ← 导航中心（守门 + 判模 + 路由 + 交接）
+├── skills/
+│   ├── action/SKILL.md          ← 子 skill：最小下一步
+│   ├── good-question/SKILL.md   ← 子 skill：追问 1 个区分问题
+│   ├── knowledge/SKILL.md       ← 子 skill：知识库检索
+│   ├── safety/SKILL.md          ← 子 skill：安全红线
+│   └── thinking/SKILL.md        ← 子 skill：假设/逻辑/因果分析
 ├── docs/INSTALL.md
 ├── docs/TUTORIAL.md
+├── scripts/install-deps.mjs
 └── scripts/manage-install.mjs
 ```
 
-安装器只复制白名单文件，不做增量覆盖：目标已存在时先改名为可恢复 backup，再切换新安装。卸载和回滚也都是可逆的，不会直接删除。
+主 Skill 是导航中心，5 个子 skill 是与它同级安装的独立 skill（`aihd-*` 命名，对齐 dbs 的 `/dbs` → `/dbs-xxx` 模式）。安装器只复制白名单文件，不做增量覆盖：目标已存在时先改名为可恢复 backup，再切换新安装。卸载和回滚也都是可逆的，不会直接删除。
 
 ## 隐私与来源边界
 
