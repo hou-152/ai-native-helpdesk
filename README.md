@@ -90,7 +90,7 @@ npx -y skills add hou-152/ai-native-helpdesk -g --all
 
 **verify 只证明 TARGET_ROOT 与安装收据一致，不等于宿主实际加载的 Skill 目录与其一致。** 另外，`manage-install.mjs` 是**整体替换式安装器**（安装时把整个 target 改名 backup 再放入新包），因此：
 
-- **禁止**把 target 直接指向宿主共享的 Skill 目录（如 `~/.agents/skills/`）——整体替换会备份并替换整个目录，影响同目录下其他 Skill。
+- **禁止**把 target 直接指向宿主共享的 Skill 目录（整体替换会备份并替换整个目录，影响同目录下其他 Skill）。
 - target 必须是**专用目录**（本项目自己的安装根，如 `/path/to/aihd-skill`），不与宿主其他 Skill 混放。
 
 闭环方式二选一：
