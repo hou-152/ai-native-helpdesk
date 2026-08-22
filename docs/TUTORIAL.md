@@ -6,7 +6,7 @@
 
 本教程走的是**完整运行包通道**：从 GitHub／release／npm 取得仓库文件，再由 `manage-install.mjs` 按 `release-files.v1.json` 安装和验证。skills.sh／`skills` CLI 负责 Skill 发现、合同展示和多宿主注册；skills.sh 公共下载快照不是 Skill 目录的完整递归副本，不能替代完整运行包的 `verify` 收据。
 
-> ⚠️ **verify 的边界**：`verify` 只证明 TARGET_ROOT 与安装收据一致（文件集合、字节、SHA-256），**不证明宿主实际加载的 Skill 目录与 TARGET_ROOT 一致**。运行 6 个脚本时，要么把完整包装到宿主实际加载路径并逐路径 verify，要么用 TARGET_ROOT 下显式路径调用脚本（`node "$TARGET_ROOT/skills/<name>/scripts/<script>.mjs"`）；不要假设 `skills add` 注册的目录自带 `scripts/`。
+> ⚠️ **verify 的边界**：`verify` 只证明 TARGET_ROOT 与安装收据一致（文件集合、字节、SHA-256），**不证明宿主实际加载的 Skill 目录与 TARGET_ROOT 一致**。另外 `manage-install.mjs` 是**整体替换式安装器**（安装时把整个 target 改名 backup 再放入新包）——**禁止把 target 指向宿主共享的 Skill 目录**（如 `~/.agents/skills/`），否则会备份并替换整个目录、影响同目录其他 Skill；target 必须用专用目录。运行 6 个脚本时，要么把宿主实际加载路径指向已验证的 TARGET_ROOT（或逐 skill 复制/链接后逐路径 verify），要么用 TARGET_ROOT 下显式路径调用（`node "$TARGET_ROOT/skills/<name>/scripts/<script>.mjs"`）。SKILL.md 中 `node scripts/...` 示例是相对于已验证完整包内 skill 目录的路径；不要假设 `skills add` 注册的目录自带 `scripts/`。
 
 ---
 

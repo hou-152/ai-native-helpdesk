@@ -88,12 +88,17 @@ npx -y skills add hou-152/ai-native-helpdesk -g --all
 
 ### 有效运行路径（重要）
 
-**verify 只证明 TARGET_ROOT 与安装收据一致，不等于宿主实际加载的 Skill 目录与其一致。** 两种闭环方式选一种：
+**verify 只证明 TARGET_ROOT 与安装收据一致，不等于宿主实际加载的 Skill 目录与其一致。** 另外，`manage-install.mjs` 是**整体替换式安装器**（安装时把整个 target 改名 backup 再放入新包），因此：
 
-1. **完整包直装宿主路径**（推荐，逐路径可验证）：把 `manage-install.mjs` 安装到宿主实际加载的 Skill 目录（或目录的上级），再对每个实际加载路径执行 `verify`，确认 Agent 执行的 `skills/*/scripts/*.mjs` 与已验证字节一致。
+- **禁止**把 target 直接指向宿主共享的 Skill 目录（如 `~/.agents/skills/`）——整体替换会备份并替换整个目录，影响同目录下其他 Skill。
+- target 必须是**专用目录**（本项目自己的安装根，如 `/path/to/aihd-skill`），不与宿主其他 Skill 混放。
+
+闭环方式二选一：
+
+1. **专用 TARGET_ROOT + 宿主从该目录加载**（推荐）：安装到专用目录并 `verify` 后，把宿主实际加载路径指向已验证的 TARGET_ROOT（或从该目录逐 skill 复制/链接到宿主加载路径，再逐路径 `verify`），确保 Agent 执行的 `skills/*/scripts/*.mjs` 与已验证字节一致。
 2. **脚本显式调用 TARGET_ROOT**：宿主只注册 SKILL.md 合同；运行 6 个脚本时，用 TARGET_ROOT 下的绝对路径显式调用（如 `node "$TARGET_ROOT/skills/action/scripts/next-step.mjs" --input '...'`），不假设宿主 Skill 目录里有脚本。
 
-无论哪种方式，**运行脚本一律从已验证的 TARGET_ROOT 或已验证的宿主加载路径调用**；不要假设 `skills add` 注册的目录里自带 `scripts/`（skills.sh 公共下载快照不保证包含脚本）。
+**关于合同示例的相对路径**：SKILL.md 中的 `node scripts/xxx.mjs` 示例是相对于该 skill 目录的路径，前提是该目录来自已验证的完整运行包（TARGET_ROOT 内）或逐路径 verify 过的宿主加载路径；skills.sh 公共下载快照注册的目录不保证包含 `scripts/`。
 
 ## 完整运行包安装器
 
