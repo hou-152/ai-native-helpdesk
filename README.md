@@ -86,6 +86,15 @@ npx -y skills add hou-152/ai-native-helpdesk -g --all
 
 该命令由 Vercel Labs 的 `skills` CLI 发现并安装全部 7 个 skill。`--all` 会向全部支持的宿主写入；若只需一个宿主，使用该 CLI 的 `--agent <agent>` 参数限定目标。CLI 从 GitHub checkout 安装时可能复制脚本，但这不是 skills.sh 公共下载快照的完整性合同；需要运行 6 个脚本或取得可复核安装收据时，继续使用下方完整运行包安装器。安装后回到 Agent，输入 `/ai-native-helpdesk 新手入门` 即可开始。
 
+### 有效运行路径（重要）
+
+**verify 只证明 TARGET_ROOT 与安装收据一致，不等于宿主实际加载的 Skill 目录与其一致。** 两种闭环方式选一种：
+
+1. **完整包直装宿主路径**（推荐，逐路径可验证）：把 `manage-install.mjs` 安装到宿主实际加载的 Skill 目录（或目录的上级），再对每个实际加载路径执行 `verify`，确认 Agent 执行的 `skills/*/scripts/*.mjs` 与已验证字节一致。
+2. **脚本显式调用 TARGET_ROOT**：宿主只注册 SKILL.md 合同；运行 6 个脚本时，用 TARGET_ROOT 下的绝对路径显式调用（如 `node "$TARGET_ROOT/skills/action/scripts/next-step.mjs" --input '...'`），不假设宿主 Skill 目录里有脚本。
+
+无论哪种方式，**运行脚本一律从已验证的 TARGET_ROOT 或已验证的宿主加载路径调用**；不要假设 `skills add` 注册的目录里自带 `scripts/`（skills.sh 公共下载快照不保证包含脚本）。
+
 ## 完整运行包安装器
 
 ### 方式 A：npx 一键安装

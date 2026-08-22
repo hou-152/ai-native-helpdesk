@@ -6,6 +6,8 @@
 
 本教程走的是**完整运行包通道**：从 GitHub／release／npm 取得仓库文件，再由 `manage-install.mjs` 按 `release-files.v1.json` 安装和验证。skills.sh／`skills` CLI 负责 Skill 发现、合同展示和多宿主注册；skills.sh 公共下载快照不是 Skill 目录的完整递归副本，不能替代完整运行包的 `verify` 收据。
 
+> ⚠️ **verify 的边界**：`verify` 只证明 TARGET_ROOT 与安装收据一致（文件集合、字节、SHA-256），**不证明宿主实际加载的 Skill 目录与 TARGET_ROOT 一致**。运行 6 个脚本时，要么把完整包装到宿主实际加载路径并逐路径 verify，要么用 TARGET_ROOT 下显式路径调用脚本（`node "$TARGET_ROOT/skills/<name>/scripts/<script>.mjs"`）；不要假设 `skills add` 注册的目录自带 `scripts/`。
+
 ---
 
 ## 0. 前置检查
