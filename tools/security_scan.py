@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
-"""Fail-closed static security gate for the six bundled child runtimes.
+"""Byte-integrity gate plus bounded static checks for six child runtimes.
 
 This deterministic repository check complements, but does not impersonate, the
 third-party skills.sh/Socket audit. A provider result is current only when its
 audit metadata binds to a snapshot that contains these scripts.
+
+EXPECTED_SCRIPT_SHA256 is an authorization manifest, not generated output.
+Changing a runtime and its approved digest requires independent review of the
+exact runtime diff; the AST checks are defense in depth, not a complete model of
+JavaScript semantics.
 """
 
 from __future__ import annotations

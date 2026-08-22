@@ -251,7 +251,7 @@ python3 tools/security_scan.py
 node --test
 ```
 
-`quick_validate.py` 对 7 个 Skill pack 做结构、发布清单、脚本语法、错误输入和最小运行烟测；`security_scan.py` 对 6 个子 Skill 脚本做确定性静态安全门。第三方 skills.sh／Socket 审计只有在扫描快照包含当前脚本时才算当前收据，详细边界见 [docs/SECURITY.md](docs/SECURITY.md)。
+`quick_validate.py` 对 7 个 Skill pack 做结构、发布清单、脚本语法、错误输入和最小运行烟测；`security_scan.py` 对 6 个子 Skill 脚本执行已审核字节完整性门和有边界的静态纵深检查。它不是通用 JavaScript 验证器；运行脚本和批准 hash 的变更需要非作者 Reviewer 审阅精确 diff。第三方 skills.sh／Socket 审计只有在扫描快照包含当前脚本时才算当前收据，详细边界见 [docs/SECURITY.md](docs/SECURITY.md)。
 
 Node.js 测试使用运行时生成的脱敏临时语料，不包含真实社区消息、成员信息、消息标识或私域路径。覆盖：`HIT → raw/context`、`MISS`、`SOURCE_UNAVAILABLE`、source hash drift、定位命中但原始记录缺失、隐私／动态事实／不可逆动作／低风险最小实验边界，以及清洁安装、旧 8 卡覆盖、精确文件集 verify、回滚和软链拒绝。
 
