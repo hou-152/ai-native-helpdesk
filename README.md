@@ -67,9 +67,16 @@ AI／Agent／OpenClaw 社区的成员经常问相似的问题：某个工具怎�
 
 依赖或知识源不可用时，knowledge 路由返回 `SOURCE_UNAVAILABLE`；**不得**猜本机路径、模拟调用或用模型记忆冒充知识库。
 
-## 安装
+## 安装通道
 
-推荐：Claude Code、豆包、WorkBuddy、Codex 及其他支持 Skills 的 Agent。
+推荐：Claude Code、豆包、WorkBuddy、Codex 及其他支持 Skills 的 Agent。本项目采用双通道分发，两个通道的完成标准不同：
+
+| 通道 | 负责什么 | 不证明什么 |
+|---|---|---|
+| skills.sh／`skills` CLI | 发现 7 个 Skill、展示合同与安全提示、向宿主注册 Skill | skills.sh 公共下载快照不是 Skill 目录的完整递归副本，不能单独证明 6 个运行脚本齐全或已被第三方扫描 |
+| GitHub／release／npm ＋ `manage-install.mjs` | 按 `release-files.v1.json` 安装完整运行包，并校验文件集合、字节数和 SHA-256 | 安装成功不等于用户问题已解决，也不等于第三方源码审计完成 |
+
+### 合同发现与多宿主注册
 
 在终端执行：
 
@@ -77,9 +84,23 @@ AI／Agent／OpenClaw 社区的成员经常问相似的问题：某个工具怎�
 npx -y skills add hou-152/ai-native-helpdesk -g --all
 ```
 
-该命令由 Vercel Labs 的 `skills` CLI 发现并安装全部 7 个 skill。`--all` 会向全部支持的宿主写入；若只需一个宿主，使用该 CLI 的 `--agent <agent>` 参数限定目标。安装后回到 Agent，输入 `/ai-native-helpdesk 新手入门` 即可开始。
+该命令由 Vercel Labs 的 `skills` CLI 发现并安装全部 7 个 skill。`--all` 会向全部支持的宿主写入；若只需一个宿主，使用该 CLI 的 `--agent <agent>` 参数限定目标。CLI 从 GitHub checkout 安装时可能复制脚本，但这不是 skills.sh 公共下载快照的完整性合同；需要运行 6 个脚本或取得可复核安装收据时，继续使用下方完整运行包安装器。安装后回到 Agent，输入 `/ai-native-helpdesk 新手入门` 即可开始。
 
-## 可逆安装器（备选）
+### 有效运行路径（重要）
+
+**verify 只证明 TARGET_ROOT 与安装收据一致，不等于宿主实际加载的 Skill 目录与其一致。** 另外，`manage-install.mjs` 是**整体替换式安装器**（安装时把整个 target 改名 backup 再放入新包），因此：
+
+- **禁止**把 target 直接指向宿主共享的 Skill 目录（整体替换会备份并替换整个目录，影响同目录下其他 Skill）。
+- target 必须是**专用目录**（本项目自己的安装根，如 `/path/to/aihd-skill`），不与宿主其他 Skill 混放。
+
+闭环方式二选一：
+
+1. **专用 TARGET_ROOT + 宿主从该目录加载**（推荐）：安装到专用目录并 `verify` 后，把宿主实际加载路径指向已验证的 TARGET_ROOT（或从该目录逐 skill 复制/链接到宿主加载路径，再逐路径 `verify`），确保 Agent 执行的 `skills/*/scripts/*.mjs` 与已验证字节一致。
+2. **脚本显式调用 TARGET_ROOT**：宿主只注册 SKILL.md 合同；运行 6 个脚本时，用 TARGET_ROOT 下的绝对路径显式调用（如 `node "$TARGET_ROOT/skills/action/scripts/next-step.mjs" --input '...'`），不假设宿主 Skill 目录里有脚本。
+
+**关于合同示例的相对路径**：SKILL.md 中的 `node scripts/xxx.mjs` 示例是相对于该 skill 目录的路径，前提是该目录来自已验证的完整运行包（TARGET_ROOT 内）或逐路径 verify 过的宿主加载路径；skills.sh 公共下载快照注册的目录不保证包含 `scripts/`。
+
+## 完整运行包安装器
 
 ### 方式 A：npx 一键安装
 
@@ -133,7 +154,7 @@ node "/absolute/path/to/installed-skill/scripts/manage-install.mjs" verify \
 node --test
 ```
 
-两种方式等价：npx 方式自动携带正确的包内文件集；源码方式需要显式 `--source`。该安装器产出可验证、可回滚的发布包；多宿主注册请优先使用上方 `skills add` 命令。卸载与回滚命令见 [docs/TUTORIAL.md](docs/TUTORIAL.md)。
+两种方式等价：npx 方式自动携带正确的包内文件集；源码方式需要显式 `--source`。该安装器产出可验证、可回滚的完整运行包。多宿主注册可使用上方 `skills add` 命令；运行脚本前仍应以安装器的 `verify` 收据确认文件集合和字节。卸载与回滚命令见 [docs/TUTORIAL.md](docs/TUTORIAL.md)。
 
 ### 开箱即用：顺带安装 dbs-knowledge
 
@@ -217,14 +238,21 @@ ai-native-helpdesk/
 ├── README.md
 ├── skills/
 │   ├── action/SKILL.md                  ← 子 skill：最小下一步
+│   ├── action/scripts/next-step.mjs
 │   ├── ai-native-helpdesk/SKILL.md      ← 导航中心（守门 + 判模 + 路由 + 交接）
 │   ├── diagnosis/SKILL.md               ← 子 skill：心理／动机信号边界
+│   ├── diagnosis/scripts/classify-state.mjs
 │   ├── good-question/SKILL.md           ← 子 skill：追问 1 个区分问题
+│   ├── good-question/scripts/clarify-gate.mjs
 │   ├── knowledge/SKILL.md               ← 子 skill：知识库检索
+│   ├── knowledge/scripts/bm25-search.mjs
 │   ├── safety/SKILL.md                  ← 守门参考
-│   └── thinking/SKILL.md                ← 子 skill：假设／逻辑／因果分析
+│   ├── safety/scripts/gate-decision.mjs
+│   ├── thinking/SKILL.md                ← 子 skill：假设／逻辑／因果分析
+│   └── thinking/scripts/analysis-state.mjs
 ├── docs/INSTALL.md
 ├── docs/SECURITY.md
+├── docs/SKILL-PHILOSOPHY.md
 ├── docs/TUTORIAL.md
 ├── scripts/install-deps.mjs
 └── scripts/manage-install.mjs
@@ -251,7 +279,7 @@ python3 tools/security_scan.py
 node --test
 ```
 
-`quick_validate.py` 对 7 个 Skill pack 做结构、发布清单、脚本语法、错误输入和最小运行烟测；`security_scan.py` 对 6 个子 Skill 脚本执行已审核字节完整性门和有边界的静态纵深检查。它不是通用 JavaScript 验证器；运行脚本和批准 hash 的变更需要非作者 Reviewer 审阅精确 diff。第三方 skills.sh／Socket 审计只有在扫描快照包含当前脚本时才算当前收据，详细边界见 [docs/SECURITY.md](docs/SECURITY.md)。
+`quick_validate.py` 对 7 个 Skill pack 做结构、发布清单、脚本语法、错误输入和最小运行烟测；`security_scan.py` 对 6 个子 Skill 脚本执行已审核字节完整性门和有边界的静态纵深检查。它不是通用 JavaScript 验证器；运行脚本和批准 hash 的变更需要非作者 Reviewer 审阅精确 diff。第三方审计只有在报告绑定目标 commit，且文件清单明确包含当前 6 个脚本时才算当前收据；只分析依赖 manifest 的普通 repository／full scan 不构成这些脚本的源码审计。详细边界见 [docs/SECURITY.md](docs/SECURITY.md)。
 
 Node.js 测试使用运行时生成的脱敏临时语料，不包含真实社区消息、成员信息、消息标识或私域路径。覆盖：`HIT → raw/context`、`MISS`、`SOURCE_UNAVAILABLE`、source hash drift、定位命中但原始记录缺失、隐私／动态事实／不可逆动作／低风险最小实验边界，以及清洁安装、旧 8 卡覆盖、精确文件集 verify、回滚和软链拒绝。
 

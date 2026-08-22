@@ -4,6 +4,10 @@
 
 适用版本：`v1.0.0-private-source`。旧 8 卡公开面已撤销，本教程不涉及 PublicCard。
 
+本教程走的是**完整运行包通道**：从 GitHub／release／npm 取得仓库文件，再由 `manage-install.mjs` 按 `release-files.v1.json` 安装和验证。skills.sh／`skills` CLI 负责 Skill 发现、合同展示和多宿主注册；skills.sh 公共下载快照不是 Skill 目录的完整递归副本，不能替代完整运行包的 `verify` 收据。
+
+> ⚠️ **verify 的边界**：`verify` 只证明 TARGET_ROOT 与安装收据一致（文件集合、字节、SHA-256），**不证明宿主实际加载的 Skill 目录与 TARGET_ROOT 一致**。另外 `manage-install.mjs` 是**整体替换式安装器**（安装时把整个 target 改名 backup 再放入新包）——**禁止把 target 指向宿主共享的 Skill 目录**，否则会备份并替换整个目录、影响同目录其他 Skill；target 必须用专用目录。运行 6 个脚本时，要么把宿主实际加载路径指向已验证的 TARGET_ROOT（或逐 skill 复制/链接后逐路径 verify），要么用 TARGET_ROOT 下显式路径调用（`node "$TARGET_ROOT/skills/<name>/scripts/<script>.mjs"`）。SKILL.md 中 `node scripts/...` 示例是相对于已验证完整包内 skill 目录的路径；不要假设 `skills add` 注册的目录自带 `scripts/`。
+
 ---
 
 ## 0. 前置检查
@@ -36,7 +40,7 @@ git clone https://github.com/hou-152/ai-native-helpdesk.git
 cd ai-native-helpdesk
 ```
 
-也可以直接复用已有 checkout，只要它包含 `skills/ai-native-helpdesk/SKILL.md`、`release-files.v1.json` 和 `scripts/manage-install.mjs`。
+也可以直接复用已有 checkout，只要它包含 `skills/ai-native-helpdesk/SKILL.md`、`release-files.v1.json`、`scripts/manage-install.mjs` 和 6 个 `skills/*/scripts/*.mjs`。不要把 skills.sh 的单个子 Skill 公共下载快照当作完整源码 checkout。
 
 ---
 
@@ -201,6 +205,9 @@ node --test
 
 **Q：安装时报 `MANIFEST_UNAVAILABLE`？**
 仓库 checkout 缺 `release-files.v1.json`。确认 `--source` 指向完整 checkout。
+
+**Q：已经运行过 `skills add`，还需要完整运行包安装器吗？**
+只做 Skill 发现、合同加载或多宿主注册时，可以使用 `skills add`。需要调用 6 个运行脚本，或需要可复核的文件集合、字节数和 SHA-256 收据时，仍应使用本教程的安装器并执行 `verify`；不要用 skills.sh 页面上的旧审计或公共下载快照替代运行包完整性验证。
 
 **Q：`$dbs-knowledge` 是什么？我在哪装？**
 它是外部 Agent Skill 合同（上游 `dontbesilent2025/dbskill`），不随本包分发。宿主侧先安装并验证该 Skill 可发现、可调用，再回来做第 4 步。
