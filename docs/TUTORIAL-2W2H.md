@@ -85,14 +85,14 @@ git clone https://github.com/hou-152/ai-native-knowledge-base.git
 | **时间** | 安装 ~10 分钟；之后即用，无学习成本（不需要记命令） |
 | **前置** | Node.js ≥ 20；知识库 clone（公开库即可） |
 | **产出** | ① 每次必做的安全守门 ② 正确分类的路由 ③ 带来源的真实经验（不编造）④ 1 个可观察可回滚的最小下一步 |
-| **验证** | 机器验证：quick_validate 7/7、security_scan 6/6、node --test 21/21、npm pack 24 文件（CI 固定 checkout v7.0.1 / setup-node v7.0.0） |
-| **边界** | 不发布 npm；机器验证 ≠ 真实用户效果（产品验证 0/30）；GitHub 正式 review 待补 |
+| **验证** | 仓库 CI 持续检查 Skill 布局、脚本安全门、测试套件和发布打包；当前结果以对应提交的 GitHub checks 为准 |
+| **边界** | 机器验证和代码审查只证明各自覆盖的机制，不等于真实用户效果；产品验证需另行记录和验收 |
 | **你的成本** | 唯一要做的事：**验收**。thinking 的结论是 draft 不替你下结论；action 的下一步你做之前先确认可回滚 |
 
 ## 常见问题
 
 **Q：装完怎么确认没问题？**
-`verify` 返回 `VERIFIED / OK` 即安装正确；或跑 `node --test`（21/21）。
+`verify` 返回 `VERIFIED / OK` 即安装正确；或跑 `node --test` 并确认测试套件全部通过。
 
 **Q：它是不是什么都知道？**
 不是。它查知识库，查不到就 MISS／UNKNOWN，不编造。私域内容需要显式授权才能回读。
