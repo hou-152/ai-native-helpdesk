@@ -2,7 +2,7 @@
 
 > 面向 AI／Agent／OpenClaw 社区的薄入口 Helpdesk Skill：先守门、判模、按需加载合同，knowledge 路由调用宿主显式授权的私域知识库，定位原始对话后回答当下问题。
 
-**当前版本：`v1.0.0-private-source`（未发布）**
+**当前版本：`v1.2.0`（已发布，2026-08-22 GitHub Release：[v1.2.0](https://github.com/hou-152/ai-native-helpdesk/releases/tag/v1.2.0)）**
 
 本版本是一个减法实现：不再随包分发"标准答案"。旧 8 卡公开面（PublicCard、公共 index、卡片 loader）已全部撤销，`v0.9.0` tag 与 GitHub Release 已删除；Git 历史未重写，旧提交仍可追溯。
 
@@ -253,6 +253,7 @@ ai-native-helpdesk/
 ├── docs/INSTALL.md
 ├── docs/SECURITY.md
 ├── docs/SKILL-PHILOSOPHY.md
+├── docs/TUTORIAL-2W2H.md
 ├── docs/TUTORIAL.md
 ├── scripts/install-deps.mjs
 └── scripts/manage-install.mjs
@@ -295,7 +296,7 @@ Node.js 测试使用运行时生成的脱敏临时语料，不包含真实社区
 
 | 项目 | 状态 |
 |---|---|
-| 运行面 | `v1.0.0-private-source`（未发布） |
+| 运行面 | `v1.2.0`（已发布，2026-08-22 GitHub Release） |
 | 旧 8 卡公开面 | `REVOKED`（已撤销并归档回收） |
 | active PublicCard | `0` |
 | 产品效果 | `UNKNOWN`（30 人验证未开始） |

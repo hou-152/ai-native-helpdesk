@@ -4,7 +4,7 @@ description: 面向 AI／Agent／OpenClaw 社区的薄入口 Helpdesk Skill 导�
 license: Apache-2.0
 metadata:
   version: 1.2.0
-  status: SUB_SKILL_NAVIGATION / NOT_RELEASED / PRODUCT_VALIDATION_UNKNOWN
+  status: SUB_SKILL_NAVIGATION / RELEASED / PRODUCT_VALIDATION_UNKNOWN
   author: 减
 ---
 
